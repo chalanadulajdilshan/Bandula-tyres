@@ -4,6 +4,9 @@ include 'class/include.php';
 include './auth.php';
 ?>
 
+<?php
+$navigationLayout = $COMPANY_PROFILE_DETAILS->navigation_layout ?? 'horizontal';
+?>
 <html lang="en">
 
 <head>
@@ -14,7 +17,7 @@ include './auth.php';
     <?php include 'main-css.php' ?>
 </head>
 
-<body data-layout="horizontal" data-topbar="colored">
+<body data-layout="<?php echo $navigationLayout; ?>" data-topbar="colored">
     <!-- Begin page -->
     <div id="layout-wrapper">
         <?php include 'navigation.php' ?>
@@ -181,24 +184,10 @@ include './auth.php';
     <?php include 'customer-master-model.php'; ?>
 
     <!-- JAVASCRIPT -->
-    <link href="assets/css/app.min.css" rel="stylesheet" type="text/css" />
-    <link href="assets/css/icons.min.css" rel="stylesheet" type="text/css" />
     <link href="assets/libs/daterangepicker/daterangepicker.css" rel="stylesheet" type="text/css" />
-    <script src="assets/libs/jquery/jquery.min.js"></script>
-    <script src="assets/libs/bootstrap/js/bootstrap.bundle.min.js"></script>
-    <script src="assets/libs/metismenu/metisMenu.min.js"></script>
-    <script src="assets/libs/simplebar/simplebar.min.js"></script>
-    <script src="assets/libs/node-waves/waves.min.js"></script>
-    <script src="assets/libs/datatables.net/js/jquery.dataTables.min.js"></script>
-    <script src="assets/libs/datatables.net-bs4/js/dataTables.bootstrap4.min.js"></script>
-    <script src="assets/libs/datatables.net-responsive/js/dataTables.responsive.min.js"></script>
-    <script src="assets/libs/datatables.net-responsive-bs4/js/responsive.bootstrap4.min.js"></script>
-    <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
+    <?php include 'main-js.php' ?>
     <script src="assets/libs/moment/min/moment.min.js"></script>
     <script src="assets/libs/daterangepicker/daterangepicker.min.js"></script>
-
-    <!-- App js -->
-    <script src="assets/js/app.js"></script>
 
     <!-- Include sales summary JS -->
     <script src="ajax/js/sales-summary.js"></script>
