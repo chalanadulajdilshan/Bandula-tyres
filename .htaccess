@@ -1,5 +1,5 @@
 RewriteEngine On
-RewriteBase /
+RewriteBase /Bandula-tyres/
 # Redirect requests without .php to the actual .php files
 RewriteCond %{REQUEST_FILENAME}.php -f
 RewriteRule ^(.*)$ $1.php [L]
