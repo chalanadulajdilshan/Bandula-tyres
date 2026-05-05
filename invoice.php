@@ -35,6 +35,7 @@ if (!$SALES_INVOICE->id) {
 
 $COMPANY_PROFILE = new CompanyProfile($SALES_INVOICE->company_id);
 $CUSTOMER_MASTER = new CustomerMaster($SALES_INVOICE->customer_id);
+$INVOICE_BRANCH = new DepartmentMaster($SALES_INVOICE->department_id);
 
 // Generate public PDF URL
 $pdfBaseUrl = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://$_SERVER[HTTP_HOST]";
@@ -206,6 +207,10 @@ if (!empty($customerMobile)) {
                                     <?php echo $SALES_INVOICE->invoice_no ?></p>
                                 <p class="mb-1" style="font-size:14px;"><strong>Inv Date:</strong>
                                     <?php echo date('d M, Y', strtotime($SALES_INVOICE->invoice_date)); ?></p>
+                                <?php if (!empty($INVOICE_BRANCH->name)): ?>
+                                    <p class="mb-1" style="font-size:14px;"><strong>Branch:</strong>
+                                        <?php echo htmlspecialchars($INVOICE_BRANCH->name); ?></p>
+                                <?php endif; ?>
                                 <?php if (!empty($SALES_INVOICE->vehicle_no)): ?>
                                     <p class="mb-1" style="font-size:14px;"><strong>Vehicle No:</strong>
                                         <?php echo $SALES_INVOICE->vehicle_no ?></p>

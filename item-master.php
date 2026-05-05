@@ -172,10 +172,9 @@ $item_id = 'TI/0' . ($lastId + 1);
                                             </div>
 
                                             <!-- Group -->
-                                            <div class="col-md-3">
+                                            <div class="col-md-3" style="display:none;">
                                                 <div class="mb-3">
-                                                    <label class="form-label" for="group">Item Group <span
-                                                            class="text-danger">*</span></label>
+                                                    <label class="form-label" for="group">Item Group</label>
                                                     <select id="group" name="group" class="form-select">
 
                                                         <?php
@@ -189,10 +188,9 @@ $item_id = 'TI/0' . ($lastId + 1);
                                             </div>
 
                                             <!-- Category -->
-                                            <div class="col-md-3">
+                                            <div class="col-md-3" style="display:none;">
                                                 <div class="mb-3">
-                                                    <label class="form-label" for="category">Item Category <span
-                                                            class="text-danger">*</span></label>
+                                                    <label class="form-label" for="category">Item Category</label>
                                                     <select id="category" name="category" class="form-select">
 
                                                         <?php

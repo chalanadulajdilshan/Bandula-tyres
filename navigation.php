@@ -29,6 +29,30 @@ if ($homeViewMode === 'nav_buttons' || $homeViewMode === 'header') {
         }
     }
 }
+
+// Quick-access main links (rendered after Dashboard)
+$QUICK_LINKS_DEF = [
+    ['url' => 'sales-invoice', 'label' => 'Sales Invoice', 'icon' => 'uil-receipt'],
+    ['url' => 'quotation',     'label' => 'Quotation',     'icon' => 'uil-file-edit-alt'],
+    ['url' => 'live-stock',    'label' => 'Live Stock',    'icon' => 'uil-package'],
+];
+$QUICK_LINKS = [];
+$_quickUserId = isset($_SESSION['id']) ? (int) $_SESSION['id'] : 0;
+if ($_quickUserId > 0) {
+    $_quickPages = new Pages(null);
+    $_quickPerm = new UserPermission();
+    foreach ($QUICK_LINKS_DEF as $ql) {
+        $pg = $_quickPages->getPageByUrl($ql['url']);
+        if (!$pg) continue;
+        $perms = $_quickPerm->hasPermission($_quickUserId, $pg['id']);
+        if (!in_array(true, $perms, true)) continue;
+        $QUICK_LINKS[] = [
+            'href'  => $ql['url'] . '?page_id=' . $pg['id'],
+            'label' => $ql['label'],
+            'icon'  => !empty($pg['page_icon']) ? $pg['page_icon'] : $ql['icon'],
+        ];
+    }
+}
 ?>
 
 <?php if ($homeViewMode === 'nav_buttons') { ?>
@@ -159,6 +183,14 @@ if ($homeViewMode === 'nav_buttons' || $homeViewMode === 'header') {
                                             <span><?php echo $category['name']; ?></span>
                                         </a>
                                     </li>
+                                    <?php foreach ($QUICK_LINKS as $ql): ?>
+                                        <li>
+                                            <a href="<?php echo $ql['href']; ?>" class="waves-effect">
+                                                <i class="<?php echo htmlspecialchars($ql['icon']); ?>"></i>
+                                                <span><?php echo htmlspecialchars($ql['label']); ?></span>
+                                            </a>
+                                        </li>
+                                    <?php endforeach; ?>
                                 <?php endif;
                             endif;
                         elseif ($category['id'] == 4): // Reports
@@ -272,10 +304,7 @@ if ($homeViewMode === 'nav_buttons' || $homeViewMode === 'header') {
 
             /* Border fix for blue brand box area */
             .navbar-brand-box {
-                background: url('assets/images/Bg.png') !important;
-                background-size: cover !important;
-                background-position: top center !important;
-                background-attachment: fixed !important;
+                background: <?php echo $themeColor; ?> !important;
                 border-bottom: 1px solid rgba(255, 255, 255, 0.1);
                 padding: 0 24px;
                 height: 70px;
@@ -558,7 +587,7 @@ if ($homeViewMode === 'nav_buttons' || $homeViewMode === 'header') {
     </style>
 <?php endif; ?>
 
-<header id="page-topbar" style="background: url('assets/images/Bg.png') !important; background-size: cover !important; background-position: top center !important; background-attachment: fixed !important;">
+<header id="page-topbar" style="background: <?php echo $themeColor; ?> !important;">
     <div class="navbar-header">
         <div class="d-flex align-items-center">
             <button type="button" class="btn btn-sm px-3 font-size-16 <?php echo $navigationLayout === 'vertical' ? 'vertical-menu-btn' : 'd-lg-none'; ?> header-item waves-effect waves-light"
@@ -715,6 +744,13 @@ if ($homeViewMode === 'nav_buttons' || $homeViewMode === 'header') {
                                                     <i class="<?php echo $category['icon']; ?> me-2"></i> <?php echo $category['name']; ?>
                                                 </a>
                                             </li>
+                                            <?php foreach ($QUICK_LINKS as $ql): ?>
+                                                <li class="nav-item">
+                                                    <a class="nav-link" href="<?php echo $ql['href']; ?>">
+                                                        <i class="<?php echo htmlspecialchars($ql['icon']); ?> me-2"></i> <?php echo htmlspecialchars($ql['label']); ?>
+                                                    </a>
+                                                </li>
+                                            <?php endforeach; ?>
                                             <?php
                                         endif;
                                     endif;

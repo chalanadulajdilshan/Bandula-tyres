@@ -202,12 +202,10 @@ class ItemMaster
             $row['category'] = $CATEGORY->name;
             $row['brand'] = $BRAND->name;
 
-            // Get ARN records filtered by department directly using the method
-            if ($userDepartmentId > 0) {
-                // Get only ARNs that belong to the user's department
-                $row['stock_tmp'] = $STOCK_TMP->getByItemIdAndDepartment($row['id'], $userDepartmentId);
+            // Get ARN records filtered by the effective department (selected filter takes priority over user's own)
+            if ($effectiveDepartmentId > 0) {
+                $row['stock_tmp'] = $STOCK_TMP->getByItemIdAndDepartment($row['id'], $effectiveDepartmentId);
             } else {
-                // If no user department is set, include all (fallback for admin users)
                 $row['stock_tmp'] = $STOCK_TMP->getByItemId($row['id']);
             }
 

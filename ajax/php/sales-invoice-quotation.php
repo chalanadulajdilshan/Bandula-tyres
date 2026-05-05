@@ -81,15 +81,13 @@ if (isset($_POST['create'])) {
 
     $invoice_id = $SALES_INVOICE->create();
 
-    // Document tracking update
-    $DOCUMENT_TRACKING = new DocumentTracking(null);
-    if ($payment_type == 'cash') {
-        $DOCUMENT_TRACKING->incrementDocumentId('cash');
-    } else if ($payment_type == 'credit') {
-        $DOCUMENT_TRACKING->incrementDocumentId('credit');
-    } else {
-        $DOCUMENT_TRACKING->incrementDocumentId('invoice');
-    }
+    // Unified invoice counter: advance both cash_id and credit_id together
+    $db = Database::getInstance();
+    $db->readQuery("UPDATE `document_tracking`
+                    SET `cash_id` = GREATEST(`cash_id`, `credit_id`) + 1,
+                        `credit_id` = `cash_id`,
+                        `updated_at` = NOW()
+                    WHERE `status` = 1");
 
     // If invoice creation successful
     if ($invoice_id) {

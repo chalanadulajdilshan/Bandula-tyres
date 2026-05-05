@@ -139,6 +139,17 @@ class Pages
         return $array_res;
     }
 
+    public function getPageByUrl($url)
+    {
+        $db = Database::getInstance();
+        $query = "SELECT * FROM `pages` WHERE `page_url` = '" . $db->escapeString($url) . "' LIMIT 1";
+        $result = $db->readQuery($query);
+        if ($result && $row = mysqli_fetch_array($result)) {
+            return $row;
+        }
+        return null;
+    }
+
     public function getPagesBySubCategory($sub_category)
     {
         $query = "SELECT * FROM `pages` WHERE `sub_page_category` = '" . $sub_category . "' ORDER BY `queue` ASC";

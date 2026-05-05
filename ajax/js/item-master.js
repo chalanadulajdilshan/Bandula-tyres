@@ -256,14 +256,6 @@ jQuery(document).ready(function () {
                 timer: 2000,
                 showConfirmButton: false
             });
-        } else if (!$('#category').val() || $('#category').val().length === 0) {
-            swal({
-                title: "Error!",
-                text: "Please select item category",
-                type: 'error',
-                timer: 2000,
-                showConfirmButton: false
-            });
         } else if (!$('#list_price').val() || $('#list_price').val().length === 0) {
             swal({
                 title: "Error!",
@@ -362,14 +354,6 @@ jQuery(document).ready(function () {
             swal({
                 title: "Error!",
                 text: "Please select item brand",
-                type: 'error',
-                timer: 2000,
-                showConfirmButton: false
-            });
-        } else if (!$('#category').val() || $('#category').val().length === 0) {
-            swal({
-                title: "Error!",
-                text: "Please select item category",
                 type: 'error',
                 timer: 2000,
                 showConfirmButton: false

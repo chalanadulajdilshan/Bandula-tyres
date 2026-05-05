@@ -171,19 +171,32 @@ include './auth.php';
                                             $DEPARTMENT_MASTER = new DepartmentMaster(NULL);
                                             $isOneCompanyDept = $DEPARTMENT_MASTER->getIsOneCompany();
                                             $activeDepartments = $DEPARTMENT_MASTER->getActiveDepartment();
+                                            $isSuperAdmin = ((int) $US->type === 1);
+                                            $userBranchId = $US->department_id;
+                                            $userBranch = $userBranchId ? new DepartmentMaster($userBranchId) : null;
                                             ?>
-                                            <div class="col-md-3" hidden>
-                                                <label for="department" class="form-label" hidden>Department</label>
-
+                                            <div class="col-md-2">
+                                                <label for="department_id" class="form-label">Branch</label>
                                                 <div class="input-group mb-3">
-                                                    <?php
-                                                    if ($isOneCompanyDept && count($activeDepartments) > 0):
-                                                        $defaultDepartment = $activeDepartments[0];
-                                                    ?>
+                                                    <?php if ($isSuperAdmin && !$isOneCompanyDept): ?>
+                                                        <select id="department_id" name="department_id" class="form-select">
+                                                            <option value="">-- Select Branch --</option>
+                                                            <?php foreach ($activeDepartments as $departments): ?>
+                                                                <option value="<?php echo $departments['id'] ?>">
+                                                                    <?php echo htmlspecialchars($departments['name']) ?>
+                                                                </option>
+                                                            <?php endforeach; ?>
+                                                        </select>
+                                                    <?php elseif ($userBranch && $userBranch->id): ?>
+                                                        <input type="hidden" id="department_id" name="department_id" value="<?php echo $userBranch->id ?>">
+                                                        <input type="text" class="form-control" value="<?php echo htmlspecialchars($userBranch->name); ?>" readonly>
+                                                    <?php elseif ($isOneCompanyDept && count($activeDepartments) > 0): ?>
+                                                        <?php $defaultDepartment = $activeDepartments[0]; ?>
                                                         <input type="hidden" id="department_id" name="department_id" value="<?php echo $defaultDepartment['id'] ?>">
-                                                        <input type="text" class="form-control" value="<?php echo htmlspecialchars($defaultDepartment['name']); ?>" hidden >
+                                                        <input type="text" class="form-control" value="<?php echo htmlspecialchars($defaultDepartment['name']); ?>" readonly>
                                                     <?php else: ?>
                                                         <select id="department_id" name="department_id" class="form-select">
+                                                            <option value="">-- Select Branch --</option>
                                                             <?php foreach ($activeDepartments as $departments): ?>
                                                                 <option value="<?php echo $departments['id'] ?>">
                                                                     <?php echo htmlspecialchars($departments['name']) ?>
@@ -384,11 +397,7 @@ include './auth.php';
                                                     <input type="number" id="itemPrice" class="form-control"
                                                         placeholder="Price" oninput="calculatePayment()">
                                                 </div>
-                                                <div class="col-md-1">
-                                                    <label class="form-label">Cost</label>
-                                                    <input type="text" id="item_cost_arn" class="form-control"
-                                                        placeholder="Cost">
-                                                </div>
+                                                <input type="hidden" id="item_cost_arn">
                                                 <div class="col-md-1">
                                                     <label class="form-label">Qty</label>
                                                     <input type="number" id="itemQty" class="form-control"
@@ -404,7 +413,7 @@ include './auth.php';
                                                     <input type="number" id="itemSalePrice" class="form-control" min="0"
                                                         placeholder="Sale Price" oninput="calculatePayment()">
                                                 </div>
-                                                <div class="col-md-1">
+                                                <div class="col-md-2">
                                                     <label class="form-label">Serial No</label>
                                                     <div class="input-group">
                                                         <input type="text" id="itemSerialNo" class="form-control"

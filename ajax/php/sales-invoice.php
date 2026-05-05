@@ -28,19 +28,16 @@ if (isset($_POST['action']) && $_POST['action'] == 'resolve_duplicate_invoice') 
     $DOCUMENT_TRACKING = new DocumentTracking(1);
     $SALES_INVOICE = new SalesInvoice(NULL);
 
-    // Determine document type and get current ID
     if ($payment_type === '1') {
         $documentType = 'cash';
-        $currentId = $DOCUMENT_TRACKING->cash_id;
-        $prefix = '/CA/0';
     } elseif ($payment_type === '2') {
         $documentType = 'credit';
-        $currentId = $DOCUMENT_TRACKING->credit_id;
-        $prefix = '/CR/0';
     } else {
         echo json_encode(['status' => 'error', 'message' => 'Invalid payment type']);
         exit();
     }
+
+    $currentId = max((int)$DOCUMENT_TRACKING->cash_id, (int)$DOCUMENT_TRACKING->credit_id);
 
     // Keep incrementing until we find a unique invoice number
     $maxAttempts = 100; // Prevent infinite loop
@@ -49,8 +46,8 @@ if (isset($_POST['action']) && $_POST['action'] == 'resolve_duplicate_invoice') 
     $invoice_id = '';
 
     while ($attempts < $maxAttempts) {
-        $invoiceNumber = str_pad($nextId, 4, '0', STR_PAD_LEFT);
-        $invoice_id = $COMPANY_PROFILE_DETAILS->company_code . $prefix . $_SESSION['id'] . '/' . $invoiceNumber;
+        $invoiceNumber = str_pad($nextId, 3, '0', STR_PAD_LEFT);
+        $invoice_id = 'B' . $invoiceNumber;
 
         // Check if this invoice number exists
         $exists = $SALES_INVOICE->checkInvoiceIdExist($invoice_id);
@@ -285,14 +282,13 @@ if (isset($_POST['create'])) {
 
     $DOCUMENT_TRACKING = new DocumentTracking(null);
 
-    if ($paymentType == 1) {
-        $DOCUMENT_TRACKING->incrementDocumentId('cash');
-    } else if ($paymentType == 2) {
-        $DOCUMENT_TRACKING->incrementDocumentId('credit');
-    } else {
-
-        $DOCUMENT_TRACKING->incrementDocumentId('invoice');
-    }
+    // Unified invoice counter: advance both cash_id and credit_id together
+    $db = Database::getInstance();
+    $db->readQuery("UPDATE `document_tracking`
+                    SET `cash_id` = GREATEST(`cash_id`, `credit_id`) + 1,
+                        `credit_id` = `cash_id`,
+                        `updated_at` = NOW()
+                    WHERE `status` = 1");
 
 
     if ($invoiceResult) {

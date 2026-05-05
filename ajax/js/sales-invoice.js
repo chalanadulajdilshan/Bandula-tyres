@@ -7,8 +7,19 @@ jQuery(document).ready(function () {
 
   $("#view_price_report").on("click", function (e) {
     e.preventDefault();
+    syncBranchFromModal();
     loadItems();
   });
+
+  // Sync the modal's department filter -> main form Branch dropdown
+  function syncBranchFromModal() {
+    const modalDept = $("#item_department_id").val();
+    if (modalDept && $("#department_id").length) {
+      $("#department_id").val(modalDept).trigger("change");
+    }
+  }
+
+  $("#item_department_id").on("change", syncBranchFromModal);
 
   //LOARD ITEM MASTER
   $("#item_item_code").on("keyup", function () {
