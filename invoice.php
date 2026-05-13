@@ -65,67 +65,86 @@ if (!empty($customerMobile)) {
 
     <style>
         @media print {
-
-            /* Hide non-print elements */
-            .no-print {
-                display: none !important;
-            }
-
-            /* Make invoice full width */
-            body,
-            html {
-                width: 100%;
-                margin: 0;
-                padding: 0;
-            }
-
-            #invoice-content,
-            .card {
-                width: 100% !important;
-                max-width: 100% !important;
-                box-shadow: none;
-            }
-
-            .container {
-                width: 100% !important;
-                max-width: 100% !important;
-                padding: 0 !important;
-            }
-
-            /* Use full page without A5 restriction */
-            @page {
-                size: auto;
-                /* remove specific page size */
-                margin: 10mm;
-                /* optional margin */
-            }
-
-
+            .no-print { display: none !important; }
+            body, html { width: 100%; margin: 0; padding: 0; }
+            #invoice-content, .card { width: 100% !important; max-width: 100% !important; box-shadow: none; border: none !important; }
+            .container { width: 100% !important; max-width: 100% !important; padding: 0 !important; }
+            @page { size: A5 portrait; margin: 8mm; }
+            body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
         }
 
-        /* Remove padding and spacing in invoice table */
-        #invoice-content table,
-        #invoice-content th,
-        #invoice-content td {
-            padding: 2px !important;
-            /* reduce padding */
-            margin: 0 !important;
-            border-spacing: 0 !important;
-            border-collapse: collapse !important;
+        #invoice-content {
+            color: #b40000;
+            font-family: "Arial", "Helvetica", sans-serif;
         }
 
-        #invoice-content th,
-        #invoice-content td {
-            vertical-align: middle !important;
-            /* optional: center content vertically */
+        .bt-title {
+            text-align: center;
+            font-weight: 900;
+            letter-spacing: 1px;
+            margin: 0;
+            line-height: 1.1;
+        }
+        .bt-title-en { font-size: 26px; }
+        .bt-title-si { font-size: 18px; font-family: "Iskoola Pota", "Noto Sans Sinhala", sans-serif; }
+        .bt-tagline { text-align: center; font-size: 13px; font-weight: 700; margin: 2px 0 0 0; }
+        .bt-brands  { text-align: center; font-size: 13px; font-weight: 700; margin: 0 0 8px 0; }
+
+        .bt-addr-table { width: 100%; font-size: 12px; line-height: 1.45; }
+        .bt-addr-table td { vertical-align: top; padding: 0 4px; }
+        .bt-addr-table td.right { text-align: right; }
+
+        .bt-meta { text-align: right; font-size: 13px; margin-top: 6px; }
+        .bt-meta .line { display: inline-block; border-bottom: 1px solid #b40000; min-width: 110px; padding: 0 6px; }
+
+        .bt-ms { margin-top: 6px; font-size: 13px; }
+        .bt-ms .dots {
+            display: block;
+            border-bottom: 1px solid #b40000;
+            height: 18px;
+            margin-bottom: 2px;
         }
 
-        /* Optional: remove Bootstrap table styles */
-        #invoice-content .table {
-            width: 100%;
+        .bt-items { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 13px; }
+        .bt-items th, .bt-items td {
+            border: 1px solid #b40000;
+            padding: 4px 6px;
+            color: #b40000;
+        }
+        .bt-items th { font-weight: 700; text-align: center; background: #fff; }
+        .bt-items td.num { text-align: right; }
+        .bt-items td.c   { text-align: center; }
 
-            border-top-width: 0 !important;
-            border-style: none !important;
+        .bt-items .col-qty   { width: 8%;  text-align: center; }
+        .bt-items .col-desc  { width: 42%; }
+        .bt-items .col-volt  { width: 8%;  text-align: center; }
+        .bt-items .col-amp   { width: 8%;  text-align: center; }
+        .bt-items .col-rs    { width: 22%; text-align: right; }
+        .bt-items .col-cts   { width: 12%; text-align: right; }
+
+        .bt-items tbody tr.spacer td { height: 22px; border-left: 1px solid #b40000; border-right: 1px solid #b40000; border-top: none; border-bottom: none; }
+        .bt-items tbody tr.spacer td.with-bottom { border-bottom: 1px solid #b40000; }
+
+        .bt-foot-table { width: 100%; font-size: 12px; margin-top: 6px; }
+        .bt-foot-table td { vertical-align: top; padding: 2px 4px; }
+        .bt-foot-label { white-space: nowrap; font-weight: 700; }
+        .bt-foot-line { display: inline-block; border-bottom: 1px solid #b40000; min-width: 180px; padding: 0 4px; }
+
+        .bt-total-box {
+            border: 1px solid #b40000;
+            text-align: center;
+            font-weight: 900;
+            font-size: 16px;
+            padding: 6px 10px;
+        }
+
+        .bt-footer-tag {
+            text-align: center;
+            font-weight: 900;
+            font-size: 16px;
+            margin-top: 10px;
+            border-top: 1px solid #b40000;
+            padding-top: 6px;
         }
     </style>
 
@@ -152,21 +171,181 @@ if (!empty($customerMobile)) {
             </div>
         </div>
 
+        <?php
+        function formatPhone($number)
+        {
+            $number = preg_replace('/\D/', '', $number);
+            if (strlen($number) == 10) {
+                return sprintf("(%s) %s-%s", substr($number, 0, 3), substr($number, 3, 3), substr($number, 6));
+            }
+            return $number;
+        }
+
+        // Pre-compute items + totals so we can render the receipt-style table
+        $TEMP_SALES_ITEM = new SalesInvoiceItem(null);
+        $temp_items_list = $SALES_INVOICE->invoice_type == 'INV'
+            ? $TEMP_SALES_ITEM->getItemsByInvoiceId($invoice_id)
+            : [];
+        $print_subtotal = 0;
+        foreach ($temp_items_list as $ti) {
+            $print_subtotal += floatval($ti['price']) * (int)$ti['quantity'];
+        }
+        $print_grand = floatval($SALES_INVOICE->grand_total);
+        if ($print_grand <= 0) {
+            $print_grand = $print_subtotal;
+        }
+        $print_rs  = floor($print_grand);
+        $print_cts = round(($print_grand - $print_rs) * 100);
+
+        // Pull Telephone / Battery / Vehicle numbers if present on the invoice
+        $tel_no     = isset($SALES_INVOICE->customer_mobile) ? $SALES_INVOICE->customer_mobile : '';
+        $vehicle_no = isset($SALES_INVOICE->vehicle_no) ? $SALES_INVOICE->vehicle_no : '';
+        $battery_no = '';
+        foreach ($temp_items_list as $ti) {
+            if (!empty($ti['serial_no'])) {
+                $battery_no = $ti['serial_no'];
+                break;
+            }
+        }
+
+        $branch_name = strtolower($INVOICE_BRANCH->name ?? '');
+        $is_mt_lavinia = strpos($branch_name, 'lavinia') !== false || strpos($branch_name, 'mount') !== false;
+        ?>
+
         <div class="card" id="invoice-content">
             <div class="card-body">
-                <!-- Company & Customer Info -->
-                <div class="invoice-title">
-                    <div class="row mb-2">
+                <!-- Branded header -->
+                <h2 class="bt-title bt-title-en">BANDULA BATTERY SALES &amp; SERVICE</h2>
+                <h3 class="bt-title bt-title-si">බන්දුල බැටරි සේල්ස් ඇන්ඩ් සර්විස්</h3>
+                <p class="bt-tagline">DEALERS IN ALL KINDS OF VEHICLE BATTERIES</p>
+                <p class="bt-brands">Exide - EXIDE ULTRA - Gs - Lucas - Global - 3K</p>
+
+                <table class="bt-addr-table">
+                    <tr>
+                        <td<?php echo $is_mt_lavinia ? '' : ' style="font-weight:700;"'; ?>>
+                            No. 1 &amp; 5, Old Galle Road,<br>
+                            Moratuwa.<br>
+                            Tel : 2641053, 2644791, 4374430-31<br>
+                            Mobile : 0772538789<br>
+                            Email : bandulabattery@gmail.com
+                        </td>
+                        <td class="right"<?php echo $is_mt_lavinia ? ' style="font-weight:700;"' : ''; ?>>
+                            Mount Lavinia Branch<br>
+                            No. 221, Templar's Road,<br>
+                            Mount Lavinia<br>
+                            Tel : 011 2738074
+                        </td>
+                    </tr>
+                </table>
+
+                <div class="bt-meta">
+                    <span class="line"><?php echo date('d M', strtotime($SALES_INVOICE->invoice_date)); ?></span>
+                    <span>,&nbsp;20<span class="line"><?php echo date('y', strtotime($SALES_INVOICE->invoice_date)); ?></span></span>
+                    <br>
+                    <strong>No:</strong>
+                    <span class="line" style="min-width:130px;"><?php echo htmlspecialchars($SALES_INVOICE->invoice_no); ?></span>
+                </div>
+
+                <div class="bt-ms">
+                    <strong>M/s</strong>
+                    <span class="dots" style="display:inline-block;min-width:85%;border-bottom:1px solid #b40000;">
+                        <?php echo htmlspecialchars($SALES_INVOICE->customer_name); ?>
+                    </span>
+                    <span class="dots"><?php echo htmlspecialchars($SALES_INVOICE->customer_address ?? ''); ?></span>
+                    <span class="dots"></span>
+                </div>
+
+                <table class="bt-items">
+                    <thead>
+                        <tr>
+                            <th class="col-qty">Qty.</th>
+                            <th class="col-desc">Description</th>
+                            <th class="col-volt">Volt</th>
+                            <th class="col-amp">Amp.</th>
+                            <th class="col-rs">Rs.</th>
+                            <th class="col-cts">Cts.</th>
+                        </tr>
+                    </thead>
+                    <tbody>
                         <?php
-                        function formatPhone($number)
-                        {
-                            $number = preg_replace('/\D/', '', $number);
-                            if (strlen($number) == 10) {
-                                return sprintf("(%s) %s-%s", substr($number, 0, 3), substr($number, 3, 3), substr($number, 6));
+                        $rendered_rows = 0;
+                        foreach ($temp_items_list as $ti) {
+                            $qty   = (int) $ti['quantity'];
+                            $price = floatval($ti['price']);
+                            $line  = $price * $qty;
+                            $line_rs  = floor($line);
+                            $line_cts = round(($line - $line_rs) * 100);
+
+                            // Try to pull volt / amp from item attributes if available
+                            $volt = $ti['volt'] ?? ($ti['voltage'] ?? '');
+                            $amp  = $ti['amp']  ?? ($ti['ampere']  ?? '');
+                            $desc = trim(($ti['item_code_name'] ?? '') . ' ' . ($ti['display_name'] ?? ''));
+                            if (!empty($ti['serial_no'])) {
+                                $desc .= ' — S/N: ' . $ti['serial_no'];
                             }
-                            return $number;
+                            ?>
+                            <tr>
+                                <td class="c"><?php echo $qty; ?></td>
+                                <td><?php echo htmlspecialchars($desc); ?></td>
+                                <td class="c"><?php echo htmlspecialchars($volt); ?></td>
+                                <td class="c"><?php echo htmlspecialchars($amp); ?></td>
+                                <td class="num"><?php echo number_format($line_rs); ?></td>
+                                <td class="num"><?php echo str_pad($line_cts, 2, '0', STR_PAD_LEFT); ?></td>
+                            </tr>
+                            <?php
+                            $rendered_rows++;
+                        }
+                        // Pad with empty ruled rows so the table looks like the printed pad
+                        $min_rows = 8;
+                        for ($i = $rendered_rows; $i < $min_rows; $i++) {
+                            $isLast = ($i === $min_rows - 1);
+                            echo '<tr class="spacer"><td' . ($isLast ? ' class="with-bottom"' : '') . '></td>';
+                            echo '<td' . ($isLast ? ' class="with-bottom"' : '') . '></td>';
+                            echo '<td' . ($isLast ? ' class="with-bottom"' : '') . '></td>';
+                            echo '<td' . ($isLast ? ' class="with-bottom"' : '') . '></td>';
+                            echo '<td' . ($isLast ? ' class="with-bottom"' : '') . '></td>';
+                            echo '<td' . ($isLast ? ' class="with-bottom"' : '') . '></td></tr>';
                         }
                         ?>
+                    </tbody>
+                </table>
+
+                <table class="bt-foot-table">
+                    <tr>
+                        <td style="width:60%;">
+                            <span class="bt-foot-label">Telephone No. :</span>
+                            <span class="bt-foot-line"><?php echo htmlspecialchars($tel_no); ?></span>
+                        </td>
+                        <td rowspan="3" style="width:40%; vertical-align:bottom;">
+                            <table style="width:100%; border-collapse:collapse;">
+                                <tr>
+                                    <td style="text-align:right; font-weight:900; padding-right:8px;">TOTAL</td>
+                                    <td class="bt-total-box" style="width:55%;">
+                                        <?php echo number_format($print_rs); ?>
+                                        <span style="display:inline-block;width:1px;background:#b40000;height:18px;vertical-align:middle;margin:0 6px;"></span>
+                                        <?php echo str_pad($print_cts, 2, '0', STR_PAD_LEFT); ?>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <span class="bt-foot-label">Battery No. &nbsp;&nbsp;:</span>
+                            <span class="bt-foot-line"><?php echo htmlspecialchars($battery_no); ?></span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <span class="bt-foot-label">Vehicle No. &nbsp;&nbsp;:</span>
+                            <span class="bt-foot-line"><?php echo htmlspecialchars($vehicle_no); ?></span>
+                        </td>
+                    </tr>
+                </table>
+
+                <div class="bt-footer-tag">For Quality Local &amp; Imported Batteries</div>
+
+                <?php if (false): /* legacy layout removed */ ?>
                         <!-- Header: Logo + Company Info (Left), Invoice Meta (Right) -->
                         <div class="col-12 d-flex justify-content-between align-items-start">
                             <!-- Left: Logo & Company -->
@@ -425,10 +604,8 @@ if (!empty($customerMobile)) {
                             </table>
                         </div>
                     <?php } ?>
+                <?php endif; /* legacy layout */ ?>
 
-
-
-                </div>
             </div>
         </div>
 
