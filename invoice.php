@@ -275,11 +275,34 @@ if (!empty($customerMobile)) {
 
         <div class="card" id="invoice-content">
             <div class="card-body">
-                <!-- Branded header -->
-                <h2 class="bt-title bt-title-en">BANDULA BATTERY SALES &amp; SERVICE</h2>
-                <h3 class="bt-title bt-title-si">බන්දුල බැටරි සේල්ස් ඇන්ඩ් සර්විස්</h3>
-                <p class="bt-tagline">DEALERS IN ALL KINDS OF VEHICLE BATTERIES</p>
-                <p class="bt-brands">Exide - EXIDE ULTRA - Gs - Lucas - Global - 3K</p>
+                <?php
+                $logoPath = 'assets/images/logo.png';
+                if (!empty($COMPANY_PROFILE->image_name) && file_exists('uploads/company-logos/' . $COMPANY_PROFILE->image_name)) {
+                    $logoPath = 'uploads/company-logos/' . $COMPANY_PROFILE->image_name;
+                } elseif (file_exists('assets/images/logo.jpg')) {
+                    $logoPath = 'assets/images/logo.jpg';
+                }
+                $vat_no = '';
+                if (!empty($SALES_INVOICE->customer_id)) {
+                    $vat_no = $CUSTOMER_MASTER->vat_no ?? '';
+                }
+                $customerEmail = $CUSTOMER_MASTER->email ?? '';
+                ?>
+
+                <!-- Branded header with logo (left) and title (centered) -->
+                <table style="width:100%; margin-bottom:6px; border-collapse:collapse;">
+                    <tr>
+                        <td style="width:90px; vertical-align:middle;">
+                            <img src="<?php echo $logoPath; ?>" alt="logo" style="max-height:75px; max-width:90px; object-fit:contain;">
+                        </td>
+                        <td style="text-align:center; vertical-align:middle;">
+                            <h2 class="bt-title bt-title-en">BANDULA BATTERY SALES &amp; SERVICE</h2>
+                            <h3 class="bt-title bt-title-si">බන්දුල බැටරි සේල්ස් ඇන්ඩ් සර්විස්</h3>
+                            <p class="bt-tagline" style="margin-top:3px;">Dealers in all kinds of Local and Imported Batteries</p>
+                        </td>
+                        <td style="width:90px;"></td>
+                    </tr>
+                </table>
 
                 <table class="bt-addr-table">
                     <tr>
@@ -299,112 +322,202 @@ if (!empty($customerMobile)) {
                     </tr>
                 </table>
 
-                <div class="bt-meta">
-                    <span class="line"><?php echo date('d M', strtotime($SALES_INVOICE->invoice_date)); ?></span>
-                    <span>,&nbsp;20<span class="line"><?php echo date('y', strtotime($SALES_INVOICE->invoice_date)); ?></span></span>
-                    <br>
-                    <strong>No:</strong>
-                    <span class="line" style="min-width:130px;"><?php echo htmlspecialchars($SALES_INVOICE->invoice_no); ?></span>
-                </div>
+                <!-- Bill To grid: customer details (left) + invoice meta (right) -->
+                <table style="width:100%; margin-top:8px; font-size:13px; border-collapse:collapse;">
+                    <tr>
+                        <td style="width:60%; vertical-align:top; padding-right:12px;">
+                            <div><strong>Bill To :</strong>
+                                <span style="display:inline-block;min-width:60%;border-bottom:1px solid #b40000;padding:0 4px;">
+                                    <?php echo htmlspecialchars($SALES_INVOICE->customer_name); ?>
+                                </span>
+                            </div>
+                            <div style="margin-top:3px;"><strong>Mr. :</strong>
+                                <span style="display:inline-block;min-width:60%;border-bottom:1px solid #b40000;padding:0 4px;">
+                                    <?php echo htmlspecialchars($SALES_INVOICE->customer_address ?? ''); ?>
+                                </span>
+                            </div>
+                            <div style="margin-top:3px;"><strong>Mobile :</strong>
+                                <span style="display:inline-block;min-width:58%;border-bottom:1px solid #b40000;padding:0 4px;">
+                                    <?php echo htmlspecialchars($SALES_INVOICE->customer_mobile ?? ''); ?>
+                                </span>
+                            </div>
+                            <div style="margin-top:3px;"><strong>Email :</strong>
+                                <span style="display:inline-block;min-width:60%;border-bottom:1px solid #b40000;padding:0 4px;">
+                                    <?php echo htmlspecialchars($customerEmail); ?>
+                                </span>
+                            </div>
+                            <div style="margin-top:3px;"><strong>Vehicle No :</strong>
+                                <span style="display:inline-block;min-width:53%;border-bottom:1px solid #b40000;padding:0 4px;">
+                                    <?php echo htmlspecialchars($SALES_INVOICE->vehicle_no ?? ''); ?>
+                                </span>
+                            </div>
+                        </td>
+                        <td style="width:40%; vertical-align:top;">
+                            <div><strong>VAT No :</strong>
+                                <span style="display:inline-block;min-width:55%;border-bottom:1px solid #b40000;padding:0 4px;">
+                                    <?php echo htmlspecialchars($vat_no); ?>
+                                </span>
+                            </div>
+                            <div style="margin-top:3px;"><strong>Invoice No :</strong>
+                                <span style="display:inline-block;min-width:50%;border-bottom:1px solid #b40000;padding:0 4px;font-weight:700;">
+                                    <?php echo htmlspecialchars($SALES_INVOICE->invoice_no); ?>
+                                </span>
+                            </div>
+                            <div style="margin-top:3px;"><strong>Date :</strong>
+                                <span style="display:inline-block;min-width:60%;border-bottom:1px solid #b40000;padding:0 4px;">
+                                    <?php echo date('d/m/Y', strtotime($SALES_INVOICE->invoice_date)); ?>
+                                </span>
+                            </div>
+                            <div style="margin-top:3px;"><strong>PO No :</strong>
+                                <span style="display:inline-block;min-width:58%;border-bottom:1px solid #b40000;padding:0 4px;">
+                                </span>
+                            </div>
+                            <?php if ($SALES_INVOICE->payment_type == 2 && $SALES_INVOICE->credit_period): ?>
+                                <?php $CP = new CreditPeriod($SALES_INVOICE->credit_period); ?>
+                                <div style="margin-top:3px;"><strong>Due Date :</strong>
+                                    <span style="display:inline-block;min-width:53%;border-bottom:1px solid #b40000;padding:0 4px;">
+                                        <?php echo date('d/m/Y', strtotime($SALES_INVOICE->due_date)); ?>
+                                    </span>
+                                </div>
+                            <?php endif; ?>
+                        </td>
+                    </tr>
+                </table>
 
-                <div class="bt-ms">
-                    <strong>M/s</strong>
-                    <span class="dots" style="display:inline-block;min-width:85%;border-bottom:1px solid #b40000;">
-                        <?php echo htmlspecialchars($SALES_INVOICE->customer_name); ?>
-                    </span>
-                    <span class="dots"><?php echo htmlspecialchars($SALES_INVOICE->customer_address ?? ''); ?></span>
-                    <span class="dots"></span>
-                </div>
-
-                <table class="bt-items">
+                <!-- Items table: Qty | Description | Item | Volt | Ah. | Rs. -->
+                <table class="bt-items" style="margin-top:8px;">
                     <thead>
                         <tr>
-                            <th class="col-qty">Qty.</th>
-                            <th class="col-desc">Description</th>
-                            <th class="col-volt">Volt</th>
-                            <th class="col-amp">Amp.</th>
-                            <th class="col-rs">Rs.</th>
-                            <th class="col-cts">Cts.</th>
+                            <th style="width:8%;">Qty</th>
+                            <th style="width:36%;">Description</th>
+                            <th style="width:18%;">Item</th>
+                            <th style="width:8%;">Volt</th>
+                            <th style="width:10%;">Ah.</th>
+                            <th style="width:20%;">Rs.</th>
                         </tr>
                     </thead>
                     <tbody>
                         <?php
                         $rendered_rows = 0;
+                        $sub_total = 0;
                         foreach ($temp_items_list as $ti) {
                             $qty   = (int) $ti['quantity'];
                             $price = floatval($ti['price']);
                             $line  = $price * $qty;
-                            $line_rs  = floor($line);
-                            $line_cts = round(($line - $line_rs) * 100);
+                            $sub_total += $line;
 
-                            // Try to pull volt / amp from item attributes if available
                             $volt = $ti['volt'] ?? ($ti['voltage'] ?? '');
                             $amp  = $ti['amp']  ?? ($ti['ampere']  ?? '');
-                            $desc = trim(($ti['item_code_name'] ?? '') . ' ' . ($ti['display_name'] ?? ''));
+                            $itemCode = $ti['item_code_name'] ?? ($ti['item_code'] ?? '');
+                            $desc     = $ti['display_name'] ?? '';
                             if (!empty($ti['serial_no'])) {
-                                $desc .= ' — S/N: ' . $ti['serial_no'];
+                                $desc .= ' (S/N: ' . $ti['serial_no'] . ')';
                             }
                             ?>
                             <tr>
-                                <td class="c"><?php echo $qty; ?></td>
+                                <td class="c"><?php echo str_pad($qty, 2, '0', STR_PAD_LEFT); ?></td>
                                 <td><?php echo htmlspecialchars($desc); ?></td>
+                                <td class="c"><?php echo htmlspecialchars($itemCode); ?></td>
                                 <td class="c"><?php echo htmlspecialchars($volt); ?></td>
                                 <td class="c"><?php echo htmlspecialchars($amp); ?></td>
-                                <td class="num"><?php echo number_format($line_rs); ?></td>
-                                <td class="num"><?php echo str_pad($line_cts, 2, '0', STR_PAD_LEFT); ?></td>
+                                <td class="num"><?php echo number_format($line, 2); ?></td>
                             </tr>
                             <?php
                             $rendered_rows++;
                         }
-                        // Pad with empty ruled rows so the table looks like the printed pad
-                        $min_rows = 8;
+                        // Pad with empty ruled rows
+                        $min_rows = 6;
                         for ($i = $rendered_rows; $i < $min_rows; $i++) {
                             $isLast = ($i === $min_rows - 1);
-                            echo '<tr class="spacer"><td' . ($isLast ? ' class="with-bottom"' : '') . '></td>';
-                            echo '<td' . ($isLast ? ' class="with-bottom"' : '') . '></td>';
-                            echo '<td' . ($isLast ? ' class="with-bottom"' : '') . '></td>';
-                            echo '<td' . ($isLast ? ' class="with-bottom"' : '') . '></td>';
-                            echo '<td' . ($isLast ? ' class="with-bottom"' : '') . '></td>';
-                            echo '<td' . ($isLast ? ' class="with-bottom"' : '') . '></td></tr>';
+                            $bcls = $isLast ? ' class="with-bottom"' : '';
+                            echo '<tr class="spacer"><td' . $bcls . '></td><td' . $bcls . '></td><td' . $bcls . '></td><td' . $bcls . '></td><td' . $bcls . '></td><td' . $bcls . '></td></tr>';
                         }
                         ?>
                     </tbody>
                 </table>
 
-                <table class="bt-foot-table">
+                <?php
+                $grand_total      = floatval($SALES_INVOICE->grand_total);
+                if ($grand_total <= 0) $grand_total = $sub_total;
+                $total_discount   = 0;
+                foreach ($temp_items_list as $ti) {
+                    $dp = (float)($ti['discount'] ?? 0);
+                    $total_discount += (float)$ti['price'] * (int)$ti['quantity'] * ($dp / 100);
+                }
+                $vat_amount  = floatval($SALES_INVOICE->tax ?? 0);
+                ?>
+
+                <!-- Totals + Terms footer -->
+                <table style="width:100%; margin-top:8px; border-collapse:collapse; font-size:12px;">
                     <tr>
-                        <td style="width:60%;">
-                            <span class="bt-foot-label">Telephone No. :</span>
-                            <span class="bt-foot-line"><?php echo htmlspecialchars($tel_no); ?></span>
+                        <td style="width:60%; vertical-align:top; padding-right:10px;">
+                            <strong>Terms &amp; Conditions :</strong>
+                            <ol style="margin:4px 0 0 18px; padding:0; line-height:1.45;">
+                                <li>All cheques to be "A/c Payee only" and drawn in favour of "Bandula Battery Sales &amp; Service".</li>
+                                <li>Bandula Battery Sales &amp; Service reserves the right to take appropriate legal action to recover in full, if the invoice amount contained herein is not settled within the stipulated credit period.</li>
+                                <li>I accept the above mentioned terms &amp; conditions and goods received in correct &amp; good condition.</li>
+                            </ol>
                         </td>
-                        <td rowspan="3" style="width:40%; vertical-align:bottom;">
-                            <table style="width:100%; border-collapse:collapse;">
+                        <td style="width:40%; vertical-align:top;">
+                            <table style="width:100%; border-collapse:collapse; font-size:13px;">
                                 <tr>
-                                    <td style="text-align:right; font-weight:900; padding-right:8px;">TOTAL</td>
-                                    <td class="bt-total-box" style="width:55%;">
-                                        <?php echo number_format($print_rs); ?>
-                                        <span style="display:inline-block;width:1px;background:#b40000;height:18px;vertical-align:middle;margin:0 6px;"></span>
-                                        <?php echo str_pad($print_cts, 2, '0', STR_PAD_LEFT); ?>
+                                    <td style="padding:2px 6px; text-align:right;"><strong>Sub Total :</strong></td>
+                                    <td style="padding:2px 6px; text-align:right; min-width:90px; border-bottom:1px solid #b40000;">
+                                        <?php echo number_format($sub_total, 2); ?>
                                     </td>
                                 </tr>
+                                <?php if ($total_discount > 0): ?>
+                                <tr>
+                                    <td style="padding:2px 6px; text-align:right;"><strong>Discount :</strong></td>
+                                    <td style="padding:2px 6px; text-align:right; border-bottom:1px solid #b40000;">
+                                        <?php echo number_format($total_discount, 2); ?>
+                                    </td>
+                                </tr>
+                                <?php endif; ?>
+                                <?php if ($vat_amount > 0): ?>
+                                <tr>
+                                    <td style="padding:2px 6px; text-align:right;"><strong>VAT :</strong></td>
+                                    <td style="padding:2px 6px; text-align:right; border-bottom:1px solid #b40000;">
+                                        <?php echo number_format($vat_amount, 2); ?>
+                                    </td>
+                                </tr>
+                                <?php endif; ?>
+                                <tr>
+                                    <td style="padding:6px; text-align:right; font-size:15px; font-weight:900; border:1.5px solid #b40000;">TOTAL</td>
+                                    <td style="padding:6px; text-align:right; font-size:15px; font-weight:900; border:1.5px solid #b40000;">
+                                        <?php echo number_format($grand_total, 2); ?>
+                                    </td>
+                                </tr>
+                                <?php if ($SALES_INVOICE->payment_type == 2): ?>
+                                <tr>
+                                    <td style="padding:2px 6px; text-align:right;"><strong>Paid :</strong></td>
+                                    <td style="padding:2px 6px; text-align:right; border-bottom:1px solid #b40000;">
+                                        <?php echo number_format($SALES_INVOICE->outstanding_settle_amount, 2); ?>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="padding:2px 6px; text-align:right;"><strong>Balance :</strong></td>
+                                    <td style="padding:2px 6px; text-align:right; border-bottom:1px solid #b40000;">
+                                        <?php echo number_format($grand_total - floatval($SALES_INVOICE->outstanding_settle_amount), 2); ?>
+                                    </td>
+                                </tr>
+                                <?php endif; ?>
                             </table>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <span class="bt-foot-label">Battery No. &nbsp;&nbsp;:</span>
-                            <span class="bt-foot-line"><?php echo htmlspecialchars($battery_no); ?></span>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <span class="bt-foot-label">Vehicle No. &nbsp;&nbsp;:</span>
-                            <span class="bt-foot-line"><?php echo htmlspecialchars($vehicle_no); ?></span>
                         </td>
                     </tr>
                 </table>
 
-                <div class="bt-footer-tag">For Quality Local &amp; Imported Batteries</div>
+                <!-- Signature row -->
+                <table style="width:100%; margin-top:30px; border-collapse:collapse; font-size:11px;">
+                    <tr>
+                        <td style="text-align:center; width:50%;">
+                            <div style="border-top:1px solid #b40000; padding-top:3px; margin:0 30px;"><strong>Customer Signature</strong></div>
+                        </td>
+                        <td style="text-align:center; width:50%;">
+                            <div style="border-top:1px solid #b40000; padding-top:3px; margin:0 30px;"><strong>Authorized Signature</strong></div>
+                        </td>
+                    </tr>
+                </table>
 
                 <?php if (false): /* legacy layout removed */ ?>
                         <!-- Header: Logo + Company Info (Left), Invoice Meta (Right) -->
