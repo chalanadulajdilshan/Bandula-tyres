@@ -67,10 +67,62 @@ if (!empty($customerMobile)) {
         @media print {
             .no-print { display: none !important; }
             body, html { width: 100%; margin: 0; padding: 0; }
-            #invoice-content, .card { width: 100% !important; max-width: 100% !important; box-shadow: none; border: none !important; }
+            #invoice-content, .card {
+                width: 100% !important;
+                max-width: 100% !important;
+                box-shadow: none;
+                border: none !important;
+                page-break-inside: avoid;
+                break-inside: avoid;
+            }
             .container { width: 100% !important; max-width: 100% !important; padding: 0 !important; }
-            @page { size: A5 portrait; margin: 8mm; }
+            @page { size: A4 portrait; margin: 10mm; }
             body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+
+            /* Layout tweaks for A4 — comfortable sizing, still fits one page */
+            .card-body { padding: 12px !important; }
+            .bt-title-en { font-size: 24px !important; }
+            .bt-title-si { font-size: 16px !important; }
+            .bt-tagline, .bt-brands { font-size: 12px !important; margin-bottom: 3px !important; }
+            .bt-addr-table { font-size: 11px !important; line-height: 1.4 !important; }
+            .bt-meta { font-size: 12px !important; margin-top: 6px !important; }
+            .bt-ms { font-size: 12px !important; margin-top: 6px !important; }
+            .bt-ms .dots { height: 16px !important; margin-bottom: 2px !important; }
+            .bt-items { font-size: 12px !important; margin-top: 8px !important; }
+            .bt-items th, .bt-items td { padding: 3px 5px !important; }
+            /* Spacer rows — comfortable for A4 */
+            .bt-items tbody tr.spacer td { height: 18px !important; }
+            .bt-foot-table { font-size: 11px !important; margin-top: 6px !important; }
+            .bt-foot-line { min-width: 150px !important; }
+            .bt-total-box { font-size: 15px !important; padding: 5px 8px !important; }
+            .bt-footer-tag { font-size: 14px !important; margin-top: 8px !important; padding-top: 6px !important; }
+        }
+        /* Landscape override – applied when <html> has class 'print-landscape' */
+        html.print-landscape {
+            --page-orientation: landscape;
+        }
+        @media print {
+            html.print-landscape body,
+            html.print-landscape html { width: 100%; }
+        }
+        html.print-landscape { }
+        /* We inject a dynamic <style> tag via JS to override @page */
+
+        /* Toggle button styles */
+        .orientation-btn {
+            border: 1px solid #6c757d;
+            background: #fff;
+            color: #6c757d;
+            padding: 4px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: background 0.15s, color 0.15s;
+        }
+        .orientation-btn.active {
+            background: #495057;
+            color: #fff;
+            border-color: #495057;
         }
 
         #invoice-content {
@@ -162,6 +214,15 @@ if (!empty($customerMobile)) {
                     <label class="form-check-label" for="toggleOutstanding">
                         Show customer outstanding
                     </label>
+                </div>
+                <!-- Orientation toggle -->
+                <div class="d-flex align-items-center gap-1 ms-2" title="Select print / PDF orientation">
+                    <button id="btn-portrait" class="orientation-btn active" onclick="setOrientation('portrait')" title="Portrait">
+                        &#x1F4C4; Portrait
+                    </button>
+                    <button id="btn-landscape" class="orientation-btn" onclick="setOrientation('landscape')" title="Landscape">
+                        &#x1F5C3; Landscape
+                    </button>
                 </div>
                 <button onclick="window.print()" class="btn btn-success ms-2">Print</button>
                 <button onclick="downloadPDF()" class="btn btn-primary ms-2">PDF</button>
@@ -612,6 +673,30 @@ if (!empty($customerMobile)) {
         <!-- JS -->
         <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
         <script>
+            // ── Orientation management ──────────────────────────────────────────
+            var _printOrientation = 'portrait'; // default
+            var _dynamicPageStyle = null;
+
+            function setOrientation(orientation) {
+                _printOrientation = orientation;
+
+                // Update toggle button appearance
+                document.getElementById('btn-portrait').classList.toggle('active', orientation === 'portrait');
+                document.getElementById('btn-landscape').classList.toggle('active', orientation === 'landscape');
+
+                // Inject / update a dynamic <style> that overrides @page for the browser print dialog
+                if (!_dynamicPageStyle) {
+                    _dynamicPageStyle = document.createElement('style');
+                    _dynamicPageStyle.id = 'dynamic-page-style';
+                    document.head.appendChild(_dynamicPageStyle);
+                }
+                if (orientation === 'landscape') {
+                    _dynamicPageStyle.textContent = '@media print { @page { size: A4 landscape; margin: 10mm; } }';
+                } else {
+                    _dynamicPageStyle.textContent = '@media print { @page { size: A4 portrait; margin: 10mm; } }';
+                }
+            }
+
             function downloadPDF() {
                 const element = document.getElementById('invoice-content');
                 const opt = {
@@ -627,7 +712,7 @@ if (!empty($customerMobile)) {
                     jsPDF: {
                         unit: 'mm',
                         format: 'a4',
-                        orientation: 'portrait'
+                        orientation: _printOrientation   // 'portrait' or 'landscape'
                     }
                 };
                 html2pdf().set(opt).from(element).save();
