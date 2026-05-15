@@ -24,9 +24,9 @@ class Database
 
             // Online DB settings
             $this->host = 'localhost';
-            $this->name = 'chalcepi_dts';
-            $this->user = 'chalcepi_dts';
-            $this->password = 'DLJDqrNYTVp(';
+            $this->name = 'chalcepi_bandula_battery';
+            $this->user = 'chalcepi_bandula_battery';
+            $this->password = 'z~DGk~5M=eK8';
             $this->DB_CON = '';
         }
 
@@ -38,7 +38,7 @@ class Database
         }
     }
 
-    // ✔ Singleton: Only 1 DB connection in full system
+    // ✔️ Singleton: Only 1 DB connection in full system
     public static function getInstance()
     {
         if (self::$instance === null) {
@@ -71,7 +71,7 @@ class Database
         return mysqli_real_escape_string($this->DB_CON, $string);
     }
 
-    // ✔ Auto close connection when script ends
+    // ✔️ Auto close connection when script ends
     public function __destruct()
     {
         if ($this->DB_CON) {

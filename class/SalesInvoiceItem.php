@@ -210,10 +210,14 @@ class SalesInvoiceItem
             $isService = (strpos($row['item_name'], '|ARN:') === false && $row['item_code'] != 0);
             
             // safely load item master or service
+            $row['volt'] = '';
+            $row['amp'] = '';
             if ($row['item_code'] != 0 && !$isService) {
                 // Regular item from ItemMaster
                 $item_master = new ItemMaster($row['item_code']);
                 $row['item_code_name'] = $item_master->code ?? '';
+                $row['volt'] = $item_master->voltage ?? '';
+                $row['amp'] = $item_master->ampere ?? '';
             } elseif ($isService) {
                 // Pure Service (SV) - load from Service table
                 $service = new Service($row['item_code']);

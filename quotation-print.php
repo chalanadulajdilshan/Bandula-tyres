@@ -12,6 +12,8 @@ $COMPANY_PROFILE = new CompanyProfile($US->company_id);
 
 $QUOTATION = new Quotation($id);
 $CUSTOMER_MASTER = new CustomerMaster($QUOTATION->customer_id);
+
+$quotation_date = !empty($QUOTATION->date) ? date('d/m/Y', strtotime($QUOTATION->date)) : '';
 ?>
 <html lang="en">
 
@@ -19,267 +21,406 @@ $CUSTOMER_MASTER = new CustomerMaster($QUOTATION->customer_id);
     <meta charset="utf-8" />
     <title>Quotation Details | <?php echo $COMPANY_PROFILE->name ?> </title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Unicons CDN -->
-    <link href="https://unicons.iconscout.com/release/v4.0.8/css/line.css" rel="stylesheet">
-
-    <!-- Bootstrap CSS -->
-    <link href="assets/css/bootstrap.min.css" rel="stylesheet" />
-    <!-- Icons -->
-    <link href="assets/css/icons.min.css" rel="stylesheet" />
-    <!-- App CSS -->
-    <link href="assets/css/app.min.css" rel="stylesheet" />
 
     <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            color: #000;
+            margin: 0;
+            padding: 0;
+            background: #f5f5f5;
+        }
+
+        .sheet {
+            background: #fff;
+            width: 210mm;
+            min-height: 297mm;
+            margin: 20px auto;
+            padding: 18mm 16mm;
+            box-shadow: 0 0 6px rgba(0, 0, 0, 0.15);
+            position: relative;
+        }
+
+        .toolbar {
+            max-width: 210mm;
+            margin: 16px auto 0;
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+            padding: 0 16mm;
+        }
+
+        .toolbar select,
+        .toolbar button {
+            padding: 6px 14px;
+            font-size: 14px;
+            border: 1px solid #888;
+            background: #fff;
+            cursor: pointer;
+            border-radius: 3px;
+        }
+
+        .toolbar button.print {
+            background: #28a745;
+            color: #fff;
+            border-color: #28a745;
+        }
+
+        .header {
+            text-align: center;
+            position: relative;
+        }
+
+        .header h1 {
+            font-size: 30px;
+            font-weight: 900;
+            letter-spacing: 1px;
+            margin: 0 0 6px 0;
+            text-transform: uppercase;
+        }
+
+        .header .tagline {
+            font-style: italic;
+            font-weight: bold;
+            font-size: 16px;
+            margin: 0 0 4px 0;
+        }
+
+        .header .addr {
+            font-size: 13px;
+            margin: 2px 0;
+        }
+
+        .header .logo-img {
+            position: absolute;
+            right: 0;
+            top: 28px;
+            max-height: 70px;
+            max-width: 130px;
+        }
+
+        hr.divider {
+            border: none;
+            border-top: 1px solid #000;
+            margin: 14px 0 18px 0;
+        }
+
+        .meta-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 6px;
+            font-size: 13px;
+        }
+
+        .dotline {
+            border-bottom: 1px dotted #000;
+            display: inline-block;
+            min-height: 16px;
+        }
+
+        .customer-block {
+            width: 60%;
+        }
+
+        .customer-block .dotline {
+            width: 100%;
+            margin-bottom: 4px;
+        }
+
+        .date-block {
+            width: 35%;
+            text-align: right;
+            white-space: nowrap;
+        }
+
+        .salutation {
+            margin: 14px 0 8px 0;
+            font-size: 14px;
+        }
+
+        table.items {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 16px;
+        }
+
+        table.items th {
+            text-align: left;
+            font-size: 14px;
+            padding: 6px 4px;
+            border-bottom: none;
+        }
+
+        table.items td {
+            font-size: 13px;
+            padding: 4px;
+            border-bottom: 1px dotted #000;
+            height: 22px;
+        }
+
+        table.items th.num,
+        table.items td.num {
+            text-align: right;
+        }
+
+        .thanks {
+            margin-top: 24px;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+
+        .signature {
+            margin-top: 50px;
+            font-size: 14px;
+        }
+
+        .signature .sigline {
+            border-top: 1px dotted #000;
+            width: 220px;
+            padding-top: 4px;
+        }
+
+        .terms {
+            margin-top: 28px;
+            font-size: 13px;
+        }
+
+        .terms h4 {
+            font-weight: bold;
+            margin: 0 0 6px 0;
+            font-size: 14px;
+        }
+
+        .terms ul {
+            list-style: none;
+            padding-left: 0;
+            margin: 0;
+        }
+
+        .terms ul li {
+            padding-left: 20px;
+            position: relative;
+            margin-bottom: 4px;
+            line-height: 1.4;
+        }
+
+        .terms ul li::before {
+            content: "\2756";
+            position: absolute;
+            left: 0;
+            top: 0;
+        }
+
         @media print {
+            body {
+                background: #fff;
+            }
+
             .no-print {
                 display: none !important;
             }
 
+            .sheet {
+                margin: 0;
+                box-shadow: none;
+                width: auto;
+                min-height: auto;
+                padding: 12mm;
+            }
+
             @page {
-                margin: 20mm;
+                size: A4;
+                margin: 10mm;
             }
 
-            body.print-a4 {
-                width: 210mm;
-                height: 297mm;
-            }
-
-            body.print-a3 {
-                width: 297mm;
-                height: 420mm;
-            }
-
-            body.print-a5 {
-                width: 148mm;
-                height: 210mm;
-            }
-
-            body.print-letter {
-                width: 8.5in;
-                height: 11in;
-            }
-
-            body.print-legal {
-                width: 8.5in;
-                height: 14in;
-            }
-
-            body.print-tabloid {
-                width: 11in;
-                height: 17in;
-            }
-
-            body.print-dotmatrix {
-                width: 9.5in;
-                height: 11in;
-            }
+            body.print-a3 .sheet { width: 297mm; }
+            body.print-a5 .sheet { width: 148mm; }
+            body.print-letter .sheet { width: 8.5in; }
+            body.print-legal .sheet { width: 8.5in; }
+            body.print-tabloid .sheet { width: 11in; }
+            body.print-dotmatrix .sheet { width: 9.5in; }
         }
     </style>
 </head>
 
-<body class="print-a4" data-layout="horizontal" data-topbar="colored">
+<body class="print-a4">
 
-    <div class="container mt-4">
-        <div class="d-flex justify-content-between align-items-center mb-3 no-print">
-            <h4>Quotation Print</h4>
-            <div>
-                <select id="printFormat" class="form-select d-inline w-auto" onchange="setPrintFormat(this.value)">
-                    <option value="a4" selected>A4</option>
-                    <option value="a3">A3</option>
-                    <option value="a5">A5</option>
-                    <option value="letter">Letter</option>
-                    <option value="legal">Legal</option>
-                    <option value="tabloid">Tabloid</option>
-                    <option value="dotmatrix">Dot Matrix</option>
-                </select>
-                <button onclick="window.print()" class="btn btn-success ms-2">Print</button>
-            </div>
-        </div>
-
-        <div class="card">
-            <div class="card-body">
-                <div class="invoice-title">
-
-                    <div class="col-sm-6 text-sm-end float-end">
-                        <p><strong>Quotation No:</strong> #<?php echo $QUOTATION->quotation_no ?></p>
-                        <p><strong>Quotation Date:</strong>
-                            <?php echo date('d M, Y', strtotime($QUOTATION->date)); ?></p>
-                    </div>
-                    <div class="mb-4">
-                        <img src="./uploads/company-logos/<?php echo $COMPANY_PROFILE->image_name ?>" alt="logo" style="height:60px; width:auto;">
-                    </div>
-
-                    <div class="row mb-4">
-                        <!-- Left: Company Info -->
-                        <div class="col-sm-6">
-                            <div class="text-muted">
-                                <p class="mb-1"><i
-                                        class="uil uil-building me-1"></i><?php echo $COMPANY_PROFILE->name ?></p>
-                                <p class="mb-1"><i
-                                        class="uil uil-map-marker me-1"></i><?php echo $COMPANY_PROFILE->address ?></p>
-                                <p class="mb-1"><i
-                                        class="uil uil-envelope-alt me-1"></i><?php echo $COMPANY_PROFILE->email ?></p>
-                                <p><i class="uil uil-phone me-1"></i><?php echo $COMPANY_PROFILE->mobile_number_1 ?></p>
-                            </div>
-                        </div>
-
-                        <!-- Right: Billed To -->
-                        <div class="col-sm-6 text-sm-end">
-
-                            <p><?php echo $CUSTOMER_MASTER->name ?><br><?php echo $CUSTOMER_MASTER->address ?>
-                                <br><?php echo $CUSTOMER_MASTER->mobile_number ?><br>
-                                <?php echo $CUSTOMER_MASTER->email ?>
-                            </p>
-                        </div>
-                    </div>
-
-
-                </div>
-
-                <div class="table-responsive">
-                    <table class="table table-centered">
-                        <thead>
-                            <tr>
-                                <th>No.</th>
-                                <th>Item Code</th>
-                                <th>Name</th>
-                                <th>Dis</th>
-                                <th> Price</th>
-                                <th>Quantity</th>
-                                <th>Selling Price</th>
-                                <th class="text-end">Total</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php
-                            $QUOTATION_ITEM = new QuotationItem(null);
-                            $temp_items_list = $QUOTATION_ITEM->getByQuotationId($id);
-
-                            $subtotal = 0;
-                            $total_discount = 0;
-
-                            foreach ($temp_items_list as $key => $temp_items) {
-                                $key++;
-                                $price = (float) $temp_items['price'];
-                                $quantity = (int) $temp_items['qty'];
-                                // In quotation_item, discount is stored as a fixed amount per unit, not a percentage
-                                $discount_amount = isset($temp_items['discount']) ? (float) $temp_items['discount'] : 0;
-
-                                $ITEM_MASTER = new ItemMaster($temp_items['item_code']);
-                                // Calculate selling price after discount (per item)
-                                $discount_per_item = $discount_amount;
-                                $selling_price = $price - $discount_per_item;
-
-                                // Line total = selling price × quantity
-                                $line_total = $selling_price * $quantity;
-
-                                // Totals (gross and discount)
-                                $subtotal += $price * $quantity;
-                                $total_discount += $discount_per_item * $quantity;
-                                ?>
-
-                                <tr>
-                                    <td>0<?php echo $key; ?></td>
-                                    <td><?php echo $ITEM_MASTER->code ?></td>
-                                    <td><?php echo $temp_items['item_name']; ?></td>
-                                    <td><?php echo $discount_amount; ?></td>
-
-                                    <td><?php echo number_format($price, 2); ?></td>
-                                    <td><?php echo $quantity; ?></td>
-                                    <td><?php echo number_format($selling_price, 2); ?></td> <!-- Selling price per item -->
-
-                                    <td class="text-end"><?php echo number_format($line_total, 2); ?></td>
-                                </tr>
-                            <?php } ?>
-
-                            <!-- Totals section -->
-                            <tr>
-                                <td colspan="5" rowspan="3" style="vertical-align: top;">
-                                    <!-- Terms & Conditions on the left -->
-                                    <h6><strong>Terms & Conditions:</strong></h6>
-                                    <ul style="padding-left: 20px; margin-bottom: 0;">
-                                        <li>All goods once sold are non-refundable.</li>
-                                        <li>Warranty is provided as per the manufacturer's policy only.</li>
-                                        <li>This quotation is valid for <?php echo $QUOTATION->validity ?> calendar
-                                            days from the date of issue.</li>
-                                    </ul>
-                                </td>
-
-
-                                <td colspan="2" class="text-end">Gross Amount:- </td>
-                                <td class="text-end"><?php echo number_format($subtotal, 2); ?></td>
-                            </tr>
-                            <tr>
-                                <td colspan="2" class="text-end">Discount:- </td>
-                                <td class="text-end"> <?php echo number_format($total_discount, 2); ?></td>
-
-                            </tr>
-                            <?php if (!empty($QUOTATION->is_vat_invoice) && (float)$QUOTATION->vat_percentage > 0) { ?>
-                            <tr>
-                                <td colspan="2" class="text-end">VAT (<?php echo number_format($QUOTATION->vat_percentage, 2); ?>%) :- </td>
-                                <td class="text-end"> <?php echo number_format($QUOTATION->vat_total, 2); ?></td>
-                            </tr>
-                            <?php } ?>
-                            <tr>
-                                <td colspan="7" class="text-end"><strong>Net Amount:- </strong></td>
-                                <td class="text-end">
-                                    <strong><?php echo number_format($QUOTATION->grand_total, 2); ?></strong>
-                                </td>
-                            </tr>
-
-                            <!-- Signature line -->
-                            <tr>
-                                <td colspan="7" style="padding-top: 50px;">
-                                    <table style="width: 100%;">
-                                        <tr>
-                                            <td style="text-align: center;">
-                                                _________________________<br>
-                                                <strong>Prepared By</strong>
-                                            </td>
-                                            <td style="text-align: center;">
-                                                _________________________<br>
-                                                <strong>Approved By</strong>
-                                            </td>
-                                            <td style="text-align: center;">
-                                                _________________________<br>
-                                                <strong>Received By</strong>
-                                            </td>
-                                        </tr>
-                                    </table>
-                                </td>
-                            </tr>
-
-
-                        </tbody>
-
-
-                    </table>
-                </div>
-
-            </div>
-        </div>
+    <div class="toolbar no-print">
+        <select id="printFormat" onchange="setPrintFormat(this.value)">
+            <option value="a4" selected>A4</option>
+            <option value="a3">A3</option>
+            <option value="a5">A5</option>
+            <option value="letter">Letter</option>
+            <option value="legal">Legal</option>
+            <option value="tabloid">Tabloid</option>
+            <option value="dotmatrix">Dot Matrix</option>
+        </select>
+        <button class="print" onclick="window.print()">Print</button>
     </div>
 
-    <!-- JS -->
-    <script src="assets/js/bootstrap.bundle.min.js"></script>
+    <div class="sheet">
+
+        <div class="header">
+            <?php if (!empty($COMPANY_PROFILE->image_name)) { ?>
+                <img class="logo-img" src="./uploads/company-logos/<?php echo $COMPANY_PROFILE->image_name ?>" alt="logo">
+            <?php } ?>
+            <h1><?php echo htmlspecialchars($COMPANY_PROFILE->name) ?></h1>
+            <?php if (property_exists($COMPANY_PROFILE, 'tagline') && !empty($COMPANY_PROFILE->tagline)) { ?>
+                <p class="tagline"><?php echo htmlspecialchars($COMPANY_PROFILE->tagline) ?></p>
+            <?php } ?>
+            <p class="addr"><?php echo htmlspecialchars($COMPANY_PROFILE->address) ?></p>
+            <p class="addr">
+                Tel :
+                <?php
+                echo htmlspecialchars($COMPANY_PROFILE->mobile_number_1);
+                if (!empty($COMPANY_PROFILE->mobile_number_2)) {
+                    echo ' / ' . htmlspecialchars($COMPANY_PROFILE->mobile_number_2);
+                }
+                ?>
+            </p>
+        </div>
+
+        <hr class="divider">
+
+        <div class="meta-row">
+            <div class="customer-block">
+                <span class="dotline"><?php echo htmlspecialchars($CUSTOMER_MASTER->name) ?></span>
+                <span class="dotline"><?php echo htmlspecialchars($CUSTOMER_MASTER->address) ?></span>
+                <span class="dotline"><?php echo htmlspecialchars($CUSTOMER_MASTER->mobile_number) ?></span>
+            </div>
+            <div class="date-block">
+                <span class="dotline" style="min-width:140px; text-align:center;">
+                    <?php echo $quotation_date ?>
+                </span>
+            </div>
+        </div>
+
+        <p class="salutation">Dear Sir / Madam,</p>
+
+        <?php
+        $QUOTATION_ITEM = new QuotationItem(null);
+        $temp_items_list = $QUOTATION_ITEM->getByQuotationId($id);
+        $row_count = count($temp_items_list);
+        $min_rows = 8;
+        ?>
+
+        <table class="items">
+            <thead>
+                <tr>
+                    <th style="width:5%;">No.</th>
+                    <th style="width:12%;">Code</th>
+                    <th style="width:34%;">Description</th>
+                    <th class="num" style="width:7%;">Volt</th>
+                    <th class="num" style="width:7%;">Ah</th>
+                    <th class="num" style="width:8%;">Qty</th>
+                    <th class="num" style="width:13%;">Unit Price</th>
+                    <th class="num" style="width:14%;">Price</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php
+                $subtotal = 0;
+                $total_discount = 0;
+                foreach ($temp_items_list as $key => $temp_items) {
+                    $key++;
+                    $price = (float) $temp_items['price'];
+                    $quantity = (int) $temp_items['qty'];
+                    $discount_amount = isset($temp_items['discount']) ? (float) $temp_items['discount'] : 0;
+                    $selling_price = $price - $discount_amount;
+                    $line_total = $selling_price * $quantity;
+                    $subtotal += $price * $quantity;
+                    $total_discount += $discount_amount * $quantity;
+
+                    $qi_item = new ItemMaster($temp_items['item_code']);
+                    $qi_code = $qi_item->code ?: $temp_items['item_code'];
+                    $qi_volt = $qi_item->voltage ?? '';
+                    $qi_amp  = $qi_item->ampere ?? '';
+                ?>
+                    <tr>
+                        <td><?php echo str_pad($key, 2, '0', STR_PAD_LEFT); ?></td>
+                        <td><?php echo htmlspecialchars($qi_code); ?></td>
+                        <td><?php echo htmlspecialchars($temp_items['item_name']); ?></td>
+                        <td class="num"><?php echo htmlspecialchars($qi_volt); ?></td>
+                        <td class="num"><?php echo htmlspecialchars($qi_amp); ?></td>
+                        <td class="num"><?php echo $quantity; ?></td>
+                        <td class="num"><?php echo number_format($selling_price, 2); ?></td>
+                        <td class="num"><?php echo number_format($line_total, 2); ?></td>
+                    </tr>
+                <?php }
+                for ($i = $row_count; $i < $min_rows; $i++) { ?>
+                    <tr>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                    </tr>
+                <?php } ?>
+
+                <tr>
+                    <td colspan="7" class="num" style="border-bottom:none; padding-top:8px;">Gross Amount :</td>
+                    <td class="num" style="border-bottom:none; padding-top:8px;"><?php echo number_format($subtotal, 2); ?></td>
+                </tr>
+                <?php if ($total_discount > 0) { ?>
+                    <tr>
+                        <td colspan="7" class="num" style="border-bottom:none;">Discount :</td>
+                        <td class="num" style="border-bottom:none;"><?php echo number_format($total_discount, 2); ?></td>
+                    </tr>
+                <?php } ?>
+                <?php if (!empty($QUOTATION->is_vat_invoice) && (float) $QUOTATION->vat_percentage > 0) { ?>
+                    <tr>
+                        <td colspan="7" class="num" style="border-bottom:none;">VAT (<?php echo number_format($QUOTATION->vat_percentage, 2); ?>%) :</td>
+                        <td class="num" style="border-bottom:none;"><?php echo number_format($QUOTATION->vat_total, 2); ?></td>
+                    </tr>
+                <?php } ?>
+                <tr>
+                    <td colspan="7" class="num" style="border-bottom:none;"><strong>Net Amount :</strong></td>
+                    <td class="num" style="border-bottom:none;"><strong><?php echo number_format($QUOTATION->grand_total, 2); ?></strong></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="thanks">
+            Thank You,<br>
+            <?php echo htmlspecialchars($COMPANY_PROFILE->name) ?>
+        </div>
+
+        <div class="signature">
+            <div class="sigline"></div>
+            <strong>Manager</strong>
+        </div>
+
+        <div class="terms">
+            <h4>Terms &amp; Exclusions:</h4>
+            <ul>
+                <li>Prices are valid for <?php echo (int) ($QUOTATION->validity ?: 30); ?> days from the date of this quote.</li>
+                <li>Quoted prices are subject to change if the manufacturer's list price increases by more than 2% before order placement.</li>
+                <li>This quote excludes shipping and any items not explicitly listed.</li>
+                <li>All orders are subject to final confirmation and availability at the time of purchase.</li>
+            </ul>
+        </div>
+
+    </div>
+
     <script>
-        // Apply print format on load
         window.onload = function () {
             setPrintFormat('a4');
         };
 
         function setPrintFormat(format) {
-            const formats = [
-                'a4', 'a3', 'a5',
-                'letter', 'legal',
-                'tabloid', 'dotmatrix'
-            ];
+            const formats = ['a4', 'a3', 'a5', 'letter', 'legal', 'tabloid', 'dotmatrix'];
             document.body.className = document.body.className
                 .split(' ')
                 .filter(c => !formats.map(f => 'print-' + f).includes(c))
                 .join(' ')
                 .trim();
-
             document.body.classList.add('print-' + format);
         }
 

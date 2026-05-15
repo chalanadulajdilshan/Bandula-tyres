@@ -9,6 +9,8 @@ class ItemMaster
     public $brand;
     public $size;
     public $pattern;
+    public $voltage;
+    public $ampere;
     public $group;
     public $category;
     public $re_order_level;
@@ -34,6 +36,8 @@ class ItemMaster
                 $this->brand = $result['brand'];
                 $this->size = $result['size'];
                 $this->pattern = $result['pattern'];
+                $this->voltage = $result['voltage'] ?? '';
+                $this->ampere = $result['ampere'] ?? '';
                 $this->group = $result['group'];
                 $this->category = $result['category'];
                 $this->list_price = $result['list_price'];
@@ -51,10 +55,10 @@ class ItemMaster
     public function create()
     {
         $query = "INSERT INTO `item_master` (
-    `code`, `name`, `brand`, `size`, `pattern`, `group`, `category`, 
+    `code`, `name`, `brand`, `size`, `pattern`, `voltage`, `ampere`, `group`, `category`,
      `re_order_level`, `re_order_qty`, `stock_type`, `note`,`list_price`,`invoice_price`,`discount`, `is_active`
 ) VALUES (
-    '$this->code', '$this->name', '$this->brand', '$this->size', '$this->pattern', '$this->group',
+    '$this->code', '$this->name', '$this->brand', '$this->size', '$this->pattern', '$this->voltage', '$this->ampere', '$this->group',
     '$this->category',  '$this->re_order_level', '$this->re_order_qty',
      '$this->stock_type', '$this->note', '$this->list_price', '$this->invoice_price', '$this->discount', '$this->is_active'
 )";
@@ -78,8 +82,10 @@ class ItemMaster
             `name` = '$this->name', 
             `brand` = '$this->brand', 
             `size` = '$this->size',  
-            `pattern` = '$this->pattern', 
-            `group` = '$this->group', 
+            `pattern` = '$this->pattern',
+            `voltage` = '$this->voltage',
+            `ampere` = '$this->ampere',
+            `group` = '$this->group',
             `category` = '$this->category', 
             `list_price` = '$this->list_price', 
             `invoice_price` = '$this->invoice_price', 
@@ -572,6 +578,8 @@ class ItemMaster
                 "code" => $row['code'],
                 "name" => $row['name'],
                 "pattern" => $row['pattern'],
+                "voltage" => $row['voltage'] ?? '',
+                "ampere" => $row['ampere'] ?? '',
                 "size" => $row['size'],
                 "group" => $row['group'],
                 "re_order_level" => $row['re_order_level'],

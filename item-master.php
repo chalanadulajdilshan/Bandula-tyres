@@ -161,6 +161,24 @@ $item_id = 'TI/0' . ($lastId + 1);
                                                 </div>
                                             </div>
 
+                                            <!-- Voltage -->
+                                            <div class="col-md-3">
+                                                <div class="mb-3">
+                                                    <label class="form-label" for="voltage">Voltage (V)</label>
+                                                    <input id="voltage" name="voltage" onkeyup="toUpperCaseInput(this)" type="text" class="form-control"
+                                                        placeholder="e.g. 12">
+                                                </div>
+                                            </div>
+
+                                            <!-- Ampere -->
+                                            <div class="col-md-3">
+                                                <div class="mb-3">
+                                                    <label class="form-label" for="ampere">Ampere (Ah)</label>
+                                                    <input id="ampere" name="ampere" onkeyup="toUpperCaseInput(this)" type="text" class="form-control"
+                                                        placeholder="e.g. 70">
+                                                </div>
+                                            </div>
+
                                             <!-- Item Name -->
                                             <div class="col-md-3">
                                                 <div class="mb-3">

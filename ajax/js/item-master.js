@@ -120,6 +120,8 @@ jQuery(document).ready(function () {
         $('#brand').val(item.brand_id).trigger('change');
         $('#size').val(item.size);
         $('#pattern').val(item.pattern);
+        $('#voltage').val(item.voltage || '');
+        $('#ampere').val(item.ampere || '');
         $('#category').val(item.category_id).trigger('change');
         $('#list_price').val(item.list_price);
         $('#group').val(item.group).trigger('change');
@@ -198,6 +200,8 @@ jQuery(document).ready(function () {
         $('#brand').val(data.brand_id);
         $('#size').val(data.size);
         $('#pattern').val(data.pattern);
+        $('#voltage').val(data.voltage || '');
+        $('#ampere').val(data.ampere || '');
         $('#category').val(data.category_id);
         $('#list_price').val(data.list_price);
         $('#group').val(data.group);
