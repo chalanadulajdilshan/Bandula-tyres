@@ -745,7 +745,7 @@ jQuery(document).ready(function () {
     $("#itemCode").val(itemCode);
     $("#itemName").val(itemName);
 
-    $("#itemQty").val("");
+    $("#itemQty").val(1);
     $("#itemDiscount").val("");
 
     calculatePayment();
@@ -881,7 +881,7 @@ jQuery(document).ready(function () {
     $("#item_id").val("");
     $("#itemCode").val("");
     $("#itemName").val("");
-    $("#itemQty").val("");
+    $("#itemQty").val(1);
     $("#item_cost_arn").val("");
     $("#itemPrice").val("");
     $("#available_qty").val(0);
@@ -2167,8 +2167,11 @@ jQuery(document).ready(function () {
     // Clear input fields
     updateFinalTotal();
     $(
-      "#itemCode, #itemName, #itemPrice,#item_cost_arn, #itemQty, #itemDiscount, #item_id, #itemSalePrice, #itemSerialNo, #itemOldBatteryPrice, #itemOldBatteryQty"
+      "#itemCode, #itemName, #itemPrice,#item_cost_arn, #itemDiscount, #item_id, #itemSalePrice, #itemSerialNo, #itemOldBatteryPrice"
     ).val("");
+    // Qty and Old Battery Qty always default to 1
+    $("#itemQty").val(1);
+    $("#itemOldBatteryQty").val(1);
     $("#vehicleNo, #currentKm, #nextServiceDays").val("");
     // Reset service dropdowns and related fields
     $("#service").val("0");

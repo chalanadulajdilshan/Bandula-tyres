@@ -398,11 +398,8 @@ include './auth.php';
                                                         placeholder="Price" oninput="calculatePayment()">
                                                 </div>
                                                 <input type="hidden" id="item_cost_arn">
-                                                <div class="col-md-1">
-                                                    <label class="form-label">Qty</label>
-                                                    <input type="number" id="itemQty" class="form-control"
-                                                        placeholder="Qty" oninput="calculatePayment()">
-                                                </div>
+                                                <input type="hidden" id="itemQty" value="1">
+
                                                 <div class="col-md-1">
                                                     <label class="form-label">Dis Amount</label>
                                                     <input type="number" id="itemDiscount" class="form-control" min="0"
@@ -424,11 +421,8 @@ include './auth.php';
                                                         </button>
                                                     </div>
                                                 </div>
-                                                <div class="col-md-1">
-                                                    <label class="form-label">Old Battery Qty</label>
-                                                    <input type="number" id="itemOldBatteryQty" class="form-control" min="0"
-                                                        placeholder="Old Bat Qty">
-                                                </div>
+                                                <input type="hidden" id="itemOldBatteryQty" value="1">
+
                                                 <div class="col-md-1">
                                                     <label class="form-label">Old Battery Price</label>
                                                     <input type="number" id="itemOldBatteryPrice" class="form-control" min="0"
