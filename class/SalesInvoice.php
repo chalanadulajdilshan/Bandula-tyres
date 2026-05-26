@@ -30,6 +30,7 @@ class SalesInvoice
     public $credit_period;
     public $due_date;
     public $is_return;
+    public $created_by;
 
     // Constructor to initialize the SalesInvoice object with an ID
     public function __construct($id = null)
@@ -68,6 +69,7 @@ class SalesInvoice
                 $this->credit_period = $result['credit_period'];
                 $this->due_date = $result['due_date'];
                 $this->is_return = $result['is_return'];
+                $this->created_by = $result['created_by'] ?? null;
             }
         }
     }
@@ -75,14 +77,15 @@ class SalesInvoice
     // Create a new sales invoice record
     public function create()
     {
+        $created_by = $this->created_by !== null ? "'" . (int)$this->created_by . "'" : "NULL";
         $query = "INSERT INTO `sales_invoice` (
-            `ref_id`,`invoice_type`,`invoice_no`, `invoice_date`, `company_id`, `customer_id`, `customer_name`, `customer_mobile`, `customer_address`, `recommended_person`, `vehicle_no`, `department_id`, 
-            `sale_type`, `discount_type`,`final_cost`, `payment_type`, `sub_total`, `discount`, 
-            `tax`, `grand_total`, `outstanding_settle_amount`, `remark`, `credit_period`, `due_date`
+            `ref_id`,`invoice_type`,`invoice_no`, `invoice_date`, `company_id`, `customer_id`, `customer_name`, `customer_mobile`, `customer_address`, `recommended_person`, `vehicle_no`, `department_id`,
+            `sale_type`, `discount_type`,`final_cost`, `payment_type`, `sub_total`, `discount`,
+            `tax`, `grand_total`, `outstanding_settle_amount`, `remark`, `credit_period`, `due_date`, `created_by`
         ) VALUES (
-            '{$this->ref_id}','{$this->invoice_type}', '{$this->invoice_no}', '{$this->invoice_date}', '{$this->company_id}', '{$this->customer_id}', '{$this->customer_name}', '{$this->customer_mobile}', '{$this->customer_address}', '{$this->recommended_person}', '{$this->vehicle_no}', '{$this->department_id}', 
-            '{$this->sale_type}', '{$this->discount_type}', '{$this->final_cost}','{$this->payment_type}', '{$this->sub_total}', '{$this->discount}', 
-            '{$this->tax}', '{$this->grand_total}', '{$this->outstanding_settle_amount}', '{$this->remark}', '{$this->credit_period}', '{$this->due_date}'
+            '{$this->ref_id}','{$this->invoice_type}', '{$this->invoice_no}', '{$this->invoice_date}', '{$this->company_id}', '{$this->customer_id}', '{$this->customer_name}', '{$this->customer_mobile}', '{$this->customer_address}', '{$this->recommended_person}', '{$this->vehicle_no}', '{$this->department_id}',
+            '{$this->sale_type}', '{$this->discount_type}', '{$this->final_cost}','{$this->payment_type}', '{$this->sub_total}', '{$this->discount}',
+            '{$this->tax}', '{$this->grand_total}', '{$this->outstanding_settle_amount}', '{$this->remark}', '{$this->credit_period}', '{$this->due_date}', {$created_by}
         )";
 
 

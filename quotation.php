@@ -394,7 +394,7 @@ $quotation_id = $COMPANY_PROFILE_DETAILS->company_code . '/QUO/00/0' . ($lastId 
                                                             </div>
                                                         </div>
 
-                                                        <div class="row mb-2">
+                                                        <div class="row mb-2" id="credit_period_row" style="display:none;">
                                                             <div class="col-5">
                                                                 <input type="text" class="form-control  "
                                                                     value="Credit Period  " disabled>
@@ -402,7 +402,7 @@ $quotation_id = $COMPANY_PROFILE_DETAILS->company_code . '/QUO/00/0' . ($lastId 
                                                             <div class="col-7">
                                                                 <select class="form-control" id="credit_period"
                                                                     name="credit_period">
-
+                                                                    <option value="">-- Select Credit Period --</option>
                                                                     <?php
                                                                     $CREDIT_PERIOD = new CreditPeriod(NULL);
                                                                     foreach ($CREDIT_PERIOD->getCreditPeriodByStatus(1) as $Credit_period) {

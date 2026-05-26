@@ -250,6 +250,7 @@ if (isset($_POST['create'])) {
     $SALES_INVOICE->grand_total = $grandTotal;
     $SALES_INVOICE->outstanding_settle_amount = $_POST['paidAmount'];
     $SALES_INVOICE->remark = !empty($_POST['remark']) ? $_POST['remark'] : null;
+    $SALES_INVOICE->created_by = isset($_SESSION['id']) ? (int)$_SESSION['id'] : null;
 
     if ($paymentType == 2 && !empty($_POST['credit_period'])) {
         $SALES_INVOICE->credit_period = $_POST['credit_period'];

@@ -372,6 +372,23 @@ if (!empty($customerMobile)) {
                                 <span style="display:inline-block;min-width:58%;border-bottom:1px solid #b40000;padding:0 4px;">
                                 </span>
                             </div>
+                            <div style="margin-top:3px;"><strong>Billed Department :</strong>
+                                <span style="display:inline-block;min-width:42%;border-bottom:1px solid #b40000;padding:0 4px;">
+                                    <?php echo htmlspecialchars($INVOICE_BRANCH->name ?? ''); ?>
+                                </span>
+                            </div>
+                            <?php
+                            $invoiced_user_name = '';
+                            if (!empty($SALES_INVOICE->created_by)) {
+                                $INVOICE_USER = new User($SALES_INVOICE->created_by);
+                                $invoiced_user_name = $INVOICE_USER->name ?? '';
+                            }
+                            ?>
+                            <div style="margin-top:3px;"><strong>Invoiced User :</strong>
+                                <span style="display:inline-block;min-width:48%;border-bottom:1px solid #b40000;padding:0 4px;">
+                                    <?php echo htmlspecialchars($invoiced_user_name); ?>
+                                </span>
+                            </div>
                             <?php if ($SALES_INVOICE->payment_type == 2 && $SALES_INVOICE->credit_period): ?>
                                 <?php $CP = new CreditPeriod($SALES_INVOICE->credit_period); ?>
                                 <div style="margin-top:3px;"><strong>Due Date :</strong>

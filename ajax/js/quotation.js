@@ -54,6 +54,19 @@ jQuery(document).ready(function () {
         getInvoiceData();
     });
 
+    // Toggle credit period visibility based on payment type (hide for Cash)
+    function toggleCreditPeriodVisibility() {
+        var paymentTypeText = $('#payment_type option:selected').text().trim().toLowerCase();
+        if (paymentTypeText === 'cash') {
+            $('#credit_period_row').hide();
+            $('#credit_period').val('');
+        } else {
+            $('#credit_period_row').show();
+        }
+    }
+    $('#payment_type').on('change', toggleCreditPeriodVisibility);
+    toggleCreditPeriodVisibility();
+
     // Reset input fields
     $("#new").click(function (e) {
         e.preventDefault();
@@ -994,7 +1007,7 @@ jQuery(document).ready(function () {
                     // Set form values
                     $('#marketing_executive_id').val(quotation.marketing_executive_id);
                     $('#sales_type').val(quotation.sale_type || 1);
-                    $('#payment_type').val(quotation.payment_type);
+                    $('#payment_type').val(quotation.payment_type).trigger('change');
                     $('#vat_type').val(quotation.vat_type || 1);
                     $('#remark').val(quotation.remarks);
 
