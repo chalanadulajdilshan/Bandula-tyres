@@ -788,7 +788,7 @@ include './auth.php';
     <!-- JAVASCRIPT -->
     <script src="assets/libs/jquery/jquery.min.js"></script>
     <!-- /////////////////////////// -->
-    <script src="ajax/js/sales-invoice.js"></script>
+    <script src="ajax/js/sales-invoice.js?v=<?php echo @filemtime(__DIR__ . '/ajax/js/sales-invoice.js'); ?>"></script>
     <script src="ajax/js/common.js"></script>
     <script src="ajax/js/customer-master.js"></script>
 
