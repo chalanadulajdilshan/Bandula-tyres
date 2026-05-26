@@ -1374,7 +1374,7 @@ jQuery(document).ready(function () {
       const discount = parseFloat($(this).find("td:eq(4)").text()) || 0;
       const selling_price = parseFloat($(this).find("td:eq(5)").text()) || 0;
 
-      const totalItem = parseFloat($(this).find("td:eq(8)").text().replace(/,/g, "")) || 0;
+      const totalItem = parseFloat($(this).find("td:eq(10)").text().replace(/,/g, "")) || 0;
       const item_id = $(this).find('input[name="item_id[]"]').val();
       const arn_no = $(this).find('input[name="arn_ids[]"]').val();
       const arn_cost =
@@ -1390,6 +1390,10 @@ jQuery(document).ready(function () {
       const serial_no = $(this).find('input[name="serial_no[]"]').val() || "";
       const is_pre_invoice =
         $(this).find('input[name="is_pre_invoice[]"]').val() || "0";
+      const old_battery_price =
+        parseFloat($(this).find('input[name="old_battery_price[]"]').val()) || 0;
+      const old_battery_qty =
+        parseFloat($(this).find('input[name="old_battery_qty[]"]').val()) || 0;
 
       if (code && !isNaN(totalItem) && item_id) {
         items.push({
@@ -1410,6 +1414,8 @@ jQuery(document).ready(function () {
           serial_no,
           is_pre_invoice,
           vat_amount,
+          old_battery_price,
+          old_battery_qty,
         });
       }
     });
@@ -1714,6 +1720,8 @@ jQuery(document).ready(function () {
     const currentKm = $("#currentKm").val().trim() || "";
     const nextServiceDays = $("#nextServiceDays").val().trim() || "";
     const serialNo = $("#itemSerialNo").val().trim() || "";
+    const oldBatteryPrice = parseFloat($("#itemOldBatteryPrice").val()) || 0;
+    const oldBatteryQty = parseFloat($("#itemOldBatteryQty").val()) || 0;
 
     // For service items, use serviceSellingPrice as the price if main itemPrice is empty
     let effectivePrice = price;
@@ -2123,6 +2131,8 @@ jQuery(document).ready(function () {
                       <input type="hidden" name="next_service_days[]" value="${nextServiceDays}">
                       <input type="hidden" name="serial_no[]" value="${serialNo}">
                       <input type="hidden" name="is_pre_invoice[]" value="${itemIsPreInvoice ? 1 : 0}">
+                      <input type="hidden" name="old_battery_price[]" value="${oldBatteryPrice}">
+                      <input type="hidden" name="old_battery_qty[]" value="${oldBatteryQty}">
                   </td>
                   <td>${displayName}${arnAllocations.length > 1
             ? ' <small class="text-muted">(ARN: ' + allocArnId + ")</small>"
@@ -2135,6 +2145,8 @@ jQuery(document).ready(function () {
             displayPrice - discount
           ).toFixed(2)}</td>
                   <td class="item-serial-no">${serialNo}</td>
+                  <td class="item-old-battery-qty">${oldBatteryQty}</td>
+                  <td class="item-old-battery-price">${oldBatteryPrice.toFixed(2)}</td>
                   <td class="item-vat-amount vat-column" style="display: ${isVatApplied ? "" : "none"}">${itemVatAmount.toLocaleString(undefined, {
             minimumFractionDigits: 2,
             maximumFractionDigits: 2,
@@ -2155,7 +2167,7 @@ jQuery(document).ready(function () {
     // Clear input fields
     updateFinalTotal();
     $(
-      "#itemCode, #itemName, #itemPrice,#item_cost_arn, #itemQty, #itemDiscount, #item_id, #itemSalePrice, #itemSerialNo"
+      "#itemCode, #itemName, #itemPrice,#item_cost_arn, #itemQty, #itemDiscount, #item_id, #itemSalePrice, #itemSerialNo, #itemOldBatteryPrice, #itemOldBatteryQty"
     ).val("");
     $("#vehicleNo, #currentKm, #nextServiceDays").val("");
     // Reset service dropdowns and related fields
@@ -2616,6 +2628,8 @@ jQuery(document).ready(function () {
                                 <input type="hidden" name="current_km[]" value="">
                                 <input type="hidden" name="next_service_days[]" value="">
                                 <input type="hidden" name="serial_no[]" value="">
+                                <input type="hidden" name="old_battery_price[]" value="0">
+                                <input type="hidden" name="old_battery_qty[]" value="0">
                                 </td>
                                 <td>${item.item_name}</td>
                                 <td><input type="number" class="item-price form-control form-control-sm price" value="${price.toFixed(2)}" readonly></td>
@@ -2623,6 +2637,8 @@ jQuery(document).ready(function () {
                                 <td><input type="number" class="item-discount form-control form-control-sm discount" value="${discount}"></td>
                                 <td class="item-sell-price">${(price - discount).toFixed(2)}</td>
                                 <td class="item-serial-no"></td>
+                                <td class="item-old-battery-qty">0</td>
+                                <td class="item-old-battery-price">0.00</td>
                                 <td class="item-vat-amount vat-column" style="display: ${$("#is_vat_invoice").is(":checked") ? "" : "none"}">
                                   ${(() => {
                                     const isVatApplied = $("#is_vat_invoice").is(":checked");
@@ -2652,7 +2668,7 @@ jQuery(document).ready(function () {
             // Add "No items" row if no items found
             $("#invoiceItemsBody").append(`
                             <tr id="noItemRow">
-                                <td colspan="8" class="text-center text-muted">No items added</td>
+                                <td colspan="11" class="text-center text-muted">No items added</td>
                             </tr>
                         `);
           }
@@ -3058,6 +3074,8 @@ jQuery(document).ready(function () {
                     <input type="hidden" name="current_km[]" value="">
                     <input type="hidden" name="next_service_days[]" value="">
                     <input type="hidden" name="serial_no[]" value="${serialNo}">
+                    <input type="hidden" name="old_battery_price[]" value="0">
+                    <input type="hidden" name="old_battery_qty[]" value="0">
                   </td>
                   <td>${name}</td>
                   <td class="item-price">${price.toFixed(2)}</td>
@@ -3065,6 +3083,8 @@ jQuery(document).ready(function () {
                   <td class="item-discount">${discount.toFixed(2)}</td>
                   <td class="item-sell-price">${sellingPrice.toFixed(2)}</td>
                   <td class="item-serial-no">${serialNo}</td>
+                  <td class="item-old-battery-qty">0</td>
+                  <td class="item-old-battery-price">0.00</td>
                   <td class="item-vat-amount">${itemVatAmount.toLocaleString(undefined, {
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2,
@@ -3096,7 +3116,7 @@ jQuery(document).ready(function () {
             // Show "no items" row if no items
             $("#invoiceItemsBody").html(`
               <tr id="noInvoiceItemRow">
-                <td colspan="8" class="text-center text-muted">No items added</td>
+                <td colspan="11" class="text-center text-muted">No items added</td>
               </tr>
             `);
           }

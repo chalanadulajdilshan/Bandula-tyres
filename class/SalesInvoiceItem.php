@@ -19,6 +19,8 @@ class SalesInvoiceItem
     public $next_service_date;
     public $is_pre_invoice;
     public $vat_amount;
+    public $old_battery_price;
+    public $old_battery_qty;
     public $created_at;
 
     public function __construct($id = null)
@@ -48,6 +50,8 @@ class SalesInvoiceItem
                 $this->next_service_date = $result['next_service_date'] ?? '';
                 $this->is_pre_invoice = $result['is_pre_invoice'] ?? 0;
                 $this->vat_amount = $result['vat_amount'] ?? 0;
+                $this->old_battery_price = $result['old_battery_price'] ?? 0;
+                $this->old_battery_qty = $result['old_battery_qty'] ?? 0;
                 $this->created_at = $result['created_at'];
             }
         }
@@ -57,25 +61,30 @@ class SalesInvoiceItem
     {
 
 
-        $query = "INSERT INTO `sales_invoice_items` 
-    (`invoice_id`, `item_code`, `service_item_code`, `item_name`, `serial_no`, `cost`, `list_price`, `price`, `discount`,`quantity`, `total`, `vehicle_no`, `current_km`, `next_service_date`, `is_pre_invoice`, `vat_amount`, `created_at`) 
+        $old_battery_price = (float)($this->old_battery_price ?? 0);
+        $old_battery_qty = (float)($this->old_battery_qty ?? 0);
+
+        $query = "INSERT INTO `sales_invoice_items`
+    (`invoice_id`, `item_code`, `service_item_code`, `item_name`, `serial_no`, `cost`, `list_price`, `price`, `discount`,`quantity`, `total`, `vehicle_no`, `current_km`, `next_service_date`, `is_pre_invoice`, `vat_amount`, `old_battery_price`, `old_battery_qty`, `created_at`)
     VALUES (
-        '{$this->invoice_id}', 
-        '{$this->item_code}', 
-        '{$this->service_item_code}', 
-        '{$this->item_name}', 
-        '{$this->serial_no}', 
-        '{$this->cost}', 
-        '{$this->list_price}', 
-        '{$this->price}', 
-        '{$this->discount}', 
-        '{$this->quantity}', 
+        '{$this->invoice_id}',
+        '{$this->item_code}',
+        '{$this->service_item_code}',
+        '{$this->item_name}',
+        '{$this->serial_no}',
+        '{$this->cost}',
+        '{$this->list_price}',
+        '{$this->price}',
+        '{$this->discount}',
+        '{$this->quantity}',
         '{$this->total}',
         '{$this->vehicle_no}',
         '{$this->current_km}',
         '{$this->next_service_date}',
         '{$this->is_pre_invoice}',
         '{$this->vat_amount}',
+        '{$old_battery_price}',
+        '{$old_battery_qty}',
         NOW()
     )";
 

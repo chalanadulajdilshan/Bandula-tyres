@@ -357,6 +357,8 @@ if (isset($_POST['create'])) {
             $SALES_ITEM->discount = $item_discount_amount;
             $SALES_ITEM->total = ($item['selling_price'] * $qty_for_total);
             $SALES_ITEM->vat_amount = isset($item['vat_amount']) ? (float)$item['vat_amount'] : 0;
+            $SALES_ITEM->old_battery_price = isset($item['old_battery_price']) ? (float)$item['old_battery_price'] : 0;
+            $SALES_ITEM->old_battery_qty = isset($item['old_battery_qty']) ? (float)$item['old_battery_qty'] : 0;
             $SALES_ITEM->vehicle_no = isset($item['vehicle_no']) ? $item['vehicle_no'] : '';
             $SALES_ITEM->current_km = isset($item['current_km']) ? $item['current_km'] : '';
             $SALES_ITEM->next_service_date = (isset($item['next_service_days']) && !empty($item['next_service_days']) && intval($item['next_service_days']) > 0) ? date('Y-m-d', strtotime($SALES_INVOICE->invoice_date . ' + ' . $item['next_service_days'] . ' days')) : null;

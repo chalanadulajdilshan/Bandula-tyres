@@ -392,7 +392,7 @@ include './auth.php';
                                                     <input type="text" id="itemName" class="form-control"
                                                         placeholder="Name" readonly>
                                                 </div>
-                                                <div class="col-md-2">
+                                                <div class="col-md-1">
                                                     <label class="form-label">List Price</label>
                                                     <input type="number" id="itemPrice" class="form-control"
                                                         placeholder="Price" oninput="calculatePayment()">
@@ -413,7 +413,7 @@ include './auth.php';
                                                     <input type="number" id="itemSalePrice" class="form-control" min="0"
                                                         placeholder="Sale Price" oninput="calculatePayment()">
                                                 </div>
-                                                <div class="col-md-2">
+                                                <div class="col-md-1">
                                                     <label class="form-label">Serial No</label>
                                                     <div class="input-group">
                                                         <input type="text" id="itemSerialNo" class="form-control"
@@ -423,6 +423,16 @@ include './auth.php';
                                                             <i class="uil uil-plus"></i>
                                                         </button>
                                                     </div>
+                                                </div>
+                                                <div class="col-md-1">
+                                                    <label class="form-label">Old Battery Qty</label>
+                                                    <input type="number" id="itemOldBatteryQty" class="form-control" min="0"
+                                                        placeholder="Old Bat Qty">
+                                                </div>
+                                                <div class="col-md-1">
+                                                    <label class="form-label">Old Battery Price</label>
+                                                    <input type="number" id="itemOldBatteryPrice" class="form-control" min="0"
+                                                        placeholder="Old Battery">
                                                 </div>
                                                 <div class="col-md-1">
                                                     <button type="button" class="btn btn-success w-100"
@@ -503,6 +513,8 @@ include './auth.php';
                                                             <th>Discount</th>
                                                             <th>Selling Price</th>
                                                             <th>Serial No</th>
+                                                            <th>Old Bat Qty</th>
+                                                            <th>Old Battery</th>
                                                             <th class="vat-column" style="display: none;">VAT</th>
                                                             <th>Total</th>
                                                             <th>Action</th>
@@ -510,7 +522,7 @@ include './auth.php';
                                                     </thead>
                                                     <tbody id="invoiceItemsBody">
                                                         <tr id="noInvoiceItemRow">
-                                                            <td colspan="9" class="text-center text-muted">
+                                                            <td colspan="11" class="text-center text-muted">
                                                                 No items
                                                                 added</td>
                                                         </tr>
