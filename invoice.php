@@ -76,7 +76,7 @@ if (!empty($customerMobile)) {
                 break-inside: avoid;
             }
             .container { width: 100% !important; max-width: 100% !important; padding: 0 !important; }
-            @page { size: A4 portrait; margin: 10mm; }
+            @page { margin: 10mm; }
             body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 
             /* Layout tweaks for A4 — comfortable sizing, still fits one page */
@@ -247,15 +247,6 @@ if (!empty($customerMobile)) {
                     <label class="form-check-label" for="toggleDiscount">
                         Show discount
                     </label>
-                </div>
-                <!-- Orientation toggle -->
-                <div class="d-flex align-items-center gap-1 ms-2" title="Select print / PDF orientation">
-                    <button id="btn-portrait" class="orientation-btn active" onclick="setOrientation('portrait')" title="Portrait">
-                        &#x1F4C4; Portrait
-                    </button>
-                    <button id="btn-landscape" class="orientation-btn" onclick="setOrientation('landscape')" title="Landscape">
-                        &#x1F5C3; Landscape
-                    </button>
                 </div>
                 <button onclick="window.print()" class="btn btn-success ms-2">Print</button>
                 <button onclick="downloadPDF()" class="btn btn-primary ms-2">PDF</button>
