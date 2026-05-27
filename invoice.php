@@ -231,7 +231,7 @@ if (!empty($customerMobile)) {
 
 <body data-layout="horizontal" data-topbar="colored">
 
-    <div class="container mt-4">
+    <div class="container  ">
         <div
             class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-3 no-print gap-2">
             <h4 class="mb-0">Invoice</h4>
@@ -332,10 +332,10 @@ if (!empty($customerMobile)) {
                     </tr>
                 </table>
 
-                <table class="bt-addr-table">
-                    <tr>
+                <table class="bt-addr-table" style="margin-top: -20px;">
+                    <tr >
                         <td<?php echo $is_mt_lavinia ? '' : ' style="font-weight:700;"'; ?>>
-                            No. 1 &amp; 5, Old Galle Road,<br>
+                            No. 1 &amp; 5, Old Galle Road, 
                             Moratuwa.<br>
                             Tel : 2641053, 2644791, 4374430-31<br>
                             Mobile : 0772538789<br>
@@ -400,23 +400,12 @@ if (!empty($customerMobile)) {
                                 <span style="display:inline-block;min-width:58%;border-bottom:1px solid #b40000;padding:0 4px;">
                                 </span>
                             </div>
-                            <div style="margin-top:3px;"><strong>Billed Department :</strong>
+                            <div style="margin-top:3px;"><strong>  Department :</strong>
                                 <span style="display:inline-block;min-width:42%;border-bottom:1px solid #b40000;padding:0 4px;">
                                     <?php echo htmlspecialchars($INVOICE_BRANCH->name ?? ''); ?>
                                 </span>
                             </div>
-                            <?php
-                            $invoiced_user_name = '';
-                            if (!empty($SALES_INVOICE->created_by)) {
-                                $INVOICE_USER = new User($SALES_INVOICE->created_by);
-                                $invoiced_user_name = $INVOICE_USER->name ?? '';
-                            }
-                            ?>
-                            <div style="margin-top:3px;"><strong>Invoiced User :</strong>
-                                <span style="display:inline-block;min-width:48%;border-bottom:1px solid #b40000;padding:0 4px;">
-                                    <?php echo htmlspecialchars($invoiced_user_name); ?>
-                                </span>
-                            </div>
+                            
                             <?php if ($SALES_INVOICE->payment_type == 2 && $SALES_INVOICE->credit_period): ?>
                                 <?php $CP = new CreditPeriod($SALES_INVOICE->credit_period); ?>
                                 <div style="margin-top:3px;"><strong>Due Date :</strong>
@@ -474,7 +463,7 @@ if (!empty($customerMobile)) {
                             $rendered_rows++;
                         }
                         // Pad with empty ruled rows
-                        $min_rows = 6;
+                        $min_rows = 2;
                         for ($i = $rendered_rows; $i < $min_rows; $i++) {
                             $isLast = ($i === $min_rows - 1);
                             $bcls = $isLast ? ' class="with-bottom"' : '';
@@ -497,7 +486,7 @@ if (!empty($customerMobile)) {
 
                 <!-- Totals + Terms footer -->
                 <table style="width:100%; margin-top:8px; border-collapse:collapse; font-size:12px;">
-                    <tr>
+                    <tr >
                         <td style="width:60%; vertical-align:top; padding-right:10px;">
                             <strong>Terms &amp; Conditions :</strong>
                             <ol style="margin:4px 0 0 18px; padding:0; line-height:1.45;">
@@ -561,6 +550,18 @@ if (!empty($customerMobile)) {
                     <tr>
                         <td style="text-align:center; width:50%;">
                             <div style="border-top:1px solid #b40000; padding-top:3px; margin:0 30px;"><strong>Customer Signature</strong></div>
+                            <?php
+                            $invoiced_user_name = '';
+                            if (!empty($SALES_INVOICE->created_by)) {
+                                $INVOICE_USER = new User($SALES_INVOICE->created_by);
+                                $invoiced_user_name = $INVOICE_USER->name ?? '';
+                            }
+                            ?>
+                            <div style="margin-top:3px;"><strong>Invoiced User :</strong>
+                                <span style="display:inline-block;min-width:48%;border-bottom:1px solid #b40000;padding:0 4px;">
+                                    <?php echo htmlspecialchars($invoiced_user_name); ?>
+                                </span>
+                            </div>
                         </td>
                         <td style="text-align:center; width:50%;">
                             <div style="border-top:1px solid #b40000; padding-top:3px; margin:0 30px;"><strong>Authorized Signature</strong></div>
