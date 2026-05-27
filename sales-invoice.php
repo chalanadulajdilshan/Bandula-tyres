@@ -346,11 +346,10 @@ include './auth.php';
                                             <hr class="my-4">
                                             <div class="row align-items-end" id="addItemTable">
                                                 <div class="col-md-2">
-                                                    <label for="itemCode" class="form-label">Item
-                                                        Code</label>
+                                                    <label for="itemCode" class="form-label">Item Code / Name</label>
                                                     <div class="input-group">
                                                         <input id="itemCode" type="text" class="form-control"
-                                                            placeholder="Item Code" readonly>
+                                                            placeholder="Code" readonly>
 
                                                         <?php
                                                         $hasViewAllItemsPermission = false;
@@ -385,12 +384,9 @@ include './auth.php';
                                                             <i class="uil uil-wrench"></i>
                                                         </button> -->
                                                     </div>
-                                                </div>
-
-                                                <div class="col-md-2">
-                                                    <label class="form-label">Name</label>
-                                                    <input type="text" id="itemName" class="form-control"
-                                                        placeholder="Name" readonly>
+                                                    <input type="text" id="itemName" readonly
+                                                        class="form-control border-0 p-0 mt-1"
+                                                        style="height:auto; font-size:11px; color:#0d6efd; font-weight:600; background:transparent;">
                                                 </div>
                                                 <div class="col-md-2">
                                                     <label class="form-label">List Price</label>
@@ -401,16 +397,17 @@ include './auth.php';
                                                 <input type="hidden" id="itemQty" value="1">
 
                                                 <div class="col-md-1">
-                                                    <label class="form-label">Dis Amount</label>
-                                                    <input type="number" id="itemDiscount" class="form-control" min="0"
-                                                        placeholder="Dis Amount" oninput="calculatePayment()">
+                                                    <label class="form-label">Dis %</label>
+                                                    <input type="number" id="itemDiscountPercent" class="form-control" min="0" max="100"
+                                                        placeholder="Dis %">
                                                 </div>
+                                                <input type="hidden" id="itemDiscount" value="0">
                                                 <div class="col-md-2">
                                                     <label class="form-label">Selling Price</label>
                                                     <input type="number" id="itemSalePrice" class="form-control" min="0"
                                                         placeholder="Sale Price" oninput="calculatePayment()">
                                                 </div>
-                                                <div class="col-md-1">
+                                                <div class="col-md-2">
                                                     <label class="form-label">Serial No</label>
                                                     <div class="input-group">
                                                         <input type="text" id="itemSerialNo" class="form-control"
@@ -423,7 +420,7 @@ include './auth.php';
                                                 </div>
                                                 <input type="hidden" id="itemOldBatteryQty" value="1">
 
-                                                <div class="col-md-1">
+                                                <div class="col-md-2">
                                                     <label class="form-label">Old Battery Price</label>
                                                     <input type="number" id="itemOldBatteryPrice" class="form-control" min="0"
                                                         placeholder="Old Battery">
@@ -623,6 +620,17 @@ include './auth.php';
                                                             </div>
                                                             <div class="col-5">
                                                                 <input type="text" class="form-control" id="disTotal"
+                                                                    value="0.00" disabled>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="row mb-2">
+                                                            <div class="col-7">
+                                                                <input type="text" class="form-control text_purchase3"
+                                                                    value="Old Battery Total:" disabled>
+                                                            </div>
+                                                            <div class="col-5">
+                                                                <input type="text" class="form-control" id="oldBatteryTotal"
                                                                     value="0.00" disabled>
                                                             </div>
                                                         </div>

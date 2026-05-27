@@ -2103,7 +2103,8 @@ jQuery(document).ready(function () {
           displayName = name;
           let netUnitPrice = price - discount;
           if (netUnitPrice < 0) netUnitPrice = 0;
-          total = netUnitPrice * allocQty;
+          total = netUnitPrice * allocQty - oldBatteryPrice * oldBatteryQty;
+          if (total < 0) total = 0;
         }
 
         // Extract VAT if applied
@@ -2167,7 +2168,7 @@ jQuery(document).ready(function () {
     // Clear input fields
     updateFinalTotal();
     $(
-      "#itemCode, #itemName, #itemPrice,#item_cost_arn, #itemDiscount, #item_id, #itemSalePrice, #itemSerialNo, #itemOldBatteryPrice"
+      "#itemCode, #itemName, #itemPrice,#item_cost_arn, #itemDiscount, #itemDiscountPercent, #item_id, #itemSalePrice, #itemSerialNo, #itemOldBatteryPrice"
     ).val("");
     // Qty and Old Battery Qty always default to 1
     $("#itemQty").val(1);
@@ -2250,6 +2251,7 @@ jQuery(document).ready(function () {
     const isVatApplied = $("#is_vat_invoice").is(":checked");
     const vatPercentage = parseFloat($("#vat_percentage").val()) || 0;
 
+    let oldBatteryTotal = 0;
     $("#invoiceItemsBody tr").each(function () {
       const qty =
         parseFloat($(this).find(".item-qty").text().replace(/,/g, "")) || 0;
@@ -2258,17 +2260,27 @@ jQuery(document).ready(function () {
       const discount =
         parseFloat($(this).find(".item-discount").text().replace(/,/g, "")) ||
         0;
+      const oldBatPrice =
+        parseFloat(
+          $(this).find(".item-old-battery-price").text().replace(/,/g, "")
+        ) || 0;
+      const oldBatQty =
+        parseFloat(
+          $(this).find(".item-old-battery-qty").text().replace(/,/g, "")
+        ) || 0;
 
       const itemTotal = price * qty;
       // Treat discount as a fixed value per unit
       const itemDiscount = discount * qty;
+      const itemOldBattery = oldBatPrice * oldBatQty;
+      oldBatteryTotal += itemOldBattery;
       let itemTax = 0;
 
       console.log("Item - Qty:", qty, "Price:", price, "Discount:", discount);
 
       // Calculate VAT only if VAT is applied (Extract from inclusive price)
       if (isVatApplied && vatPercentage > 0) {
-        const discountedItemTotal = itemTotal - itemDiscount;
+        const discountedItemTotal = itemTotal - itemDiscount - itemOldBattery;
         itemTax = discountedItemTotal * (vatPercentage / (100 + vatPercentage));
         console.log(
           "Item Tax (Extracted):",
@@ -2297,7 +2309,7 @@ jQuery(document).ready(function () {
       );
     });
 
-    const grandTotal = subTotal - discountTotal; // Tax is already included in subTotal and discountTotal
+    const grandTotal = subTotal - discountTotal - oldBatteryTotal; // Tax is already included in subTotal and discountTotal
     $("#subTotal").val(
       subTotal.toLocaleString("en-US", {
         minimumFractionDigits: 2,
@@ -2306,6 +2318,12 @@ jQuery(document).ready(function () {
     );
     $("#disTotal").val(
       discountTotal.toLocaleString("en-US", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      })
+    );
+    $("#oldBatteryTotal").val(
+      oldBatteryTotal.toLocaleString("en-US", {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
       })
@@ -2366,24 +2384,38 @@ jQuery(document).ready(function () {
   function calculatePayment(changedField) {
     const price = parseFloat($("#itemPrice").val()) || 0;
     const qty = parseFloat($("#itemQty").val()) || 0;
-    const discount = parseFloat($("#itemDiscount").val()) || 0;
+    const oldBattery = parseFloat($("#itemOldBatteryPrice").val()) || 0;
+    let discount = parseFloat($("#itemDiscount").val()) || 0;
+    let discountPercent = parseFloat($("#itemDiscountPercent").val()) || 0;
     const salePrice = parseFloat($("#itemSalePrice").val()) || 0;
 
     let finalSalePrice = salePrice;
     let finalDiscount = discount;
 
-    if (changedField === "price" || changedField === "discount") {
-      // Recalculate Sale Price using fixed discount value per unit
-      finalSalePrice = price - discount;
-      if (finalSalePrice < 0) {
-        finalSalePrice = 0;
-      }
+    if (changedField === "discountPercent") {
+      finalDiscount = (price * discountPercent) / 100;
+      $("#itemDiscount").val(finalDiscount.toFixed(2));
+      finalSalePrice = price - finalDiscount - oldBattery;
+      if (finalSalePrice < 0) finalSalePrice = 0;
       $("#itemSalePrice").val(finalSalePrice.toFixed(2));
-    } else if (changedField === "salePrice") {
-      // Recalculate Discount as fixed value per unit (can be negative if selling price > list price)
+    } else if (
+      changedField === "price" ||
+      changedField === "discount" ||
+      changedField === "oldBattery"
+    ) {
+      finalSalePrice = price - discount - oldBattery;
+      if (finalSalePrice < 0) finalSalePrice = 0;
+      $("#itemSalePrice").val(finalSalePrice.toFixed(2));
       if (price > 0) {
-        finalDiscount = price - salePrice;
+        $("#itemDiscountPercent").val(((discount / price) * 100).toFixed(2));
+      } else {
+        $("#itemDiscountPercent").val("");
+      }
+    } else if (changedField === "salePrice") {
+      if (price > 0) {
+        finalDiscount = price - salePrice - oldBattery;
         $("#itemDiscount").val(finalDiscount.toFixed(2));
+        $("#itemDiscountPercent").val(((finalDiscount / price) * 100).toFixed(2));
       }
     }
 
@@ -2410,6 +2442,12 @@ jQuery(document).ready(function () {
   });
   $("#itemDiscount").on("input", function () {
     calculatePayment("discount");
+  });
+  $("#itemDiscountPercent").on("input", function () {
+    calculatePayment("discountPercent");
+  });
+  $("#itemOldBatteryPrice").on("input", function () {
+    calculatePayment("oldBattery");
   });
   $("#itemSalePrice").on("input", function () {
     calculatePayment("salePrice");

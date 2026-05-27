@@ -128,6 +128,33 @@ if (!empty($customerMobile)) {
         #invoice-content {
             color: #b40000;
             font-family: "Arial", "Helvetica", sans-serif;
+            position: relative;
+        }
+
+        #invoice-content .card-body {
+            position: relative;
+            z-index: 1;
+        }
+
+        #invoice-content .card-body::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-image: url('uploads/bglogo.jpeg');
+            background-repeat: no-repeat;
+            background-position: center center;
+            background-size: 60% auto;
+            opacity: 0.10;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        @media print {
+            #invoice-content .card-body::before {
+                opacity: 0.10;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
         }
 
         .bt-title {
@@ -157,7 +184,7 @@ if (!empty($customerMobile)) {
             margin-bottom: 2px;
         }
 
-        .bt-items { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 13px; }
+        .bt-items { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 13px; table-layout: fixed; }
         .bt-items th, .bt-items td {
             border: 1px solid #b40000;
             padding: 4px 6px;
@@ -213,6 +240,12 @@ if (!empty($customerMobile)) {
                     <input class="form-check-input" type="checkbox" value="" id="toggleOutstanding" <?php echo ($SALES_INVOICE->payment_type == 2) ? 'checked' : 'disabled'; ?>>
                     <label class="form-check-label" for="toggleOutstanding">
                         Show customer outstanding
+                    </label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="" id="toggleDiscount" checked>
+                    <label class="form-check-label" for="toggleDiscount">
+                        Show discount
                     </label>
                 </div>
                 <!-- Orientation toggle -->
@@ -300,7 +333,11 @@ if (!empty($customerMobile)) {
                             <h3 class="bt-title bt-title-si">බන්දුල බැටරි සේල්ස් ඇන්ඩ් සර්විස්</h3>
                             <p class="bt-tagline" style="margin-top:3px;">Dealers in all kinds of Local and Imported Batteries</p>
                         </td>
-                        <td style="width:90px;"></td>
+                        <td style="width:130px; vertical-align:middle; text-align:right;">
+                            <?php if (file_exists('uploads/bettery.jpeg')): ?>
+                                <img src="uploads/bettery.jpeg" alt="battery" style="max-height:110px; max-width:130px; object-fit:contain;">
+                            <?php endif; ?>
+                        </td>
                     </tr>
                 </table>
 
@@ -401,15 +438,16 @@ if (!empty($customerMobile)) {
                     </tr>
                 </table>
 
-                <!-- Items table: Qty | Description | Item | Volt | Ah. | Rs. -->
+                <!-- Items table: Qty | Description | Item | Volt | Ah. | Disc% | Rs. -->
                 <table class="bt-items" style="margin-top:8px;">
                     <thead>
                         <tr>
-                            <th style="width:8%;">Qty</th>
-                            <th style="width:36%;">Description</th>
-                            <th style="width:18%;">Item</th>
-                            <th style="width:8%;">Volt</th>
-                            <th style="width:10%;">Ah.</th>
+                            <th style="width:7%;">Qty</th>
+                            <th id="th-desc" style="width:32%;">Description</th>
+                            <th style="width:16%;">Item</th>
+                            <th style="width:7%;">Volt</th>
+                            <th style="width:9%;">Ah.</th>
+                            <th class="disc-col" style="width:9%;">Disc %</th>
                             <th style="width:20%;">Rs.</th>
                         </tr>
                     </thead>
@@ -431,12 +469,14 @@ if (!empty($customerMobile)) {
                                 $desc .= ' (S/N: ' . $ti['serial_no'] . ')';
                             }
                             ?>
+                            <?php $item_disc = (float)($ti['discount'] ?? 0); ?>
                             <tr>
                                 <td class="c"><?php echo str_pad($qty, 2, '0', STR_PAD_LEFT); ?></td>
                                 <td><?php echo htmlspecialchars($desc); ?></td>
                                 <td class="c"><?php echo htmlspecialchars($itemCode); ?></td>
                                 <td class="c"><?php echo htmlspecialchars($volt); ?></td>
                                 <td class="c"><?php echo htmlspecialchars($amp); ?></td>
+                                <td class="c disc-col"><?php echo $item_disc > 0 ? number_format($item_disc, 2) . '%' : ''; ?></td>
                                 <td class="num"><?php echo number_format($line, 2); ?></td>
                             </tr>
                             <?php
@@ -447,7 +487,7 @@ if (!empty($customerMobile)) {
                         for ($i = $rendered_rows; $i < $min_rows; $i++) {
                             $isLast = ($i === $min_rows - 1);
                             $bcls = $isLast ? ' class="with-bottom"' : '';
-                            echo '<tr class="spacer"><td' . $bcls . '></td><td' . $bcls . '></td><td' . $bcls . '></td><td' . $bcls . '></td><td' . $bcls . '></td><td' . $bcls . '></td></tr>';
+                            echo '<tr class="spacer"><td' . $bcls . '></td><td' . $bcls . '></td><td' . $bcls . '></td><td' . $bcls . '></td><td' . $bcls . '></td><td' . $bcls . ' class="disc-col"></td><td' . $bcls . '></td></tr>';
                         }
                         ?>
                     </tbody>
@@ -484,10 +524,11 @@ if (!empty($customerMobile)) {
                                     </td>
                                 </tr>
                                 <?php if ($total_discount > 0): ?>
-                                <tr>
+                                <?php $discount_percentage = $sub_total > 0 ? ($total_discount / $sub_total) * 100 : 0; ?>
+                                <tr id="discount-row">
                                     <td style="padding:2px 6px; text-align:right;"><strong>Discount :</strong></td>
                                     <td style="padding:2px 6px; text-align:right; border-bottom:1px solid #b40000;">
-                                        <?php echo number_format($total_discount, 2); ?>
+                                        <?php echo number_format($discount_percentage, 2); ?>%
                                     </td>
                                 </tr>
                                 <?php endif; ?>
@@ -891,6 +932,25 @@ if (!empty($customerMobile)) {
                 if (toggleOutstanding) {
                     toggleOutstanding.addEventListener("change", syncOutstandingVisibility);
                     syncOutstandingVisibility();
+                }
+
+                const toggleDiscount = document.getElementById("toggleDiscount");
+                const discountRow = document.getElementById("discount-row");
+
+                function syncDiscountVisibility() {
+                    if (!toggleDiscount) return;
+                    const show = toggleDiscount.checked;
+                    if (discountRow) discountRow.style.display = show ? "" : "none";
+                    document.querySelectorAll('.disc-col').forEach(function (el) {
+                        el.style.display = show ? "" : "none";
+                    });
+                    const descTh = document.getElementById('th-desc');
+                    if (descTh) descTh.style.width = show ? '32%' : '41%';
+                }
+
+                if (toggleDiscount) {
+                    toggleDiscount.addEventListener("change", syncDiscountVisibility);
+                    syncDiscountVisibility();
                 }
             });
 
