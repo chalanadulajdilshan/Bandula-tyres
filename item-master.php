@@ -265,6 +265,15 @@ $item_id = 'TI/0' . ($lastId + 1);
                                                 </div>
                                             </div>
 
+                                            <!-- Old Battery Dis Price -->
+                                            <div class="col-md-3">
+                                                <div class="mb-3">
+                                                    <label class="form-label" for="old_battery_dis_price">Old Battery Dis Price</label>
+                                                    <input id="old_battery_dis_price" name="old_battery_dis_price" type="text"
+                                                        class="form-control" placeholder="0.00" value="0">
+                                                </div>
+                                            </div>
+
                                         </div>
 
                                         <hr class="my-4">

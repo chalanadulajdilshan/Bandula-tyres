@@ -130,6 +130,7 @@ jQuery(document).ready(function () {
         $('#stock_type').val(item.stock_type).trigger('change');
         $('#invoice_price').val(item.invoice_price);
         $('#discount').val(item.discount);
+        $('#old_battery_dis_price').val(item.old_battery_dis_price || 0);
         $('#note').val(item.note);
         $('#is_active').prop('checked', item.status == 1);
 
@@ -209,6 +210,7 @@ jQuery(document).ready(function () {
         $('#re_order_qty').val(data.re_order_qty);
         $('#stock_type').val(data.stock_type);
         $('#invoice_price').val(data.invoice_price);
+        $('#old_battery_dis_price').val(data.old_battery_dis_price || 0);
 
         $('#note').val(data.note);
 

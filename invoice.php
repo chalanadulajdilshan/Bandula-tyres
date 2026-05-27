@@ -76,26 +76,26 @@ if (!empty($customerMobile)) {
                 break-inside: avoid;
             }
             .container { width: 100% !important; max-width: 100% !important; padding: 0 !important; }
-            @page { margin: 10mm; }
+            @page { size: A5 landscape; margin: 6mm; }
             body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 
-            /* Layout tweaks for A4 — comfortable sizing, still fits one page */
-            .card-body { padding: 12px !important; }
-            .bt-title-en { font-size: 24px !important; }
-            .bt-title-si { font-size: 16px !important; }
-            .bt-tagline, .bt-brands { font-size: 12px !important; margin-bottom: 3px !important; }
-            .bt-addr-table { font-size: 11px !important; line-height: 1.4 !important; }
-            .bt-meta { font-size: 12px !important; margin-top: 6px !important; }
-            .bt-ms { font-size: 12px !important; margin-top: 6px !important; }
-            .bt-ms .dots { height: 16px !important; margin-bottom: 2px !important; }
-            .bt-items { font-size: 12px !important; margin-top: 8px !important; }
-            .bt-items th, .bt-items td { padding: 3px 5px !important; }
-            /* Spacer rows — comfortable for A4 */
-            .bt-items tbody tr.spacer td { height: 18px !important; }
-            .bt-foot-table { font-size: 11px !important; margin-top: 6px !important; }
-            .bt-foot-line { min-width: 150px !important; }
-            .bt-total-box { font-size: 15px !important; padding: 5px 8px !important; }
-            .bt-footer-tag { font-size: 14px !important; margin-top: 8px !important; padding-top: 6px !important; }
+            /* Layout tweaks for A5 landscape — compact sizing to fit one page */
+            .card-body { padding: 6px !important; }
+            .bt-title-en { font-size: 18px !important; }
+            .bt-title-si { font-size: 13px !important; }
+            .bt-tagline, .bt-brands { font-size: 10px !important; margin-bottom: 2px !important; }
+            .bt-addr-table { font-size: 9px !important; line-height: 1.25 !important; }
+            .bt-meta { font-size: 10px !important; margin-top: 3px !important; }
+            .bt-ms { font-size: 10px !important; margin-top: 3px !important; }
+            .bt-ms .dots { height: 12px !important; margin-bottom: 1px !important; }
+            .bt-items { font-size: 10px !important; margin-top: 4px !important; }
+            .bt-items th, .bt-items td { padding: 2px 4px !important; }
+            .bt-items tbody tr.spacer td { height: 10px !important; }
+            .bt-foot-table { font-size: 9px !important; margin-top: 3px !important; }
+            .bt-foot-line { min-width: 120px !important; }
+            .bt-total-box { font-size: 12px !important; padding: 3px 6px !important; }
+            .bt-footer-tag { font-size: 11px !important; margin-top: 4px !important; padding-top: 3px !important; }
+            img { max-height: 55px !important; }
         }
         /* Landscape override – applied when <html> has class 'print-landscape' */
         html.print-landscape {
@@ -323,10 +323,11 @@ if (!empty($customerMobile)) {
                             <h2 class="bt-title bt-title-en">BANDULA BATTERY SALES &amp; SERVICE</h2>
                             <h3 class="bt-title bt-title-si">බන්දුල බැටරි සේල්ස් ඇන්ඩ් සර්විස්</h3>
                             <p class="bt-tagline" style="margin-top:3px;">Dealers in all kinds of Local and Imported Batteries</p>
+                            <p style="margin-top:3px; font-weight:bold; color:#b40000;"><?php echo htmlspecialchars($INVOICE_BRANCH->name ?? ''); ?></p>
                         </td>
                         <td style="width:130px; vertical-align:middle; text-align:right;">
                             <?php if (file_exists('uploads/bettery.jpeg')): ?>
-                                <img src="uploads/bettery.jpeg" alt="battery" style="max-height:110px; max-width:130px; object-fit:contain;">
+                                <img src="uploads/bettery.jpeg" alt="battery" style="max-height:75px; max-width:90px; object-fit:contain;">
                             <?php endif; ?>
                         </td>
                     </tr>
@@ -369,18 +370,8 @@ if (!empty($customerMobile)) {
                                     <?php echo htmlspecialchars($SALES_INVOICE->customer_mobile ?? ''); ?>
                                 </span>
                             </div>
-                            <div style="margin-top:3px;"><strong>Email :</strong>
-                                <span style="display:inline-block;min-width:60%;border-bottom:1px solid #b40000;padding:0 4px;">
-                                    <?php echo htmlspecialchars($customerEmail); ?>
-                                </span>
-                            </div>
-                            <div style="margin-top:3px;"><strong>Vehicle No :</strong>
-                                <span style="display:inline-block;min-width:53%;border-bottom:1px solid #b40000;padding:0 4px;">
-                                    <?php echo htmlspecialchars($SALES_INVOICE->vehicle_no ?? ''); ?>
-                                </span>
-                            </div>
                         </td>
-                        <td style="width:40%; vertical-align:top;">
+                        <td style="width:40%; vertical-align:top; text-align:right;">
                             <div><strong>VAT No :</strong>
                                 <span style="display:inline-block;min-width:55%;border-bottom:1px solid #b40000;padding:0 4px;">
                                     <?php echo htmlspecialchars($vat_no); ?>
@@ -396,16 +387,6 @@ if (!empty($customerMobile)) {
                                     <?php echo date('d/m/Y', strtotime($SALES_INVOICE->invoice_date)); ?>
                                 </span>
                             </div>
-                            <div style="margin-top:3px;"><strong>PO No :</strong>
-                                <span style="display:inline-block;min-width:58%;border-bottom:1px solid #b40000;padding:0 4px;">
-                                </span>
-                            </div>
-                            <div style="margin-top:3px;"><strong>  Department :</strong>
-                                <span style="display:inline-block;min-width:42%;border-bottom:1px solid #b40000;padding:0 4px;">
-                                    <?php echo htmlspecialchars($INVOICE_BRANCH->name ?? ''); ?>
-                                </span>
-                            </div>
-                            
                             <?php if ($SALES_INVOICE->payment_type == 2 && $SALES_INVOICE->credit_period): ?>
                                 <?php $CP = new CreditPeriod($SALES_INVOICE->credit_period); ?>
                                 <div style="margin-top:3px;"><strong>Due Date :</strong>
@@ -449,14 +430,18 @@ if (!empty($customerMobile)) {
                                 $desc .= ' (S/N: ' . $ti['serial_no'] . ')';
                             }
                             ?>
-                            <?php $item_disc = (float)($ti['discount'] ?? 0); ?>
+                            <?php
+                                $item_disc = (float)($ti['discount'] ?? 0);
+                                $item_list_unit = $price + $item_disc;
+                                $item_disc_pct = $item_list_unit > 0 ? ($item_disc / $item_list_unit) * 100 : 0;
+                            ?>
                             <tr>
                                 <td class="c"><?php echo str_pad($qty, 2, '0', STR_PAD_LEFT); ?></td>
                                 <td><?php echo htmlspecialchars($desc); ?></td>
                                 <td class="c"><?php echo htmlspecialchars($itemCode); ?></td>
                                 <td class="c"><?php echo htmlspecialchars($volt); ?></td>
                                 <td class="c"><?php echo htmlspecialchars($amp); ?></td>
-                                <td class="c disc-col"><?php echo $item_disc > 0 ? number_format($item_disc, 2) . '%' : ''; ?></td>
+                                <td class="c disc-col"><?php echo $item_disc > 0 ? number_format($item_disc_pct, 2) . '%' : ''; ?></td>
                                 <td class="num"><?php echo number_format($line, 2); ?></td>
                             </tr>
                             <?php
@@ -479,7 +464,7 @@ if (!empty($customerMobile)) {
                 $total_discount   = 0;
                 foreach ($temp_items_list as $ti) {
                     $dp = (float)($ti['discount'] ?? 0);
-                    $total_discount += (float)$ti['price'] * (int)$ti['quantity'] * ($dp / 100);
+                    $total_discount += $dp * (int)$ti['quantity'];
                 }
                 $vat_amount  = floatval($SALES_INVOICE->tax ?? 0);
                 ?>
@@ -491,8 +476,6 @@ if (!empty($customerMobile)) {
                             <strong>Terms &amp; Conditions :</strong>
                             <ol style="margin:4px 0 0 18px; padding:0; line-height:1.45;">
                                 <li>All cheques to be "A/c Payee only" and drawn in favour of "Bandula Battery Sales &amp; Service".</li>
-                                <li>Bandula Battery Sales &amp; Service reserves the right to take appropriate legal action to recover in full, if the invoice amount contained herein is not settled within the stipulated credit period.</li>
-                                <li>I accept the above mentioned terms &amp; conditions and goods received in correct &amp; good condition.</li>
                             </ol>
                         </td>
                         <td style="width:40%; vertical-align:top;">
@@ -504,11 +487,10 @@ if (!empty($customerMobile)) {
                                     </td>
                                 </tr>
                                 <?php if ($total_discount > 0): ?>
-                                <?php $discount_percentage = $sub_total > 0 ? ($total_discount / $sub_total) * 100 : 0; ?>
                                 <tr id="discount-row">
                                     <td style="padding:2px 6px; text-align:right;"><strong>Discount :</strong></td>
                                     <td style="padding:2px 6px; text-align:right; border-bottom:1px solid #b40000;">
-                                        <?php echo number_format($discount_percentage, 2); ?>%
+                                        <?php echo number_format($total_discount, 2); ?>
                                     </td>
                                 </tr>
                                 <?php endif; ?>
@@ -854,9 +836,9 @@ if (!empty($customerMobile)) {
                     document.head.appendChild(_dynamicPageStyle);
                 }
                 if (orientation === 'landscape') {
-                    _dynamicPageStyle.textContent = '@media print { @page { size: A4 landscape; margin: 10mm; } }';
+                    _dynamicPageStyle.textContent = '@media print { @page { size: A5 landscape; margin: 6mm; } }';
                 } else {
-                    _dynamicPageStyle.textContent = '@media print { @page { size: A4 portrait; margin: 10mm; } }';
+                    _dynamicPageStyle.textContent = '@media print { @page { size: A5 portrait; margin: 6mm; } }';
                 }
             }
 

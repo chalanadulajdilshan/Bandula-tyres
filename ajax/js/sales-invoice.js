@@ -761,6 +761,33 @@ jQuery(document).ready(function () {
     }
   });
 
+  // Fetch old_battery_dis_price for selected item and apply it:
+  // - autofill #itemOldBatteryPrice
+  // - reduce #itemSalePrice by that amount
+  function applyOldBatteryDisPrice(itemId) {
+    if (!itemId) return;
+    $.ajax({
+      url: "ajax/php/item-master.php",
+      type: "POST",
+      dataType: "json",
+      data: { action: "get_by_id", id: itemId },
+      success: function (res) {
+        if (res && res.status === "success" && res.item) {
+          const oldBatPrice = parseFloat(res.item.old_battery_dis_price) || 0;
+          $("#itemOldBatteryPrice").val(oldBatPrice.toFixed(2));
+
+          const currentSale = parseFloat($("#itemSalePrice").val()) || 0;
+          const newSale = currentSale - oldBatPrice;
+          $("#itemSalePrice").val((newSale < 0 ? 0 : newSale).toFixed(2));
+
+          if (typeof calculatePayment === "function") {
+            calculatePayment();
+          }
+        }
+      }
+    });
+  }
+
   $(document).on("click", "#all_itemMaster tbody tr", function () {
     let mainRow = $(this).closest("tr.table-primary"); // ✅ pick the clicked row
 
@@ -780,6 +807,8 @@ jQuery(document).ready(function () {
     $("#item_id").val(item_id);
     $("#itemPrice").val(itemPrice);
     $("#itemSalePrice").val(itemSalePrice);
+
+    applyOldBatteryDisPrice(item_id);
 
     calculatePayment();
 
@@ -860,6 +889,8 @@ jQuery(document).ready(function () {
     // Clear qty, discount, payment
     $("#itemQty").val(1);
     $("#payment_type").prop("disabled", true);
+
+    applyOldBatteryDisPrice($("#item_id").val());
 
     calculatePayment();
 

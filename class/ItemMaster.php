@@ -20,6 +20,7 @@ class ItemMaster
     public $stock_type;
     public $note;
     public $discount;
+    public $old_battery_dis_price;
     public $is_active;
 
     public function __construct($id = null)
@@ -47,6 +48,7 @@ class ItemMaster
                 $this->stock_type = $result['stock_type'];
                 $this->note = $result['note'];
                 $this->discount = $result['discount'];
+                $this->old_battery_dis_price = $result['old_battery_dis_price'] ?? 0;
                 $this->is_active = $result['is_active'];
             }
         }
@@ -56,11 +58,11 @@ class ItemMaster
     {
         $query = "INSERT INTO `item_master` (
     `code`, `name`, `brand`, `size`, `pattern`, `voltage`, `ampere`, `group`, `category`,
-     `re_order_level`, `re_order_qty`, `stock_type`, `note`,`list_price`,`invoice_price`,`discount`, `is_active`
+     `re_order_level`, `re_order_qty`, `stock_type`, `note`,`list_price`,`invoice_price`,`discount`,`old_battery_dis_price`, `is_active`
 ) VALUES (
     '$this->code', '$this->name', '$this->brand', '$this->size', '$this->pattern', '$this->voltage', '$this->ampere', '$this->group',
     '$this->category',  '$this->re_order_level', '$this->re_order_qty',
-     '$this->stock_type', '$this->note', '$this->list_price', '$this->invoice_price', '$this->discount', '$this->is_active'
+     '$this->stock_type', '$this->note', '$this->list_price', '$this->invoice_price', '$this->discount', '$this->old_battery_dis_price', '$this->is_active'
 )";
 
 
@@ -93,7 +95,8 @@ class ItemMaster
             `re_order_qty` = '$this->re_order_qty', 
             `stock_type` = '$this->stock_type', 
             `note` = '$this->note',
-             `discount` = '$this->discount', 
+             `discount` = '$this->discount',
+            `old_battery_dis_price` = '$this->old_battery_dis_price',
             `is_active` = '$this->is_active'
             WHERE `id` = '$this->id'";
 
@@ -475,6 +478,7 @@ class ItemMaster
                         "list_price" => $row['list_price'],
                         "invoice_price" => $row['invoice_price'],
                         "discount" => $row['discount'],
+                        "old_battery_dis_price" => $row['old_battery_dis_price'] ?? 0,
                         "stock_type" => $row['stock_type'],
                         "note" => $row['note'],
                         "status" => $row['is_active'],
@@ -591,6 +595,7 @@ class ItemMaster
                 "list_price" => $row['list_price'],
                 "invoice_price" => $row['invoice_price'],
                 "discount" => $row['discount'],
+                "old_battery_dis_price" => $row['old_battery_dis_price'] ?? 0,
                 "stock_type" => $row['stock_type'],
                 "note" => $row['note'],
                 "status" => $row['is_active'],
