@@ -1755,16 +1755,16 @@ jQuery(document).ready(function () {
 
     // Validate that selling price is not lower than cost
     const itemCost = parseFloat($("#item_cost_arn").val()) || 0;
-    if (itemCost > 0 && sale_price < itemCost) {
-      swal({
-        title: "Validation Error!",
-        text: `Selling price (${sale_price.toFixed(2)}) cannot be lower than cost (${itemCost.toFixed(2)}).`,
-        type: "error",
-        timer: 4000,
-        showConfirmButton: true,
-      });
-      return;
-    }
+    // if (itemCost > 0 && sale_price < itemCost) {
+    //   swal({
+    //     title: "Validation Error!",
+    //     text: `Selling price (${sale_price.toFixed(2)}) cannot be lower than cost (${itemCost.toFixed(2)}).`,
+    //     type: "error",
+    //     timer: 4000,
+    //     showConfirmButton: true,
+    //   });
+    //   return;
+    // }
 
     // For pre-invoice items, skip stock validation entirely
     if (!isServiceItemCode && !isPureServiceCode && !isPreInvoiceMode) {
@@ -2910,16 +2910,16 @@ jQuery(document).ready(function () {
     const cost = parseFloat(costInput.val()) || 0;
 
     // If cost is higher than price, reset cost to price value
-    if (cost > price) {
-      costInput.val(price.toFixed(2));
-      swal({
-        title: "Warning!",
-        text: "Cost cannot exceed the selling price. Cost has been adjusted to match the price.",
-        type: "warning",
-        timer: 3000,
-        showConfirmButton: false,
-      });
-    }
+    // if (cost > price) {
+    //   costInput.val(price.toFixed(2));
+    //   swal({
+    //     title: "Warning!",
+    //     text: "Cost cannot exceed the selling price. Cost has been adjusted to match the price.",
+    //     type: "warning",
+    //     timer: 3000,
+    //     showConfirmButton: false,
+    //   });
+    // }
 
     calculateDagTotals();
   });

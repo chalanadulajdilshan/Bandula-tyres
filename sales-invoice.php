@@ -378,12 +378,12 @@ include './auth.php';
                                                             style="display: <?php echo $hasViewAllItemsPermission ? 'inline-block' : 'none'; ?>">
                                                             <i class="uil uil-search me-1"></i>
                                                         </button>
-                                                        <button class="btn btn-warning" type="button"
+                                                        <!-- <button class="btn btn-warning" type="button"
                                                             data-bs-toggle="tooltip" id="serviceItemBtn"
                                                             title="Service Item"
                                                             style="color: #fff">
                                                             <i class="uil uil-wrench"></i>
-                                                        </button>
+                                                        </button> -->
                                                     </div>
                                                 </div>
 
