@@ -345,7 +345,7 @@ include './auth.php';
 
                                             <hr class="my-4">
                                             <div class="row align-items-end" id="addItemTable">
-                                                <div class="col-md-2">
+                                                <div class="col-md-2 position-relative">
                                                     <label for="itemCode" class="form-label">Item Code / Name</label>
                                                     <div class="input-group">
                                                         <input id="itemCode" type="text" class="form-control"
@@ -385,8 +385,8 @@ include './auth.php';
                                                         </button> -->
                                                     </div>
                                                     <input type="text" id="itemName" readonly
-                                                        class="form-control border-0 p-0 mt-1"
-                                                        style="height:auto; font-size:11px; color:#0d6efd; font-weight:600; background:transparent;">
+                                                        class="form-control border-0 p-0 mt-1 position-absolute"
+                                                        style="height:auto; font-size:11px; color:#0d6efd; font-weight:600; background:transparent; left:12px; right:12px; width:auto;">
                                                 </div>
                                                 <div class="col-md-2">
                                                     <label class="form-label">List Price</label>
@@ -494,21 +494,21 @@ include './auth.php';
 
                                             <!-- Table -->
                                             <div class="table-responsive mt-4">
-                                                <table class="table table-bordered" id="invoiceTable">
+                                                <table class="table table-bordered table-sm align-middle" id="invoiceTable" style="table-layout: fixed; width: 100%; word-break: break-word;">
                                                     <thead class="table-light">
                                                         <tr>
-                                                            <th>Code</th>
-                                                            <th>Name</th>
-                                                            <th>List Price</th>
-                                                            <th>Qty</th>
-                                                            <th>Discount</th>
-                                                            <th>Selling Price</th>
-                                                            <th>Serial No</th>
-                                                            <th>Old Bat Qty</th>
-                                                            <th>Old Battery</th>
-                                                            <th class="vat-column" style="display: none;">VAT</th>
-                                                            <th>Total</th>
-                                                            <th>Action</th>
+                                                            <th style="width: 6%;">Code</th>
+                                                            <th style="width: 22%;">Name</th>
+                                                            <th style="width: 8%;">List Price</th>
+                                                            <th style="width: 5%;">Qty</th>
+                                                            <th style="width: 7%;">Discount</th>
+                                                            <th style="width: 9%;">Selling Price</th>
+                                                            <th style="width: 9%;">Serial No</th>
+                                                            <th style="width: 7%;">Old Bat Qty</th>
+                                                            <th style="width: 9%;">Old Battery</th>
+                                                            <th class="vat-column" style="display: none; width: 7%;">VAT</th>
+                                                            <th style="width: 9%;">Total</th>
+                                                            <th style="width: 9%;">Action</th>
                                                         </tr>
                                                     </thead>
                                                     <tbody id="invoiceItemsBody">

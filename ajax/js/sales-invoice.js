@@ -2486,6 +2486,8 @@ jQuery(document).ready(function () {
 
   // VAT checkbox change event
   $("#is_vat_invoice").on("change", function () {
+    const show = $(this).is(":checked");
+    $("#invoiceTable .vat-column").css("display", show ? "" : "none");
     updateFinalTotal();
   });
 
