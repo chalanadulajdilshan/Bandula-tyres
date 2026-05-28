@@ -248,6 +248,12 @@ if (!empty($customerMobile)) {
                         Show discount
                     </label>
                 </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="" id="toggleOldBattery" checked>
+                    <label class="form-check-label" for="toggleOldBattery">
+                        Show old battery
+                    </label>
+                </div>
                 <button onclick="window.print()" class="btn btn-success ms-2">Print</button>
                 <button onclick="downloadPDF()" class="btn btn-primary ms-2">PDF</button>
                 <button onclick="shareViaWhatsApp()" class="btn btn-success ms-2 no-print">
@@ -370,6 +376,21 @@ if (!empty($customerMobile)) {
                                     <?php echo htmlspecialchars($SALES_INVOICE->customer_mobile ?? ''); ?>
                                 </span>
                             </div>
+                            <?php
+                            $vehicle_nos = [];
+                            foreach ($temp_items_list as $ti) {
+                                $vn = trim($ti['vehicle_no'] ?? '');
+                                if ($vn !== '' && !in_array($vn, $vehicle_nos, true)) {
+                                    $vehicle_nos[] = $vn;
+                                }
+                            }
+                            $vehicle_no_display = implode(', ', $vehicle_nos);
+                            ?>
+                            <div style="margin-top:3px;"><strong>Vehicle No :</strong>
+                                <span style="display:inline-block;min-width:55%;border-bottom:1px solid #b40000;padding:0 4px;">
+                                    <?php echo htmlspecialchars($vehicle_no_display); ?>
+                                </span>
+                            </div>
                         </td>
                         <td style="width:40%; vertical-align:top; text-align:right;">
                             <div><strong>VAT No :</strong>
@@ -409,6 +430,7 @@ if (!empty($customerMobile)) {
                             <th style="width:7%;">Volt</th>
                             <th style="width:9%;">Ah.</th>
                             <th class="disc-col" style="width:9%;">Disc %</th>
+                            <th class="old-bat-col" style="width:11%;">Old Battery</th>
                             <th style="width:20%;">Rs.</th>
                         </tr>
                     </thead>
@@ -432,6 +454,9 @@ if (!empty($customerMobile)) {
                                 $desc .= ' (S/N: ' . $ti['serial_no'] . ')';
                             }
                             $item_disc_pct = $item_list_unit > 0 ? ($item_disc / $item_list_unit) * 100 : 0;
+                            $item_ob_price = (float)($ti['old_battery_price'] ?? 0);
+                            $item_ob_qty   = (float)($ti['old_battery_qty'] ?? 0);
+                            $item_ob_total = $item_ob_price * $item_ob_qty;
                             ?>
                             <tr>
                                 <td class="c"><?php echo str_pad($qty, 2, '0', STR_PAD_LEFT); ?></td>
@@ -440,6 +465,7 @@ if (!empty($customerMobile)) {
                                 <td class="c"><?php echo htmlspecialchars($volt); ?></td>
                                 <td class="c"><?php echo htmlspecialchars($amp); ?></td>
                                 <td class="c disc-col"><?php echo $item_disc > 0 ? number_format($item_disc_pct, 2) . '%' : ''; ?></td>
+                                <td class="num old-bat-col"><?php echo $item_ob_total > 0 ? number_format($item_ob_total, 2) : ''; ?></td>
                                 <td class="num"><?php echo number_format($gross_line, 2); ?></td>
                             </tr>
                             <?php
@@ -450,7 +476,7 @@ if (!empty($customerMobile)) {
                         for ($i = $rendered_rows; $i < $min_rows; $i++) {
                             $isLast = ($i === $min_rows - 1);
                             $bcls = $isLast ? ' class="with-bottom"' : '';
-                            echo '<tr class="spacer"><td' . $bcls . '></td><td' . $bcls . '></td><td' . $bcls . '></td><td' . $bcls . '></td><td' . $bcls . '></td><td' . $bcls . ' class="disc-col"></td><td' . $bcls . '></td></tr>';
+                            echo '<tr class="spacer"><td' . $bcls . '></td><td' . $bcls . '></td><td' . $bcls . '></td><td' . $bcls . '></td><td' . $bcls . '></td><td' . $bcls . ' class="disc-col"></td><td' . $bcls . ' class="old-bat-col"></td><td' . $bcls . '></td></tr>';
                         }
                         ?>
                     </tbody>
@@ -460,9 +486,13 @@ if (!empty($customerMobile)) {
                 $grand_total      = floatval($SALES_INVOICE->grand_total);
                 if ($grand_total <= 0) $grand_total = $sub_total;
                 $total_discount   = 0;
+                $total_old_battery = 0;
                 foreach ($temp_items_list as $ti) {
                     $dp = (float)($ti['discount'] ?? 0);
                     $total_discount += $dp * (int)$ti['quantity'];
+                    $obp = (float)($ti['old_battery_price'] ?? 0);
+                    $obq = (float)($ti['old_battery_qty'] ?? 0);
+                    $total_old_battery += $obp * $obq;
                 }
                 $vat_amount  = floatval($SALES_INVOICE->tax ?? 0);
                 ?>
@@ -489,6 +519,14 @@ if (!empty($customerMobile)) {
                                     <td style="padding:2px 6px; text-align:right;"><strong>Discount :</strong></td>
                                     <td style="padding:2px 6px; text-align:right; border-bottom:1px solid #b40000;">
                                         <?php echo number_format($total_discount, 2); ?>
+                                    </td>
+                                </tr>
+                                <?php endif; ?>
+                                <?php if ($total_old_battery > 0): ?>
+                                <tr id="old-battery-row">
+                                    <td style="padding:2px 6px; text-align:right;"><strong>Old Battery :</strong></td>
+                                    <td style="padding:2px 6px; text-align:right; border-bottom:1px solid #b40000;">
+                                        <?php echo number_format($total_old_battery, 2); ?>
                                     </td>
                                 </tr>
                                 <?php endif; ?>
@@ -537,8 +575,8 @@ if (!empty($customerMobile)) {
                                 $invoiced_user_name = $INVOICE_USER->name ?? '';
                             }
                             ?>
-                            <div style="margin-top:3px;"><strong>Invoiced User :</strong>
-                                <span style="display:inline-block;min-width:48%;border-bottom:1px solid #b40000;padding:0 4px;">
+                            <div style="margin-top:3px;">
+                                <span style="display:inline-block;min-width:48%;padding:0 4px;">
                                     <?php echo htmlspecialchars($invoiced_user_name); ?>
                                 </span>
                             </div>
@@ -899,6 +937,23 @@ if (!empty($customerMobile)) {
                 if (toggleDiscount) {
                     toggleDiscount.addEventListener("change", syncDiscountVisibility);
                     syncDiscountVisibility();
+                }
+
+                const toggleOldBattery = document.getElementById("toggleOldBattery");
+                const oldBatteryRow = document.getElementById("old-battery-row");
+
+                function syncOldBatteryVisibility() {
+                    if (!toggleOldBattery) return;
+                    const show = toggleOldBattery.checked;
+                    if (oldBatteryRow) oldBatteryRow.style.display = show ? "" : "none";
+                    document.querySelectorAll('.old-bat-col').forEach(function (el) {
+                        el.style.display = show ? "" : "none";
+                    });
+                }
+
+                if (toggleOldBattery) {
+                    toggleOldBattery.addEventListener("change", syncOldBatteryVisibility);
+                    syncOldBatteryVisibility();
                 }
             });
 
