@@ -483,13 +483,6 @@ if (!empty($customerMobile)) {
                             <?php
                             $rendered_rows++;
                         }
-                        // Pad with empty ruled rows
-                        $min_rows = 2;
-                        for ($i = $rendered_rows; $i < $min_rows; $i++) {
-                            $isLast = ($i === $min_rows - 1);
-                            $bcls = $isLast ? ' class="with-bottom"' : '';
-                            echo '<tr class="spacer"><td' . $bcls . '></td><td' . $bcls . '></td><td' . $bcls . '></td><td' . $bcls . '></td><td' . $bcls . '></td><td' . $bcls . ' class="disc-col"></td><td' . $bcls . ' class="old-bat-col"></td><td' . $bcls . '></td></tr>';
-                        }
                         ?>
                     </tbody>
                 </table>
