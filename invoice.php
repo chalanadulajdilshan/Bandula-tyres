@@ -419,8 +419,10 @@ if (!empty($customerMobile)) {
                         foreach ($temp_items_list as $ti) {
                             $qty   = (int) $ti['quantity'];
                             $price = floatval($ti['price']);
-                            $line  = $price * $qty;
-                            $sub_total += $line;
+                            $item_disc = (float)($ti['discount'] ?? 0);
+                            $item_list_unit = $price + $item_disc;
+                            $gross_line = $item_list_unit * $qty;
+                            $sub_total += $gross_line;
 
                             $volt = $ti['volt'] ?? ($ti['voltage'] ?? '');
                             $amp  = $ti['amp']  ?? ($ti['ampere']  ?? '');
@@ -429,11 +431,7 @@ if (!empty($customerMobile)) {
                             if (!empty($ti['serial_no'])) {
                                 $desc .= ' (S/N: ' . $ti['serial_no'] . ')';
                             }
-                            ?>
-                            <?php
-                                $item_disc = (float)($ti['discount'] ?? 0);
-                                $item_list_unit = $price + $item_disc;
-                                $item_disc_pct = $item_list_unit > 0 ? ($item_disc / $item_list_unit) * 100 : 0;
+                            $item_disc_pct = $item_list_unit > 0 ? ($item_disc / $item_list_unit) * 100 : 0;
                             ?>
                             <tr>
                                 <td class="c"><?php echo str_pad($qty, 2, '0', STR_PAD_LEFT); ?></td>
@@ -442,7 +440,7 @@ if (!empty($customerMobile)) {
                                 <td class="c"><?php echo htmlspecialchars($volt); ?></td>
                                 <td class="c"><?php echo htmlspecialchars($amp); ?></td>
                                 <td class="c disc-col"><?php echo $item_disc > 0 ? number_format($item_disc_pct, 2) . '%' : ''; ?></td>
-                                <td class="num"><?php echo number_format($line, 2); ?></td>
+                                <td class="num"><?php echo number_format($gross_line, 2); ?></td>
                             </tr>
                             <?php
                             $rendered_rows++;
