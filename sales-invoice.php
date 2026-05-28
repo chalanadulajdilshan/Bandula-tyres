@@ -418,9 +418,12 @@ include './auth.php';
                                                         </button>
                                                     </div>
                                                 </div>
-                                                <input type="hidden" id="itemOldBatteryQty" value="1">
-
-                                                <div class="col-md-2">
+                                                <div class="col-md-1">
+                                                    <label class="form-label">Old Bat Qty</label>
+                                                    <input type="number" id="itemOldBatteryQty" class="form-control" min="0"
+                                                        value="1" placeholder="Qty">
+                                                </div>
+                                                <div class="col-md-1">
                                                     <label class="form-label">Old Battery Price</label>
                                                     <input type="number" id="itemOldBatteryPrice" class="form-control" min="0"
                                                         placeholder="Old Battery">

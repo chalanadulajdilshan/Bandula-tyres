@@ -568,6 +568,8 @@ jQuery(document).ready(function () {
           response.forEach((item) => {
             const discountValue = parseFloat(item.discount) || 0;
             const totalValue = parseFloat(item.total) || 0;
+            const oldBatteryPrice = parseFloat(item.old_battery_price) || 0;
+            const oldBatteryQty = parseFloat(item.old_battery_qty) || 0;
             let itemVatAmount = 0;
 
             if (isVatApplied && vatPercentage > 0) {
@@ -592,8 +594,13 @@ jQuery(document).ready(function () {
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2,
               }
-            )}</td>  
-                                <td>${item.serial_no || ""}</td> 
+            )}</td>
+                                <td>${item.serial_no || ""}</td>
+                                <td class="item-old-battery-qty">${oldBatteryQty}</td>
+                                <td class="item-old-battery-price">${oldBatteryPrice.toLocaleString(undefined, {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+              })}</td>
                                 <td class="item-vat-amount vat-column" style="display: ${isVatApplied ? "" : "none"
               }">${itemVatAmount.toLocaleString(undefined, {
                 minimumFractionDigits: 2,
