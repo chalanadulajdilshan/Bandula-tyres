@@ -43,6 +43,25 @@ $quotation_date = !empty($QUOTATION->date) ? date('d/m/Y', strtotime($QUOTATION-
             padding: 18mm 16mm;
             box-shadow: 0 0 6px rgba(0, 0, 0, 0.15);
             position: relative;
+            overflow: hidden;
+        }
+
+        .sheet::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-image: url('uploads/bglogo.jpeg');
+            background-repeat: no-repeat;
+            background-position: center center;
+            background-size: 60% auto;
+            opacity: 0.10;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .sheet > * {
+            position: relative;
+            z-index: 1;
         }
 
         .toolbar {
@@ -220,54 +239,67 @@ $quotation_date = !empty($QUOTATION->date) ? date('d/m/Y', strtotime($QUOTATION-
                 background: #fff;
             }
 
+            .sheet::before {
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+
             .no-print {
                 display: none !important;
+            }
+
+            html, body {
+                height: auto;
             }
 
             .sheet {
                 margin: 0;
                 box-shadow: none;
                 width: auto;
-                min-height: auto;
-                padding: 12mm;
+                min-height: 0;
+                height: auto;
+                padding: 8mm 10mm;
+                page-break-after: avoid;
             }
 
-            @page {
-                size: A4;
-                margin: 10mm;
-            }
-
-            body.print-a3 .sheet { width: 297mm; }
-            body.print-a5 .sheet { width: 148mm; }
-            body.print-letter .sheet { width: 8.5in; }
-            body.print-legal .sheet { width: 8.5in; }
-            body.print-tabloid .sheet { width: 11in; }
-            body.print-dotmatrix .sheet { width: 9.5in; }
+            .header h1 { font-size: 22px; margin: 0 0 4px 0; }
+            .header .addr { font-size: 11px; margin: 1px 0; }
+            .header .logo-img { max-height: 50px; top: 10px; }
+            hr.divider { margin: 8px 0 10px 0; }
+            .meta-row { font-size: 12px; margin-bottom: 4px; }
+            .salutation { margin: 8px 0 4px 0; font-size: 12px; }
+            table.items { margin-bottom: 8px; }
+            table.items th { font-size: 12px; padding: 3px 4px; }
+            table.items td { font-size: 11px; padding: 2px 4px; height: 16px; }
+            .thanks { margin-top: 8px; font-size: 11px; }
+            .signature { margin-top: 14px; font-size: 11px; }
+            .signature .sigline { width: 180px; padding-top: 2px; }
+            .terms { margin-top: 8px; font-size: 10px; page-break-inside: avoid; }
+            .terms h4 { font-size: 11px; margin: 0 0 3px 0; }
+            .terms ul li { margin-bottom: 1px; line-height: 1.25; padding-left: 16px; }
+            .sheet > *:last-child { page-break-after: avoid; }
         }
     </style>
 </head>
 
-<body class="print-a4">
+<body>
 
     <div class="toolbar no-print">
-        <select id="printFormat" onchange="setPrintFormat(this.value)">
-            <option value="a4" selected>A4</option>
-            <option value="a3">A3</option>
-            <option value="a5">A5</option>
-            <option value="letter">Letter</option>
-            <option value="legal">Legal</option>
-            <option value="tabloid">Tabloid</option>
-            <option value="dotmatrix">Dot Matrix</option>
-        </select>
         <button class="print" onclick="window.print()">Print</button>
     </div>
 
     <div class="sheet">
 
         <div class="header">
-            <?php if (!empty($COMPANY_PROFILE->image_name)) { ?>
-                <img class="logo-img" src="./uploads/company-logos/<?php echo $COMPANY_PROFILE->image_name ?>" alt="logo">
-            <?php } ?>
+            <?php
+            $logoPath = 'assets/images/logo.png';
+            if (!empty($COMPANY_PROFILE->image_name) && file_exists('uploads/company-logos/' . $COMPANY_PROFILE->image_name)) {
+                $logoPath = 'uploads/company-logos/' . $COMPANY_PROFILE->image_name;
+            } elseif (file_exists('assets/images/logo.jpg')) {
+                $logoPath = 'assets/images/logo.jpg';
+            }
+            ?>
+            <img class="logo-img" src="<?php echo $logoPath; ?>" alt="logo">
             <h1><?php echo htmlspecialchars($COMPANY_PROFILE->name) ?></h1>
             <?php if (property_exists($COMPANY_PROFILE, 'tagline') && !empty($COMPANY_PROFILE->tagline)) { ?>
                 <p class="tagline"><?php echo htmlspecialchars($COMPANY_PROFILE->tagline) ?></p>
@@ -305,7 +337,7 @@ $quotation_date = !empty($QUOTATION->date) ? date('d/m/Y', strtotime($QUOTATION-
         $QUOTATION_ITEM = new QuotationItem(null);
         $temp_items_list = $QUOTATION_ITEM->getByQuotationId($id);
         $row_count = count($temp_items_list);
-        $min_rows = 8;
+        $min_rows = 3;
         ?>
 
         <table class="items">
@@ -349,18 +381,6 @@ $quotation_date = !empty($QUOTATION->date) ? date('d/m/Y', strtotime($QUOTATION-
                         <td class="num"><?php echo $quantity; ?></td>
                         <td class="num"><?php echo number_format($selling_price, 2); ?></td>
                         <td class="num"><?php echo number_format($line_total, 2); ?></td>
-                    </tr>
-                <?php }
-                for ($i = $row_count; $i < $min_rows; $i++) { ?>
-                    <tr>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
                     </tr>
                 <?php } ?>
 
@@ -410,19 +430,6 @@ $quotation_date = !empty($QUOTATION->date) ? date('d/m/Y', strtotime($QUOTATION-
     </div>
 
     <script>
-        window.onload = function () {
-            setPrintFormat('a4');
-        };
-
-        function setPrintFormat(format) {
-            const formats = ['a4', 'a3', 'a5', 'letter', 'legal', 'tabloid', 'dotmatrix'];
-            document.body.className = document.body.className
-                .split(' ')
-                .filter(c => !formats.map(f => 'print-' + f).includes(c))
-                .join(' ')
-                .trim();
-            document.body.classList.add('print-' + format);
-        }
 
         document.addEventListener("keydown", function (e) {
             if (e.key === "Enter") {
