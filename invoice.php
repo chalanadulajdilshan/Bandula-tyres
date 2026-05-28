@@ -76,7 +76,7 @@ if (!empty($customerMobile)) {
                 break-inside: avoid;
             }
             .container { width: 100% !important; max-width: 100% !important; padding: 0 !important; }
-            @page { size: A5 landscape; margin: 6mm; }
+            @page { margin: 6mm; }
             body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 
             /* Layout tweaks for A5 landscape — compact sizing to fit one page */
@@ -818,30 +818,6 @@ if (!empty($customerMobile)) {
         <!-- JS -->
         <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
         <script>
-            // ── Orientation management ──────────────────────────────────────────
-            var _printOrientation = 'portrait'; // default
-            var _dynamicPageStyle = null;
-
-            function setOrientation(orientation) {
-                _printOrientation = orientation;
-
-                // Update toggle button appearance
-                document.getElementById('btn-portrait').classList.toggle('active', orientation === 'portrait');
-                document.getElementById('btn-landscape').classList.toggle('active', orientation === 'landscape');
-
-                // Inject / update a dynamic <style> that overrides @page for the browser print dialog
-                if (!_dynamicPageStyle) {
-                    _dynamicPageStyle = document.createElement('style');
-                    _dynamicPageStyle.id = 'dynamic-page-style';
-                    document.head.appendChild(_dynamicPageStyle);
-                }
-                if (orientation === 'landscape') {
-                    _dynamicPageStyle.textContent = '@media print { @page { size: A5 landscape; margin: 6mm; } }';
-                } else {
-                    _dynamicPageStyle.textContent = '@media print { @page { size: A5 portrait; margin: 6mm; } }';
-                }
-            }
-
             function downloadPDF() {
                 const element = document.getElementById('invoice-content');
                 const opt = {
@@ -857,7 +833,7 @@ if (!empty($customerMobile)) {
                     jsPDF: {
                         unit: 'mm',
                         format: 'a4',
-                        orientation: _printOrientation   // 'portrait' or 'landscape'
+                        orientation: 'portrait'
                     }
                 };
                 html2pdf().set(opt).from(element).save();
