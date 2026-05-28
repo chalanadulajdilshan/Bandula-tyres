@@ -408,6 +408,18 @@ if (!empty($customerMobile)) {
                                     <?php echo date('d/m/Y', strtotime($SALES_INVOICE->invoice_date)); ?>
                                 </span>
                             </div>
+                            <?php
+                            $invoiced_user_name = '';
+                            if (!empty($SALES_INVOICE->created_by)) {
+                                $INVOICE_USER = new User($SALES_INVOICE->created_by);
+                                $invoiced_user_name = $INVOICE_USER->name ?? '';
+                            }
+                            ?>
+                            <div style="margin-top:3px;"><strong>Invoiced User :</strong>
+                                <span style="display:inline-block;min-width:50%;border-bottom:1px solid #b40000;padding:0 4px;">
+                                    <?php echo htmlspecialchars($invoiced_user_name); ?>
+                                </span>
+                            </div>
                             <?php if ($SALES_INVOICE->payment_type == 2 && $SALES_INVOICE->credit_period): ?>
                                 <?php $CP = new CreditPeriod($SALES_INVOICE->credit_period); ?>
                                 <div style="margin-top:3px;"><strong>Due Date :</strong>
@@ -568,18 +580,6 @@ if (!empty($customerMobile)) {
                     <tr>
                         <td style="text-align:center; width:50%;">
                             <div style="border-top:1px solid #b40000; padding-top:3px; margin:0 30px;"><strong>Customer Signature</strong></div>
-                            <?php
-                            $invoiced_user_name = '';
-                            if (!empty($SALES_INVOICE->created_by)) {
-                                $INVOICE_USER = new User($SALES_INVOICE->created_by);
-                                $invoiced_user_name = $INVOICE_USER->name ?? '';
-                            }
-                            ?>
-                            <div style="margin-top:3px;">
-                                <span style="display:inline-block;min-width:48%;padding:0 4px;">
-                                    <?php echo htmlspecialchars($invoiced_user_name); ?>
-                                </span>
-                            </div>
                         </td>
                         <td style="text-align:center; width:50%;">
                             <div style="border-top:1px solid #b40000; padding-top:3px; margin:0 30px;"><strong>Authorized Signature</strong></div>
