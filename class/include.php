@@ -68,6 +68,7 @@ include_once(dirname(__FILE__) . '/PaymentReceiptMethod.php');
 include_once(dirname(__FILE__) . '/ServiceItem.php');
 include_once(dirname(__FILE__) . '/Service.php');
 include_once(dirname(__FILE__) . '/BrandWiseDis.php');
+include_once(dirname(__FILE__) . '/QtyBaseDiscount.php');
 include_once(dirname(__FILE__) . '/SupplierPayment.php');
 include_once(dirname(__FILE__) . '/ServiceIncome.php');
 include_once(dirname(__FILE__) . '/PaymentReceiptSupplier.php');

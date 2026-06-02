@@ -10,6 +10,7 @@ class Brand
     public $country_id;
     public $discount;
     public $is_active;
+    public $req_ref_no;
     public $remark;
     public $created_at;
 
@@ -27,6 +28,7 @@ class Brand
                 $this->country_id = $result['country_id'];
                 $this->discount = $result['discount'];
                 $this->is_active = $result['is_active'];
+                $this->req_ref_no = $result['req_ref_no'];
                 $this->remark = $result['remark'];
                 $this->created_at = $result['created_at'];
             }
@@ -35,13 +37,14 @@ class Brand
 
     public function create()
     {
-        $query = "INSERT INTO `brands` (`category_id`, `name`, `country_id`, `discount`, `is_active`, `remark`, `created_at`) 
+        $query = "INSERT INTO `brands` (`category_id`, `name`, `country_id`, `discount`, `is_active`, `req_ref_no`, `remark`, `created_at`) 
                   VALUES (
                     '{$this->category_id}', 
                     '{$this->name}', 
                     '{$this->country_id}', 
                     '{$this->discount}', 
                     '{$this->is_active}', 
+                    '{$this->req_ref_no}', 
                     '{$this->remark}', 
                     NOW()
                   )";
@@ -58,6 +61,7 @@ class Brand
                     `country_id` = '{$this->country_id}', 
                     `discount` = '{$this->discount}', 
                     `is_active` = '{$this->is_active}', 
+                    `req_ref_no` = '{$this->req_ref_no}', 
                     `remark` = '{$this->remark}'
                   WHERE `id` = '{$this->id}'";
 

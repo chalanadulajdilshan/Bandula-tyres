@@ -13,6 +13,7 @@ if (isset($_POST['create'])) {
     $BRAND->country_id = $_POST['country_id'];
     $BRAND->discount = $_POST['discount'];
     $BRAND->is_active = isset($_POST['activeStatus']) ? 1 : 0;
+    $BRAND->req_ref_no = isset($_POST['req_ref_no']) ? 1 : 0;
     $BRAND->remark = $_POST['remark'];
 
     $res = $BRAND->create();
@@ -35,6 +36,7 @@ if (isset($_POST['update'])) {
     $BRAND->country_id = $_POST['country_id'];
     $BRAND->discount = $_POST['discount'];
     $BRAND->is_active = isset($_POST['activeStatus']) ? 1 : 0;
+    $BRAND->req_ref_no = isset($_POST['req_ref_no']) ? 1 : 0;
     $BRAND->remark = $_POST['remark'];
 
     $res = $BRAND->update();

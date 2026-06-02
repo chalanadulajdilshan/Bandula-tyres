@@ -122,6 +122,7 @@ jQuery(document).ready(function () {
         $('#pattern').val(item.pattern);
         $('#voltage').val(item.voltage || '');
         $('#ampere').val(item.ampere || '');
+        $('#weight').val(item.weight || '');
         $('#category').val(item.category_id).trigger('change');
         $('#list_price').val(item.list_price);
         $('#group').val(item.group).trigger('change');
@@ -203,6 +204,7 @@ jQuery(document).ready(function () {
         $('#pattern').val(data.pattern);
         $('#voltage').val(data.voltage || '');
         $('#ampere').val(data.ampere || '');
+        $('#weight').val(data.weight || '');
         $('#category').val(data.category_id);
         $('#list_price').val(data.list_price);
         $('#group').val(data.group);

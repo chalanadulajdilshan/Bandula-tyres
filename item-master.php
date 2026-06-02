@@ -179,6 +179,15 @@ $item_id = 'TI/0' . ($lastId + 1);
                                                 </div>
                                             </div>
 
+                                            <!-- Weight -->
+                                            <div class="col-md-3">
+                                                <div class="mb-3">
+                                                    <label class="form-label" for="weight">Weight (kg)</label>
+                                                    <input id="weight" name="weight" onkeyup="toUpperCaseInput(this)" type="text" class="form-control"
+                                                        placeholder="e.g. 15">
+                                                </div>
+                                            </div>
+
                                             <!-- Item Name -->
                                             <div class="col-md-3">
                                                 <div class="mb-3">

@@ -11,6 +11,7 @@ class ItemMaster
     public $pattern;
     public $voltage;
     public $ampere;
+    public $weight;
     public $group;
     public $category;
     public $re_order_level;
@@ -39,6 +40,7 @@ class ItemMaster
                 $this->pattern = $result['pattern'];
                 $this->voltage = $result['voltage'] ?? '';
                 $this->ampere = $result['ampere'] ?? '';
+                $this->weight = $result['weight'] ?? '';
                 $this->group = $result['group'];
                 $this->category = $result['category'];
                 $this->list_price = $result['list_price'];
@@ -57,10 +59,10 @@ class ItemMaster
     public function create()
     {
         $query = "INSERT INTO `item_master` (
-    `code`, `name`, `brand`, `size`, `pattern`, `voltage`, `ampere`, `group`, `category`,
+    `code`, `name`, `brand`, `size`, `pattern`, `voltage`, `ampere`, `weight`, `group`, `category`,
      `re_order_level`, `re_order_qty`, `stock_type`, `note`,`list_price`,`invoice_price`,`discount`,`old_battery_dis_price`, `is_active`
 ) VALUES (
-    '$this->code', '$this->name', '$this->brand', '$this->size', '$this->pattern', '$this->voltage', '$this->ampere', '$this->group',
+    '$this->code', '$this->name', '$this->brand', '$this->size', '$this->pattern', '$this->voltage', '$this->ampere', '$this->weight', '$this->group',
     '$this->category',  '$this->re_order_level', '$this->re_order_qty',
      '$this->stock_type', '$this->note', '$this->list_price', '$this->invoice_price', '$this->discount', '$this->old_battery_dis_price', '$this->is_active'
 )";
@@ -87,6 +89,7 @@ class ItemMaster
             `pattern` = '$this->pattern',
             `voltage` = '$this->voltage',
             `ampere` = '$this->ampere',
+            `weight` = '$this->weight',
             `group` = '$this->group',
             `category` = '$this->category', 
             `list_price` = '$this->list_price', 
@@ -584,6 +587,7 @@ class ItemMaster
                 "pattern" => $row['pattern'],
                 "voltage" => $row['voltage'] ?? '',
                 "ampere" => $row['ampere'] ?? '',
+                "weight" => $row['weight'] ?? '',
                 "size" => $row['size'],
                 "group" => $row['group'],
                 "re_order_level" => $row['re_order_level'],

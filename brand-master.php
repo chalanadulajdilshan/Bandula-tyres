@@ -167,6 +167,16 @@ include 'auth.php';
                                                     </div>
                                                 </div>
 
+                                                <!-- Required Ref No Checkbox -->
+                                                <div class="col-md-2 d-flex justify-content-center align-items-center">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox"
+                                                            id="req_ref_no" name="req_ref_no" value="1">
+                                                        <label class="form-check-label"
+                                                            for="req_ref_no">Required Ref No</label>
+                                                    </div>
+                                                </div>
+
                                                 <!-- Remark Note -->
                                                 <div class="col-12">
                                                     <label for="remark" class="form-label">Remark Note</label>
@@ -219,6 +229,7 @@ include 'auth.php';
                                         <th>Country</th>
                                         <th>Discount %</th>
                                         <th>Status</th>
+                                        <th>Req Ref No</th>
                                         <th>Remark</th>
                                     </tr>
                                 </thead>
@@ -237,7 +248,8 @@ include 'auth.php';
                                             data-country="<?php echo $brand['country_id']; ?>"
                                             data-discount="<?php echo htmlspecialchars($brand['discount']); ?>"
                                             data-remark="<?php echo htmlspecialchars($brand['remark']); ?>"
-                                            data-active="<?php echo $brand['is_active']; ?>">
+                                            data-active="<?php echo $brand['is_active']; ?>"
+                                            data-req_ref_no="<?php echo $brand['req_ref_no']; ?>">
 
                                             <td><?php echo $key; ?></td>
                                             <td><?php echo htmlspecialchars($CATEGORY->name); ?></td>
@@ -249,6 +261,13 @@ include 'auth.php';
                                                     <span class="badge bg-soft-success font-size-12">Active</span>
                                                 <?php else: ?>
                                                     <span class="badge bg-soft-danger font-size-12">Inactive</span>
+                                                <?php endif; ?>
+                                            </td>
+                                            <td>
+                                                <?php if ($brand['req_ref_no'] == 1): ?>
+                                                    <span class="badge bg-soft-info font-size-12">Yes</span>
+                                                <?php else: ?>
+                                                    <span class="badge bg-soft-secondary font-size-12">No</span>
                                                 <?php endif; ?>
                                             </td>
                                             <td><?php echo htmlspecialchars($brand['remark']); ?></td>
