@@ -680,6 +680,7 @@ if (isset($_POST['action']) && $_POST['action'] === 'get_by_id') {
                 'pattern' => $row['pattern'],
                 'voltage' => $row['voltage'] ?? '',
                 'ampere' => $row['ampere'] ?? '',
+                'weight' => $row['weight'] ?? '',
                 'list_price' => (float)$row['list_price'],
                 'invoice_price' => (float)$row['invoice_price'],
                 're_order_level' => $row['re_order_level'],
@@ -724,6 +725,7 @@ if (isset($_POST['action']) && $_POST['action'] === 'get_by_code') {
                 'pattern' => $row['pattern'],
                 'voltage' => $row['voltage'] ?? '',
                 'ampere' => $row['ampere'] ?? '',
+                'weight' => $row['weight'] ?? '',
                 'list_price' => (float)$row['list_price'],
                 'invoice_price' => (float)$row['invoice_price'],
                 're_order_level' => $row['re_order_level'],
@@ -768,6 +770,7 @@ if (isset($_POST['create'])) {
     $ITEM->pattern = $_POST['pattern'];
     $ITEM->voltage = $_POST['voltage'] ?? '';
     $ITEM->ampere = $_POST['ampere'] ?? '';
+    $ITEM->weight = $_POST['weight'] ?? '';
     $ITEM->group = $_POST['group'];
     $ITEM->category = $_POST['category'];
     $ITEM->list_price = $_POST['list_price'];
@@ -837,6 +840,7 @@ if (isset($_POST['update'])) {
     $ITEM->pattern = $_POST['pattern'];
     $ITEM->voltage = $_POST['voltage'] ?? '';
     $ITEM->ampere = $_POST['ampere'] ?? '';
+    $ITEM->weight = $_POST['weight'] ?? '';
     $ITEM->group = $_POST['group'];
     $ITEM->category = $_POST['category'];
     $ITEM->re_order_level = $_POST['re_order_level'];

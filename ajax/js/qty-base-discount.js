@@ -1,22 +1,46 @@
 jQuery(document).ready(function () {
 
-    // Create Brand
+    // Create Qty Base Discount
     $("#create").click(function (event) {
         event.preventDefault();
 
         // Validation
-        if (!$('#category_id').val() || $('#category_id').val().length === 0) {
+        if (!$('#brand_id').val() || $('#brand_id').val().length === 0) {
             swal({
                 title: "Error!",
-                text: "Please select a category",
+                text: "Please select a brand",
                 type: 'error',
                 timer: 2000,
                 showConfirmButton: false
             });
-        } else if (!$('#name').val() || $('#name').val().length === 0) {
+        } else if (!$('#period_year').val() || $('#period_year').val().length === 0) {
             swal({
                 title: "Error!",
-                text: "Please enter brand name",
+                text: "Please select a year",
+                type: 'error',
+                timer: 2000,
+                showConfirmButton: false
+            });
+        } else if (!$('#period_month').val() || $('#period_month').val().length === 0) {
+            swal({
+                title: "Error!",
+                text: "Please select a month",
+                type: 'error',
+                timer: 2000,
+                showConfirmButton: false
+            });
+        } else if (!$('#qty').val() || $('#qty').val().length === 0) {
+            swal({
+                title: "Error!",
+                text: "Please enter quantity",
+                type: 'error',
+                timer: 2000,
+                showConfirmButton: false
+            });
+        } else if (!$('#net_discount').val() || $('#net_discount').val().length === 0) {
+            swal({
+                title: "Error!",
+                text: "Please enter net discount",
                 type: 'error',
                 timer: 2000,
                 showConfirmButton: false
@@ -25,34 +49,34 @@ jQuery(document).ready(function () {
 
             $('.someBlock').preloader();
 
-
             var formData = new FormData($("#form-data")[0]);
             formData.append('create', true);
 
             $.ajax({
-                url: "ajax/php/brand.php",
+                url: "ajax/php/qty-base-discount.php",
                 type: 'POST',
                 data: formData,
                 async: false,
                 cache: false,
                 contentType: false,
                 processData: false,
+                dataType: "JSON",
                 success: function (result) {
                     $('.someBlock').preloader('remove');
 
                     if (result.status === 'success') {
                         swal({
                             title: "Success!",
-                            text: "Brand added successfully!",
+                            text: "Discount added successfully!",
                             type: 'success',
                             timer: 2000,
                             showConfirmButton: false
                         });
 
-                        window.setTimeout(function () {
+                        setTimeout(function () {
                             window.location.reload();
                         }, 2000);
-                    } else if (result.status === 'error') {
+                    } else {
                         swal({
                             title: "Error!",
                             text: "Something went wrong.",
@@ -67,22 +91,46 @@ jQuery(document).ready(function () {
         return false;
     });
 
-    // Update Brand
+    // Update Qty Base Discount
     $("#update").click(function (event) {
         event.preventDefault();
 
-        if (!$('#category_id').val() || $('#category_id').val().length === 0) {
+        if (!$('#brand_id').val() || $('#brand_id').val().length === 0) {
             swal({
                 title: "Error!",
-                text: "Please select a category",
+                text: "Please select a brand",
                 type: 'error',
                 timer: 2000,
                 showConfirmButton: false
             });
-        } else if (!$('#name').val() || $('#name').val().length === 0) {
+        } else if (!$('#period_year').val() || $('#period_year').val().length === 0) {
             swal({
                 title: "Error!",
-                text: "Please enter brand name",
+                text: "Please select a year",
+                type: 'error',
+                timer: 2000,
+                showConfirmButton: false
+            });
+        } else if (!$('#period_month').val() || $('#period_month').val().length === 0) {
+            swal({
+                title: "Error!",
+                text: "Please select a month",
+                type: 'error',
+                timer: 2000,
+                showConfirmButton: false
+            });
+        } else if (!$('#qty').val() || $('#qty').val().length === 0) {
+            swal({
+                title: "Error!",
+                text: "Please enter quantity",
+                type: 'error',
+                timer: 2000,
+                showConfirmButton: false
+            });
+        } else if (!$('#net_discount').val() || $('#net_discount').val().length === 0) {
+            swal({
+                title: "Error!",
+                text: "Please enter net discount",
                 type: 'error',
                 timer: 2000,
                 showConfirmButton: false
@@ -95,7 +143,7 @@ jQuery(document).ready(function () {
             formData.append('update', true);
 
             $.ajax({
-                url: "ajax/php/brand.php",
+                url: "ajax/php/qty-base-discount.php",
                 type: 'POST',
                 data: formData,
                 async: false,
@@ -109,17 +157,16 @@ jQuery(document).ready(function () {
                     if (result.status == 'success') {
                         swal({
                             title: "Success!",
-                            text: "Brand updated successfully!",
+                            text: "Discount updated successfully!",
                             type: 'success',
                             timer: 2500,
                             showConfirmButton: false
                         });
 
-                        window.setTimeout(function () {
+                        setTimeout(function () {
                             window.location.reload();
                         }, 2000);
-
-                    } else if (result.status === 'error') {
+                    } else {
                         swal({
                             title: "Error!",
                             text: "Something went wrong.",
@@ -138,50 +185,48 @@ jQuery(document).ready(function () {
     $("#new").click(function (e) {
         e.preventDefault();
         $('#form-data')[0].reset();
-        $('#category_id').prop('selectedIndex', 0);
-        $('#req_ref_no').prop('checked', false);
+        $('#brand_id').prop('selectedIndex', 0);
+        $('#period_year').prop('selectedIndex', 0);
+        $('#period_month').prop('selectedIndex', 0);
+        $('#id').val('');
         $("#create").show();
         $("#update").hide();
+        $(".delete-discount").hide();
     });
 
+    // Populate form from table click
+    $(document).on('click', '.select-dis', function () {
+        var $this = $(this);
+        $('#id').val($this.data('id'));
+        
+        // Update brand select
+        var brandId = $this.data('brand');
+        $('#brand_id').val(brandId).trigger('change');
+        
+        // Update year & month
+        $('#period_year').val($this.data('year')).trigger('change');
+        $('#period_month').val($this.data('month')).trigger('change');
+        
+        // Update qty & net discount
+        $('#qty').val($this.data('qty'));
+        $('#net_discount').val($this.data('net_discount'));
 
-    // Populate form from modal click
-    $(document).on('click', '.select-brand', function () {
-        $('#brand_id').val($(this).data('id'));
-        $('#category_id').val($(this).data('category'));
-        $('#name').val($(this).data('name'));
-        $('#country_id').val($(this).data('country'));
-        $('#discount').val($(this).data('discount'));
-        $('#remark').val($(this).data('remark'));
-
-        if ($(this).data('active') == 1) {
-            $('#activeStatus').prop('checked', true);
-        } else {
-            $('#activeStatus').prop('checked', false);
-        }
-
-        if ($(this).data('req_ref_no') == 1) {
-            $('#req_ref_no').prop('checked', true);
-        } else {
-            $('#req_ref_no').prop('checked', false);
-        }
-
+        // Show update button and hide create button
         $("#create").hide();
         $("#update").show();
-        $('#brand_master').modal('hide');
+        $(".delete-discount").show();
     });
 
-    // Delete Brand
-    $(document).on('click', '.delete-brand', function (e) {
+    // Delete Discount
+    $(document).on('click', '.delete-discount', function (e) {
         e.preventDefault();
 
-        var brandId = $('#brand_id').val();
-        var brandName = $('#name').val();
+        var disId = $('#id').val();
 
-        if (!brandId || brandId === "") {
+        if (!disId || disId === "") {
             swal({
                 title: "Error!",
-                text: "Please select a brand first.",
+                text: "Please select a discount first.",
                 type: "error",
                 timer: 2000,
                 showConfirmButton: false
@@ -191,7 +236,7 @@ jQuery(document).ready(function () {
 
         swal({
             title: "Are you sure?",
-            text: "Do you want to delete brand '" + brandName + "'?",
+            text: "Do you want to delete this discount?",
             type: "warning",
             showCancelButton: true,
             confirmButtonColor: "#d33",
@@ -204,10 +249,10 @@ jQuery(document).ready(function () {
                 $('.someBlock').preloader();
 
                 $.ajax({
-                    url: 'ajax/php/brand.php',
+                    url: 'ajax/php/qty-base-discount.php',
                     type: 'POST',
                     data: {
-                        id: brandId,
+                        id: disId,
                         delete: true
                     },
                     dataType: 'JSON',
@@ -217,7 +262,7 @@ jQuery(document).ready(function () {
                         if (response.status === 'success') {
                             swal({
                                 title: "Deleted!",
-                                text: "Brand has been deleted.",
+                                text: "Discount has been deleted.",
                                 type: "success",
                                 timer: 2000,
                                 showConfirmButton: false
