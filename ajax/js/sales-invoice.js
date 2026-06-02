@@ -4,6 +4,10 @@ jQuery(document).ready(function () {
   getInvoiceData();
 
   let focusAfterModal = false;
+  let oldBatteryLocalImport = "";
+  let oldBatteryReUsed = "";
+  let oldBatteryRemark = "";
+  let oldBatteryPrice = 0;
 
   $("#view_price_report").on("click", function (e) {
     e.preventDefault();
@@ -48,6 +52,63 @@ jQuery(document).ready(function () {
 
   // Initial button state
   togglePaymentButtons();
+
+  // Old Battery Details Modal controls
+  $("#addOldBatteryDetailsBtn").on("click", function () {
+    $("#obInvoiceNo").val($("#invoice_no").val());
+    $("#obInvoiceDate").val($("#invoice_date").val());
+    $("#obPrice").val($("#itemOldBatteryPrice").val() || "");
+    $("#oldBatteryDetailsModal").modal("show");
+  });
+
+  $("#saveOldBatteryDetailsBtn").on("click", function () {
+    const localImport = $("#obLocalImport").val();
+    const reUsed = $("#obReUsed").val();
+
+    if (!localImport) {
+      swal({
+        title: "Error!",
+        text: "Please select Local or Import.",
+        type: "error",
+        timer: 2000,
+        showConfirmButton: false,
+      });
+      return;
+    }
+
+    if (!reUsed) {
+      swal({
+        title: "Error!",
+        text: "Please select if Re-used.",
+        type: "error",
+        timer: 2000,
+        showConfirmButton: false,
+      });
+      return;
+    }
+
+    oldBatteryLocalImport = localImport;
+    oldBatteryReUsed = reUsed;
+    oldBatteryRemark = $("#obRemark").val();
+    oldBatteryPrice = parseFloat($("#obPrice").val()) || 0;
+
+    // Sync back to the main form input field
+    $("#itemOldBatteryPrice").val(oldBatteryPrice);
+
+    // Visual indicator that details are saved
+    $("#addOldBatteryDetailsBtn").removeClass("btn-info").addClass("btn-success");
+    $("#addOldBatteryDetailsBtn i").removeClass("uil-plus").addClass("uil-check");
+
+    $("#oldBatteryDetailsModal").modal("hide");
+
+    swal({
+      title: "Success!",
+      text: "Old battery details saved successfully!",
+      type: "success",
+      timer: 1500,
+      showConfirmButton: false,
+    });
+  });
 
   // Function to toggle payment/save buttons based on payment type
   function togglePaymentButtons() {
@@ -1591,6 +1652,10 @@ jQuery(document).ready(function () {
     }
 
     const formData = new FormData($("#form-data")[0]);
+    formData.append("old_battery_local_import", oldBatteryLocalImport);
+    formData.append("old_battery_re_used", oldBatteryReUsed);
+    formData.append("old_battery_remark", oldBatteryRemark);
+    formData.append("old_battery_price", oldBatteryPrice);
     formData.append("create", true);
     formData.append(
       "payment_type",

@@ -424,9 +424,14 @@ include './auth.php';
                                                         value="1" placeholder="Qty">
                                                 </div>
                                                 <div class="col-md-1">
-                                                    <label class="form-label">Old Battery Price</label>
-                                                    <input type="number" id="itemOldBatteryPrice" class="form-control" min="0"
-                                                        placeholder="Old Battery">
+                                                    <label class="form-label text-nowrap">Old Battery Price</label>
+                                                     <div class="input-group">
+                                                         <input type="number" id="itemOldBatteryPrice" class="form-control" min="0"
+                                                         placeholder="Old Battery">
+                                                         <button class="btn btn-info p-1 px-2" type="button" id="addOldBatteryDetailsBtn" title="Add Old Battery Details">
+                                                             <i class="uil uil-plus"></i>
+                                                         </button>
+                                                     </div>
                                                 </div>
                                                 <div class="col-md-1">
                                                     <button type="button" class="btn btn-success w-100"
@@ -815,6 +820,58 @@ include './auth.php';
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                     <button type="button" class="btn btn-primary" id="saveSerialNosBtn">Save Serial Numbers</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Old Battery Details Modal -->
+    <div class="modal fade" id="oldBatteryDetailsModal" tabindex="-1" role="dialog" aria-labelledby="oldBatteryDetailsModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="oldBatteryDetailsModalLabel">Add Old Battery Details</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="oldBatteryDetailsForm">
+                        <div class="mb-3">
+                            <label for="obInvoiceNo" class="form-label">Invoice No</label>
+                            <input type="text" class="form-control" id="obInvoiceNo" readonly>
+                        </div>
+                        <div class="mb-3">
+                            <label for="obInvoiceDate" class="form-label">Invoice Date</label>
+                            <input type="text" class="form-control" id="obInvoiceDate" readonly>
+                        </div>
+                        <div class="mb-3">
+                            <label for="obLocalImport" class="form-label">Local / Import <span class="text-danger">*</span></label>
+                            <select class="form-select" id="obLocalImport" required>
+                                <option value="">-- Select Option --</option>
+                                <option value="Local">Local</option>
+                                <option value="Import">Import</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="obReUsed" class="form-label">Re-used <span class="text-danger">*</span></label>
+                            <select class="form-select" id="obReUsed" required>
+                                <option value="">-- Select Option --</option>
+                                <option value="Yes">Yes</option>
+                                <option value="No">No</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="obPrice" class="form-label">Old Battery Price</label>
+                            <input type="number" class="form-control" id="obPrice" step="0.01" min="0" placeholder="0.00">
+                        </div>
+                        <div class="mb-3">
+                            <label for="obRemark" class="form-label">Remark</label>
+                            <textarea class="form-control" id="obRemark" rows="2" placeholder="Enter old battery remarks..."></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="saveOldBatteryDetailsBtn">Save Details</button>
                 </div>
             </div>
         </div>

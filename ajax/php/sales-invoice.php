@@ -295,6 +295,27 @@ if (isset($_POST['create'])) {
     if ($invoiceResult) {
         $invoiceTableId = $invoiceResult;
 
+        // Save Old Battery Details if provided
+        $local_import = isset($_POST['old_battery_local_import']) ? trim($_POST['old_battery_local_import']) : '';
+        $re_used = isset($_POST['old_battery_re_used']) ? trim($_POST['old_battery_re_used']) : '';
+        $remark_ob = isset($_POST['old_battery_remark']) ? trim($_POST['old_battery_remark']) : '';
+        $price_ob = isset($_POST['old_battery_price']) ? floatval($_POST['old_battery_price']) : 0.00;
+
+        if (!empty($local_import) && !empty($re_used)) {
+            $db = Database::getInstance();
+            $local_import_escaped = mysqli_real_escape_string($db->DB_CON, $local_import);
+            $re_used_escaped = mysqli_real_escape_string($db->DB_CON, $re_used);
+            $remark_ob_escaped = mysqli_real_escape_string($db->DB_CON, $remark_ob);
+            $invoice_no_escaped = mysqli_real_escape_string($db->DB_CON, $invoiceId);
+            $invoice_date_escaped = mysqli_real_escape_string($db->DB_CON, $_POST['invoice_date']);
+
+            $old_battery_query = "INSERT INTO `old_battery_details` 
+                (`invoice_no`, `invoice_date`, `local_import`, `re_used`, `price`, `remark`, `created_at`) 
+                VALUES 
+                ('{$invoice_no_escaped}', '{$invoice_date_escaped}', '{$local_import_escaped}', '{$re_used_escaped}', '{$price_ob}', '{$remark_ob_escaped}', NOW())";
+            $db->readQuery($old_battery_query);
+        }
+
         foreach ($items as $item) {
 
             // Treat discount as a fixed value per unit
