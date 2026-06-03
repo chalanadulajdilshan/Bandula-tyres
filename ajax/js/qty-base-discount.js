@@ -1,5 +1,109 @@
 jQuery(document).ready(function () {
 
+    // Auto-calculate Discount function
+    function calculateDiscount() {
+        var qtyMinVal = $('#qty').val();
+        var qtyMaxVal = $('#qty_max').val();
+        var monthCountVal = $('#period_month').val();
+
+        if (qtyMinVal === '' && qtyMaxVal === '') {
+            return;
+        }
+
+        var qtyMin = parseFloat(qtyMinVal) || 0;
+        var qtyMax = parseFloat(qtyMaxVal) || 0;
+        var monthCount = parseInt(monthCountVal) || 1;
+
+        var discount = 0.0;
+
+        // If two values are entered (range)
+        if (qtyMinVal !== '' && qtyMaxVal !== '' && qtyMax > 0) {
+            // Use Second Table
+            if (monthCount === 3) {
+                // 3-Month Target Column
+                if (qtyMin >= 600 || qtyMax >= 600) {
+                    discount = 6.0;
+                } else if (qtyMin >= 480 && qtyMax <= 599) {
+                    discount = 5.5;
+                } else if (qtyMin >= 405 && qtyMax <= 479) {
+                    discount = 5.0;
+                } else if (qtyMin >= 330 && qtyMax <= 404) {
+                    discount = 4.5;
+                } else if (qtyMin >= 240 && qtyMax <= 329) {
+                    discount = 4.0;
+                } else if (qtyMin >= 165 && qtyMax <= 239) {
+                    discount = 3.5;
+                } else if (qtyMin >= 120 && qtyMax <= 164) {
+                    discount = 3.0;
+                } else if (qtyMin >= 75 && qtyMax <= 119) {
+                    discount = 2.5;
+                } else {
+                    // Fallback to qtyMin
+                    if (qtyMin >= 600) discount = 6.0;
+                    else if (qtyMin >= 480) discount = 5.5;
+                    else if (qtyMin >= 405) discount = 5.0;
+                    else if (qtyMin >= 330) discount = 4.5;
+                    else if (qtyMin >= 240) discount = 4.0;
+                    else if (qtyMin >= 165) discount = 3.5;
+                    else if (qtyMin >= 120) discount = 3.0;
+                    else if (qtyMin >= 75) discount = 2.5;
+                    else discount = 0.0;
+                }
+            } else {
+                // Default/Monthly column of second table
+                if (qtyMin >= 200 || qtyMax >= 200) {
+                    discount = 6.0;
+                } else if (qtyMin >= 160 && qtyMax <= 199) {
+                    discount = 5.5;
+                } else if (qtyMin >= 135 && qtyMax <= 159) {
+                    discount = 5.0;
+                } else if (qtyMin >= 110 && qtyMax <= 134) {
+                    discount = 4.5;
+                } else if (qtyMin >= 80 && qtyMax <= 109) {
+                    discount = 4.0;
+                } else if (qtyMin >= 55 && qtyMax <= 79) {
+                    discount = 3.5;
+                } else if (qtyMin >= 40 && qtyMax <= 54) {
+                    discount = 3.0;
+                } else if (qtyMin >= 25 && qtyMax <= 39) {
+                    discount = 2.5;
+                } else {
+                    // Fallback to qtyMin
+                    if (qtyMin >= 200) discount = 6.0;
+                    else if (qtyMin >= 160) discount = 5.5;
+                    else if (qtyMin >= 135) discount = 5.0;
+                    else if (qtyMin >= 110) discount = 4.5;
+                    else if (qtyMin >= 80) discount = 4.0;
+                    else if (qtyMin >= 55) discount = 3.5;
+                    else if (qtyMin >= 40) discount = 3.0;
+                    else if (qtyMin >= 25) discount = 2.5;
+                    else discount = 0.0;
+                }
+            }
+        } else {
+            // Use First Table
+            var checkQty = qtyMin > 0 ? qtyMin : qtyMax;
+            if (checkQty >= 100) {
+                discount = 14.0;
+            } else if (checkQty >= 51) {
+                discount = 11.0;
+            } else if (checkQty >= 31) {
+                discount = 9.0;
+            } else if (checkQty >= 10) {
+                discount = 7.0;
+            } else {
+                discount = 0.0;
+            }
+        }
+
+        $('#net_discount').val(discount.toFixed(2));
+    }
+
+    // Attach change triggers
+    $(document).on('input change', '#qty, #qty_max, #period_month', function () {
+        calculateDiscount();
+    });
+
     // Create Qty Base Discount
     $("#create").click(function (event) {
         event.preventDefault();
@@ -16,7 +120,7 @@ jQuery(document).ready(function () {
         } else if (!$('#period_year').val() || $('#period_year').val().length === 0) {
             swal({
                 title: "Error!",
-                text: "Please select a year",
+                text: "Please select date",
                 type: 'error',
                 timer: 2000,
                 showConfirmButton: false
@@ -24,7 +128,7 @@ jQuery(document).ready(function () {
         } else if (!$('#period_month').val() || $('#period_month').val().length === 0) {
             swal({
                 title: "Error!",
-                text: "Please select a month",
+                text: "Please enter month count",
                 type: 'error',
                 timer: 2000,
                 showConfirmButton: false
@@ -106,7 +210,7 @@ jQuery(document).ready(function () {
         } else if (!$('#period_year').val() || $('#period_year').val().length === 0) {
             swal({
                 title: "Error!",
-                text: "Please select a year",
+                text: "Please select date",
                 type: 'error',
                 timer: 2000,
                 showConfirmButton: false
@@ -114,7 +218,7 @@ jQuery(document).ready(function () {
         } else if (!$('#period_month').val() || $('#period_month').val().length === 0) {
             swal({
                 title: "Error!",
-                text: "Please select a month",
+                text: "Please enter month count",
                 type: 'error',
                 timer: 2000,
                 showConfirmButton: false
@@ -186,8 +290,11 @@ jQuery(document).ready(function () {
         e.preventDefault();
         $('#form-data')[0].reset();
         $('#brand_id').prop('selectedIndex', 0);
-        $('#period_year').prop('selectedIndex', 0);
-        $('#period_month').prop('selectedIndex', 0);
+        $('#period_year').val('');
+        $('#period_month').val('');
+        $('#qty').val('');
+        $('#qty_max').val('');
+        $('#net_discount').val('');
         $('#id').val('');
         $("#create").show();
         $("#update").hide();
@@ -204,11 +311,12 @@ jQuery(document).ready(function () {
         $('#brand_id').val(brandId).trigger('change');
         
         // Update year & month
-        $('#period_year').val($this.data('year')).trigger('change');
-        $('#period_month').val($this.data('month')).trigger('change');
+        $('#period_year').val($this.data('year'));
+        $('#period_month').val($this.data('month'));
         
         // Update qty & net discount
         $('#qty').val($this.data('qty'));
+        $('#qty_max').val($this.data('qty_max') > 0 ? $this.data('qty_max') : '');
         $('#net_discount').val($this.data('net_discount'));
 
         // Show update button and hide create button

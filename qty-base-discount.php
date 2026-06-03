@@ -86,7 +86,7 @@ include 'auth.php';
                                             <div class="row">
 
                                                 <!-- Brand -->
-                                                <div class="col-md-3">
+                                                <div class="col-md-2 mb-3">
                                                     <label for="brand_id" class="form-label">Brand <span class="text-danger">*</span></label>
                                                     <select id="brand_id" name="brand_id" class="form-select" required>
                                                         <option value="">-- Select Brand --</option>
@@ -99,50 +99,34 @@ include 'auth.php';
                                                     </select>
                                                 </div>
 
-                                                <!-- Year -->
-                                                <div class="col-md-2">
-                                                    <label for="period_year" class="form-label">Year <span class="text-danger">*</span></label>
-                                                    <select id="period_year" name="period_year" class="form-select" required>
-                                                        <option value="">-- Select Year --</option>
-                                                        <?php
-                                                        $currentYear = (int)date('Y');
-                                                        for ($y = $currentYear - 2; $y <= $currentYear + 5; $y++) {
-                                                            echo "<option value='{$y}'>{$y}</option>";
-                                                        }
-                                                        ?>
-                                                    </select>
+                                                <!-- Date -->
+                                                <div class="col-md-2 col-sm-6 mb-3">
+                                                    <label for="period_year" class="form-label">Date <span class="text-danger">*</span></label>
+                                                    <input id="period_year" name="period_year" type="text" class="form-control date-picker-date" placeholder="Select Date" required readonly style="background-color: #fff; cursor: pointer;">
                                                 </div>
 
-                                                <!-- Month -->
-                                                <div class="col-md-2">
-                                                    <label for="period_month" class="form-label">Month <span class="text-danger">*</span></label>
-                                                    <select id="period_month" name="period_month" class="form-select" required>
-                                                        <option value="">-- Select Month --</option>
-                                                        <option value="1">January</option>
-                                                        <option value="2">February</option>
-                                                        <option value="3">March</option>
-                                                        <option value="4">April</option>
-                                                        <option value="5">May</option>
-                                                        <option value="6">June</option>
-                                                        <option value="7">July</option>
-                                                        <option value="8">August</option>
-                                                        <option value="9">September</option>
-                                                        <option value="10">October</option>
-                                                        <option value="11">November</option>
-                                                        <option value="12">December</option>
-                                                    </select>
+                                                <!-- Month Count -->
+                                                <div class="col-md-2 col-sm-6 mb-3">
+                                                    <label for="period_month" class="form-label">Month Count <span class="text-danger">*</span></label>
+                                                    <input id="period_month" name="period_month" type="number" min="1" step="1" class="form-control" placeholder="Month Count" required>
                                                 </div>
 
-                                                <!-- Qty -->
-                                                <div class="col-md-2">
-                                                    <label for="qty" class="form-label">Qty <span class="text-danger">*</span></label>
-                                                    <input id="qty" name="qty" type="number" step="1" min="0" class="form-control" placeholder="Enter Qty" required>
+                                                <!-- Qty Min -->
+                                                <div class="col-md-2 col-sm-6 mb-3">
+                                                    <label for="qty" class="form-label">Qty Min <span class="text-danger">*</span></label>
+                                                    <input id="qty" name="qty" type="number" step="1" min="0" class="form-control" placeholder="Qty Min" required>
+                                                </div>
+
+                                                <!-- Qty Max -->
+                                                <div class="col-md-2 col-sm-6 mb-3">
+                                                    <label for="qty_max" class="form-label">Qty Max</label>
+                                                    <input id="qty_max" name="qty_max" type="number" step="1" min="0" class="form-control" placeholder="Qty Max (Optional)">
                                                 </div>
 
                                                 <!-- Net Discount -->
-                                                <div class="col-md-3">
-                                                    <label for="net_discount" class="form-label">Net Discount <span class="text-danger">*</span></label>
-                                                    <input id="net_discount" name="net_discount" type="number" step="0.01" min="0" class="form-control" placeholder="Enter Net Discount" required>
+                                                <div class="col-md-2 col-sm-6 mb-3">
+                                                    <label for="net_discount" class="form-label">Net Discount (%) <span class="text-danger">*</span></label>
+                                                    <input id="net_discount" name="net_discount" type="number" step="0.01" min="0" class="form-control" placeholder="Net Discount" required>
                                                 </div>
 
                                                 <input type="hidden" id="id" name="id">
@@ -164,9 +148,10 @@ include 'auth.php';
                                             <tr>
                                                 <th>#ID</th>
                                                 <th>Brand</th>
-                                                <th>Year</th>
-                                                <th>Month</th>
-                                                <th>Qty</th>
+                                                <th>Date</th>
+                                                <th>Month Count</th>
+                                                <th>Qty Min</th>
+                                                <th>Qty Max</th>
                                                 <th>Net Discount</th>
                                                 <th>Action</th>
                                             </tr>
@@ -174,15 +159,9 @@ include 'auth.php';
                                         <tbody>
                                             <?php
                                             $QTY_DIS = new QtyBaseDiscount(NULL);
-                                            $months = [
-                                                1 => "January", 2 => "February", 3 => "March", 4 => "April",
-                                                5 => "May", 6 => "June", 7 => "July", 8 => "August",
-                                                9 => "September", 10 => "October", 11 => "November", 12 => "December"
-                                            ];
                                             foreach ($QTY_DIS->all() as $key => $dis) {
                                                 $key++;
                                                 $BRAND = new Brand($dis['brand_id']);
-                                                $monthName = $months[(int)$dis['period_month']] ?? $dis['period_month'];
                                             ?>
                                                 <tr class="select-dis" 
                                                     data-id="<?php echo $dis['id']; ?>"
@@ -190,14 +169,16 @@ include 'auth.php';
                                                     data-year="<?php echo htmlspecialchars($dis['period_year']); ?>"
                                                     data-month="<?php echo htmlspecialchars($dis['period_month']); ?>"
                                                     data-qty="<?php echo htmlspecialchars($dis['qty']); ?>"
+                                                    data-qty_max="<?php echo htmlspecialchars($dis['qty_max']); ?>"
                                                     data-net_discount="<?php echo htmlspecialchars($dis['net_discount']); ?>">
 
                                                     <td><?php echo $key; ?></td>
                                                     <td><?php echo htmlspecialchars($BRAND->name); ?></td>
                                                     <td><?php echo htmlspecialchars($dis['period_year']); ?></td>
-                                                    <td><?php echo htmlspecialchars($monthName); ?></td>
+                                                    <td><?php echo htmlspecialchars($dis['period_month']); ?></td>
                                                     <td><?php echo number_format($dis['qty'], 2); ?></td>
-                                                    <td><?php echo number_format($dis['net_discount'], 2); ?></td>
+                                                    <td><?php echo $dis['qty_max'] > 0 ? number_format($dis['qty_max'], 2) : '-'; ?></td>
+                                                    <td><?php echo number_format($dis['net_discount'], 2); ?>%</td>
                                                     <td>
                                                         <button type="button" class="btn btn-primary btn-sm edit-dis" data-id="<?php echo $dis['id']; ?>">
                                                             <i class="mdi mdi-pencil"></i>
