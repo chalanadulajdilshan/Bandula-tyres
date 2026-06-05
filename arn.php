@@ -373,7 +373,7 @@ $arn_id = $COMPANY_PROFILE_DETAILS->company_code . '/ARN/00/' . ($lastId + 1);
                                                 </div>
 
 
-                                                <div class="col-6 col-sm-4 col-md-2 col-lg-1">
+                                                <div class="col-6 col-sm-4 col-md-2 col-lg-2">
                                                     <label class="form-label">Item Dis %</label>
                                                     <input type="number" id="dis_2" class="form-control form-control-sm"
                                                         disabled>
