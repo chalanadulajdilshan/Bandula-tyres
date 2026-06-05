@@ -341,7 +341,7 @@ $arn_id = $COMPANY_PROFILE_DETAILS->company_code . '/ARN/00/' . ($lastId + 1);
                                                 <!-- ────────── First Line of Fields ────────── -->
 
 
-                                                <div class="  col-sm-2 col-md-2 col-lg-2" style="width: 345px;">
+                                                <div class="  col-sm-2 col-md-1 col-lg-2" style="width: 345px;">
                                                     <label for="Description" class="form-label">Item Code</label>
                                                     <div class="input-group input-group-sm">
                                                         <input id="itemCode" name="itemCode" type="text"
@@ -366,7 +366,7 @@ $arn_id = $COMPANY_PROFILE_DETAILS->company_code . '/ARN/00/' . ($lastId + 1);
                                                 </div>
 
 
-                                                <div class="col-6 col-sm-4 col-md-2 col-lg-1">
+                                                <div class="col-6 col-sm-4 col-md-2 col-lg-2">
                                                     <label class="form-label"> Brand Dis %</label>
                                                     <input type="number" id="dis_1" class="form-control form-control-sm"
                                                         disabled>
@@ -403,7 +403,7 @@ $arn_id = $COMPANY_PROFILE_DETAILS->company_code . '/ARN/00/' . ($lastId + 1);
                                                         class="form-control form-control-sm  ">
                                                 </div>
 
-                                                <div class="col-6 col-sm-4 col-md-2 col-lg-1">
+                                                <div class="col-6 col-sm-4 col-md-2 col-lg-2">
                                                     <label class="form-label">Selling Price</label>
                                                     <input type="text" id="invoice_price"
                                                         class="form-control form-control-sm">
