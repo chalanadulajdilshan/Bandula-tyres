@@ -12,6 +12,7 @@ if (isset($_POST['create'])) {
     $DISCOUNT->period_month = $_POST['period_month'];
     $DISCOUNT->period_year = $_POST['period_year'];
     $DISCOUNT->qty = $_POST['qty'];
+    $DISCOUNT->qty_max = isset($_POST['qty_max']) && $_POST['qty_max'] !== '' ? $_POST['qty_max'] : 0;
     $DISCOUNT->net_discount = $_POST['net_discount'];
 
     $res = $DISCOUNT->create();
@@ -33,6 +34,7 @@ if (isset($_POST['update'])) {
     $DISCOUNT->period_month = $_POST['period_month'];
     $DISCOUNT->period_year = $_POST['period_year'];
     $DISCOUNT->qty = $_POST['qty'];
+    $DISCOUNT->qty_max = isset($_POST['qty_max']) && $_POST['qty_max'] !== '' ? $_POST['qty_max'] : 0;
     $DISCOUNT->net_discount = $_POST['net_discount'];
 
     $res = $DISCOUNT->update();
