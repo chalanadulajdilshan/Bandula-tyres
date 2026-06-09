@@ -91,10 +91,10 @@ jQuery(document).ready(function () {
         const rate = parseFloat($('#rate').val()) || 0;
         const discount = parseFloat($('#itemDiscount').val()) || 0;
 
-        if (!code || qty <= 0 || rate <= 0) {
+        if (!code || qty <= 0) {
             swal({
                 title: "Validation Error!",
-                text: "Please enter valid item code, quantity, and rate.",
+                text: "Please enter valid item code and quantity.",
                 type: 'error',
                 timer: 2500,
                 showConfirmButton: false
@@ -132,8 +132,8 @@ jQuery(document).ready(function () {
         <tr data-item-id="${item_id}">
             <td>${code}</td>
             <td>${qty}</td>
-            <td>${rate.toFixed(2)}</td>
-            <td>${total.toFixed(2)}</td>
+            <td style="display:none;">${rate.toFixed(2)}</td>
+            <td style="display:none;">${total.toFixed(2)}</td>
              <td><button type="button" class="btn btn-sm btn-danger" onclick="removeRow(this)">Remove</button></td>
         </tr>
     `;
@@ -292,7 +292,7 @@ jQuery(document).ready(function () {
                     const itemPrice = parseFloat($(this).find('td:eq(2)').text()) || 0;
                     const itemTotal = parseFloat($(this).find('td:eq(3)').text()) || 0;
 
-                    if (!itemCode || itemPrice <= 0 || qty <= 0) {
+                    if (!itemCode || qty <= 0) {
                         hasInvalidItem = true;
                         return false;
                     }
@@ -460,7 +460,7 @@ jQuery(document).ready(function () {
             const unitPrice = parseFloat($(this).find('td:eq(2)').text()) || 0;
             const total = parseFloat($(this).find('td:eq(3)').text()) || 0;
 
-            if (!itemId || unitPrice <= 0 || qty <= 0) {
+            if (!itemId || qty <= 0) {
                 hasInvalidItem = true;
                 return false;
             }
@@ -638,10 +638,8 @@ jQuery(document).ready(function () {
                                 <tr data-item-id="${item.item_id}">
                                 <td>${item.item_code} - ${item.item_name}</td>
                                 <td>${qty}</td>
-                                <td>${price.toFixed(2)}</td>
-                               
-                                
-                                <td>${total.toFixed(2)}</td>
+                                <td style="display:none;">${price.toFixed(2)}</td>
+                                <td style="display:none;">${total.toFixed(2)}</td>
                                 <td><button type="button" class="btn btn-sm btn-danger" onclick="removeRow(this)">Remove</button></td>
                             </tr>
                         `;

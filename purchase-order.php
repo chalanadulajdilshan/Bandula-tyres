@@ -26,6 +26,15 @@ $IS_HEAD_OFFICE = ((int) $US->department_id === HEAD_OFFICE_DEPT_ID);
     <meta content="<?php echo $COMPANY_PROFILE_DETAILS->name ?>" name="author" />
     <!-- include main CSS -->
     <?php include 'main-css.php' ?>
+    <style>
+        /* Hide Rate (col 3) and Total Amount (col 4) on the PO item table */
+        table.po-items th:nth-child(3),
+        table.po-items th:nth-child(4),
+        table.po-items td:nth-child(3),
+        table.po-items td:nth-child(4) {
+            display: none !important;
+        }
+    </style>
 
 </head>
 
@@ -302,16 +311,16 @@ $IS_HEAD_OFFICE = ((int) $US->department_id === HEAD_OFFICE_DEPT_ID);
                                                         placeholder="Quantity" oninput="calculatePayment()">
                                                 </div>
 
-                                                <div class="col-md-3">
+                                                <div class="col-md-3" style="display:none;">
                                                     <label class="form-label">Rate</label>
                                                     <input type="number" id="rate" class="form-control"
-                                                        placeholder="Rate" oninput="calculatePayment()">
+                                                        placeholder="Rate" value="0" oninput="calculatePayment()">
                                                 </div>
 
-                                                <div class="col-md-3">
+                                                <div class="col-md-3" style="display:none;">
                                                     <label class="form-label">Amount</label>
                                                     <input type="number" id="itemPayment" class="form-control"
-                                                        placeholder="Amount" readonly>
+                                                        placeholder="Amount" value="0" readonly>
                                                 </div>
 
                                                 <div class="col-md-1">
@@ -324,13 +333,13 @@ $IS_HEAD_OFFICE = ((int) $US->department_id === HEAD_OFFICE_DEPT_ID);
 
                                         <!-- Table -->
                                         <div class="table-responsive mt-4">
-                                            <table class="table table-bordered">
+                                            <table class="table table-bordered po-items">
                                                 <thead class="table-light">
                                                     <tr>
                                                         <th>Code and Name </th>
                                                         <th>Qty</th>
-                                                        <th>Rate</th>
-                                                        <th>Total Amount</th>
+                                                        <th style="display:none;">Rate</th>
+                                                        <th style="display:none;">Total Amount</th>
                                                         <th>Action</th>
                                                     </tr>
                                                 </thead>
@@ -347,7 +356,7 @@ $IS_HEAD_OFFICE = ((int) $US->department_id === HEAD_OFFICE_DEPT_ID);
                                         </div>
 
 
-                                        <div class="row">
+                                        <div class="row" style="display:none;">
 
                                             <div class="col-md-8"></div>
                                             <div class="col-md-4">

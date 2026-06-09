@@ -238,24 +238,17 @@ $po_items = $PURCHASE_ORDER_ITEM->getByPurchaseOrderId($id);
         <table class="items">
             <thead>
                 <tr>
-                    <th style="width:5%;">No.</th>
-                    <th style="width:15%;">Code</th>
-                    <th style="width:45%;">Description</th>
-                    <th class="num" style="width:10%;">Qty</th>
-                    <th class="num" style="width:12%;">Unit Price</th>
-                    <th class="num" style="width:13%;">Amount</th>
+                    <th style="width:8%;">No.</th>
+                    <th style="width:20%;">Code</th>
+                    <th style="width:57%;">Description</th>
+                    <th class="num" style="width:15%;">Qty</th>
                 </tr>
             </thead>
             <tbody>
                 <?php
-                $subtotal = 0;
                 foreach ($po_items as $key => $row) {
                     $key++;
-                    $price = (float) $row['unit_price'];
                     $qty = (float) $row['quantity'];
-                    $lineTotal = (float) $row['total_price'];
-                    $subtotal += $lineTotal;
-
                     $ITEM = new ItemMaster($row['item_id']);
                 ?>
                     <tr>
@@ -263,17 +256,10 @@ $po_items = $PURCHASE_ORDER_ITEM->getByPurchaseOrderId($id);
                         <td><?php echo htmlspecialchars($ITEM->code); ?></td>
                         <td><?php echo htmlspecialchars($ITEM->name); ?></td>
                         <td class="num"><?php echo rtrim(rtrim(number_format($qty, 2, '.', ''), '0'), '.'); ?></td>
-                        <td class="num"><?php echo number_format($price, 2); ?></td>
-                        <td class="num"><?php echo number_format($lineTotal, 2); ?></td>
                     </tr>
                 <?php } ?>
             </tbody>
         </table>
-
-        <div class="totals">
-            <div class="row"><span>Sub Total:</span><span><?php echo number_format($subtotal, 2); ?></span></div>
-            <div class="row total"><span>Grand Total:</span><span><?php echo number_format((float) $PURCHASE_ORDER->grand_total, 2); ?></span></div>
-        </div>
 
         <?php if (!empty($PURCHASE_ORDER->remarks)) { ?>
             <p style="margin-top: 18px;"><span class="label" style="font-weight:bold;">Remarks:</span> <?php echo nl2br(htmlspecialchars($PURCHASE_ORDER->remarks)); ?></p>
