@@ -317,7 +317,38 @@ if (!empty($customerMobile)) {
                     $vat_no = $CUSTOMER_MASTER->vat_no ?? '';
                 }
                 $customerEmail = $CUSTOMER_MASTER->email ?? '';
+
+                // Helper: convert number to words (English) for VAT invoice
+                if (!function_exists('numberToWordsLKR')) {
+                    function numberToWordsLKR($number)
+                    {
+                        $number = (float)$number;
+                        $rupees = floor($number);
+                        $cents = (int) round(($number - $rupees) * 100);
+
+                        $words = function ($num) use (&$words) {
+                            $ones = ['', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine',
+                                'Ten', 'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen', 'Seventeen', 'Eighteen', 'Nineteen'];
+                            $tens = ['', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'];
+                            $num = (int)$num;
+                            if ($num < 20) return $ones[$num];
+                            if ($num < 100) return $tens[(int)($num/10)] . ($num%10 ? ' ' . $ones[$num%10] : '');
+                            if ($num < 1000) return $ones[(int)($num/100)] . ' Hundred' . ($num%100 ? ' ' . $words($num%100) : '');
+                            if ($num < 100000) return $words((int)($num/1000)) . ' Thousand' . ($num%1000 ? ' ' . $words($num%1000) : '');
+                            if ($num < 10000000) return $words((int)($num/100000)) . ' Lakh' . ($num%100000 ? ' ' . $words($num%100000) : '');
+                            return $words((int)($num/10000000)) . ' Crore' . ($num%10000000 ? ' ' . $words($num%10000000) : '');
+                        };
+
+                        $result = ($rupees > 0 ? $words($rupees) : 'Zero') . ' Rupees';
+                        if ($cents > 0) {
+                            $result .= ' and ' . $words($cents) . ' Cents';
+                        }
+                        return $result . ' Only';
+                    }
+                }
                 ?>
+
+                <?php if (floatval($SALES_INVOICE->tax) <= 0): ?>
 
                 <!-- Branded header with logo (left) and title (centered) -->
                 <table style="width:100%; margin-bottom:6px; border-collapse:collapse;">
@@ -579,6 +610,208 @@ if (!empty($customerMobile)) {
                         </td>
                     </tr>
                 </table>
+
+                <?php else: /* VAT TAX INVOICE LAYOUT */ ?>
+
+                <style>
+                    .tax-inv { color: #000; font-family: "Times New Roman", Times, serif; font-size: 12px; }
+                    #invoice-content:has(.tax-inv) .card-body::before { display: none !important; background: none !important; }
+                    @media print {
+                        @page { size: A5; margin: 5mm; }
+                        .tax-inv { font-size: 9.5px; line-height: 1.2; }
+                        .tax-inv .tax-title { font-size: 13px !important; padding: 2px 18px !important; margin: 0 auto 4px auto !important; letter-spacing: 1px !important; }
+                        .tax-inv table.outer td { padding: 2px 4px !important; }
+                        .tax-inv .min-h { min-height: 26px !important; }
+                        .tax-inv .items th, .tax-inv .items td { padding: 2px 4px !important; }
+                        .tax-inv .totals td { padding: 2px 4px !important; }
+                        .tax-inv .signature-row { margin-top: 12px !important; font-size: 9px !important; }
+                        .tax-inv .form-code { font-size: 8px !important; margin-top: 4px !important; }
+                        #invoice-content:has(.tax-inv) .card-body { padding: 4px !important; }
+                        #invoice-content:has(.tax-inv) { page-break-inside: avoid; break-inside: avoid; }
+                    }
+                    .tax-inv .tax-title {
+                        text-align: center;
+                        border: 1.5px solid #000;
+                        display: inline-block;
+                        padding: 4px 30px;
+                        font-weight: bold;
+                        font-size: 18px;
+                        letter-spacing: 2px;
+                        margin: 0 auto 12px auto;
+                    }
+                    .tax-inv table { border-collapse: collapse; width: 100%; }
+                    .tax-inv table.outer td { border: 1px solid #000; padding: 6px 8px; vertical-align: top; }
+                    .tax-inv .label { font-weight: normal; }
+                    .tax-inv .min-h { min-height: 50px; }
+                    .tax-inv .items th, .tax-inv .items td { border: 1px solid #000; padding: 5px 6px; }
+                    .tax-inv .items th { text-align: center; font-weight: bold; }
+                    .tax-inv .items td.num { text-align: right; }
+                    .tax-inv .items td.c   { text-align: center; }
+                    .tax-inv .totals td { border: 1px solid #000; padding: 6px 8px; }
+                    .tax-inv .totals td.lbl { width: 70%; }
+                    .tax-inv .totals td.val { width: 30%; text-align: right; }
+                    .tax-inv .signature-row { margin-top: 30px; }
+                    .tax-inv .form-code { font-size: 11px; margin-top: 10px; }
+                </style>
+
+                <div class="tax-inv">
+                    <div style="text-align:center;">
+                        <div class="tax-title">TAX INVOICE</div>
+                    </div>
+
+                    <!-- Date & Invoice No -->
+                    <table class="outer">
+                        <tr>
+                            <td style="width:50%;"><span class="label">Date of Invoice:</span>
+                                <strong><?php echo date('d/m/Y', strtotime($SALES_INVOICE->invoice_date)); ?></strong>
+                            </td>
+                            <td style="width:50%;"><span class="label">Tax Invoice No. :</span>
+                                <strong><?php echo htmlspecialchars($SALES_INVOICE->invoice_no); ?></strong>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><span class="label">Supplier's TIN :</span>
+                                <strong><?php echo htmlspecialchars($COMPANY_PROFILE->vat_number ?? ''); ?></strong>
+                            </td>
+                            <td><span class="label">Purchaser's TIN :</span>
+                                <strong><?php echo htmlspecialchars($CUSTOMER_MASTER->vat_no ?? ''); ?></strong>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><span class="label">Supplier's Name :</span>
+                                <strong><?php echo htmlspecialchars($COMPANY_PROFILE->name ?? ''); ?></strong>
+                            </td>
+                            <td><span class="label">Purchaser's Name :</span>
+                                <strong><?php echo htmlspecialchars($SALES_INVOICE->customer_name ?? ''); ?></strong>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <span class="label">Address :</span>
+                                <div class="min-h"><strong><?php echo nl2br(htmlspecialchars($COMPANY_PROFILE->address ?? '')); ?></strong></div>
+                            </td>
+                            <td>
+                                <span class="label">Address :</span>
+                                <div class="min-h"><strong><?php echo nl2br(htmlspecialchars($SALES_INVOICE->customer_address ?? '')); ?></strong></div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><span class="label">Telephone No.:*</span>
+                                <strong><?php echo htmlspecialchars($COMPANY_PROFILE->mobile_number_1 ?? ''); ?></strong>
+                            </td>
+                            <td><span class="label">Telephone No.:*</span>
+                                <strong><?php echo htmlspecialchars($SALES_INVOICE->customer_mobile ?? ''); ?></strong>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><span class="label">Date of Supply :</span>
+                                <strong><?php echo date('d/m/Y', strtotime($SALES_INVOICE->invoice_date)); ?></strong>
+                            </td>
+                            <td><span class="label">Place of Supply :*</span>
+                                <strong><?php echo htmlspecialchars($INVOICE_BRANCH->name ?? ''); ?></strong>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2"><span class="label">Additional Information if any :*</span>
+                                <div style="min-height:24px;"><strong><?php echo htmlspecialchars($SALES_INVOICE->remark ?? ''); ?></strong></div>
+                            </td>
+                        </tr>
+                    </table>
+
+                    <!-- Items Table -->
+                    <?php
+                    $vatPct = floatval($COMPANY_PROFILE->vat_percentage ?? 0);
+                    $totalExclVat = 0;
+                    $totalInclVat = 0;
+                    $vatTotal = floatval($SALES_INVOICE->tax ?? 0);
+                    ?>
+                    <table class="items" style="margin-top:0; border-top:none;">
+                        <thead>
+                            <tr>
+                                <th style="width:10%;">Reference*</th>
+                                <th style="width:42%;">Description of Goods or Services</th>
+                                <th style="width:10%;">Quantity</th>
+                                <th style="width:16%;">Unit Price</th>
+                                <th style="width:22%;">Amount Excluding VAT (Rs.)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php
+                            $row_count = 0;
+                            foreach ($temp_items_list as $ti):
+                                $qty = (int)$ti['quantity'];
+                                $price_incl = floatval($ti['price']); // VAT-inclusive sell price
+                                $line_incl  = $price_incl * $qty;
+                                $line_excl  = $vatPct > 0 ? $line_incl / (1 + $vatPct/100) : $line_incl;
+                                $unit_excl  = $qty > 0 ? $line_excl / $qty : $line_excl;
+                                $totalExclVat += $line_excl;
+                                $totalInclVat += $line_incl;
+                                $desc = trim(($ti['item_code_name'] ?? '') . ' ' . ($ti['display_name'] ?? ''));
+                                if (!empty($ti['serial_no'])) $desc .= ' (S/N: ' . $ti['serial_no'] . ')';
+                                $row_count++;
+                            ?>
+                            <tr>
+                                <td class="c"><?php echo htmlspecialchars($ti['item_code_name'] ?? ''); ?></td>
+                                <td><?php echo htmlspecialchars($desc); ?></td>
+                                <td class="c"><?php echo $qty; ?></td>
+                                <td class="num"><?php echo number_format($unit_excl, 2); ?></td>
+                                <td class="num"><?php echo number_format($line_excl, 2); ?></td>
+                            </tr>
+                            <?php endforeach; ?>
+                            <?php for ($i = $row_count; $i < 4; $i++): ?>
+                            <tr>
+                                <td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td>
+                            </tr>
+                            <?php endfor; ?>
+                        </tbody>
+                    </table>
+
+                    <!-- Totals -->
+                    <table class="totals">
+                        <tr>
+                            <td class="lbl">Total Value of Supply:</td>
+                            <td class="val"><strong><?php echo number_format($totalExclVat, 2); ?></strong></td>
+                        </tr>
+                        <tr>
+                            <td class="lbl">VAT Amount (Total Value of Supply @ <?php echo rtrim(rtrim(number_format($vatPct, 2), '0'), '.'); ?>% VAT Rate)</td>
+                            <td class="val"><strong><?php echo number_format($vatTotal, 2); ?></strong></td>
+                        </tr>
+                        <tr>
+                            <td class="lbl">Total Amount/consideration including VAT:</td>
+                            <td class="val"><strong><?php echo number_format($totalInclVat, 2); ?></strong></td>
+                        </tr>
+                    </table>
+
+                    <!-- Words & Mode of payment -->
+                    <table class="outer" style="margin-top:-1px;">
+                        <tr>
+                            <td colspan="2"><span class="label">Total Amount in words:*</span>
+                                <div style="min-height:22px;"><strong><?php echo htmlspecialchars(numberToWordsLKR($totalInclVat)); ?></strong></div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2"><span class="label">Mode of Payment:*</span>
+                                <strong><?php echo $SALES_INVOICE->payment_type == 1 ? 'Cash' : 'Credit'; ?></strong>
+                            </td>
+                        </tr>
+                    </table>
+
+                    <!-- Signatures -->
+                    <table class="signature-row" style="width:100%; margin-top:30px; font-size:12px;">
+                        <tr>
+                            <td style="text-align:center; width:50%;">
+                                <div style="border-top:1px solid #000; padding-top:3px; margin:0 30px;"><strong>Customer Signature</strong></div>
+                            </td>
+                            <td style="text-align:center; width:50%;">
+                                <div style="border-top:1px solid #000; padding-top:3px; margin:0 30px;"><strong>Authorized Signature</strong></div>
+                            </td>
+                        </tr>
+                    </table>
+
+                    <div class="form-code">EOG 03-0219</div>
+                </div>
+
+                <?php endif; /* end VAT/non-VAT layout switch */ ?>
 
                 <?php if (false): /* legacy layout removed */ ?>
                         <!-- Header: Logo + Company Info (Left), Invoice Meta (Right) -->

@@ -17,7 +17,7 @@ class Database
 
             // Local DB
             $this->host = 'localhost';
-            $this->name = '360-erp';
+            $this->name = 'bandula_battery';
             $this->user = 'root';
             $this->password = '';
         } else {
