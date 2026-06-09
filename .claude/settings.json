@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(c:/xampp/mysql/bin/mysql.exe -uroot bandula_battery -e \"SELECT id, name FROM department ORDER BY id;\")",
+      "Bash(c:/xampp/mysql/bin/mysql.exe -uroot bandula_battery -e \"SHOW TABLES LIKE 'depart%'; SELECT id, name FROM departments ORDER BY id;\")",
+      "Bash(c:/xampp/mysql/bin/mysql.exe -uroot bandula_battery -e \"SELECT id, name FROM department_master ORDER BY id; DESCRIBE purchase_orders;\")",
+      "Bash(c:/xampp/php/php.exe -l purchase-order.php)",
+      "Bash(c:/xampp/php/php.exe -l purchase-order-print.php)",
+      "Bash(c:/xampp/php/php.exe -l ajax/php/purchase-order.php)",
+      "Bash(c:/xampp/mysql/bin/mysql.exe -uroot bandula_battery -e \"SELECT id, name, username, department_id, type FROM user WHERE username='dulaj' OR name LIKE '%dulaj%';\")"
+    ]
+  }
+}

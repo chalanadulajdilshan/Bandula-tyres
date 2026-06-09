@@ -3,6 +3,57 @@
 include '../../class/include.php';
 header('Content-Type: application/json; charset=UTF8');
 
+// Head office department id (only this dept can approve POs)
+if (!defined('HEAD_OFFICE_DEPT_ID')) {
+    define('HEAD_OFFICE_DEPT_ID', 1);
+}
+
+// Approve purchase order - head-office users only
+if (isset($_POST['action']) && $_POST['action'] === 'approve_purchase_order') {
+    if (!isset($_SESSION['id'])) {
+        echo json_encode(['status' => 'error', 'message' => 'Not logged in']);
+        exit();
+    }
+
+    $CURRENT_USER = new User($_SESSION['id']);
+    if ((int) $CURRENT_USER->department_id !== HEAD_OFFICE_DEPT_ID) {
+        echo json_encode(['status' => 'error', 'message' => 'Only Head Office users can approve purchase orders.']);
+        exit();
+    }
+
+    $poId = (int) $_POST['id'];
+    $PURCHASE_ORDER = new PurchaseOrder($poId);
+
+    if (!$PURCHASE_ORDER->id) {
+        echo json_encode(['status' => 'error', 'message' => 'Purchase order not found.']);
+        exit();
+    }
+
+    if ((int) $PURCHASE_ORDER->status === 1) {
+        echo json_encode(['status' => 'error', 'message' => 'Purchase order is already approved.']);
+        exit();
+    }
+
+    $PURCHASE_ORDER->status = 1;
+    $ok = $PURCHASE_ORDER->update();
+
+    if ($ok) {
+        $AUDIT_LOG = new AuditLog(NULL);
+        $AUDIT_LOG->ref_id = $poId;
+        $AUDIT_LOG->ref_code = $PURCHASE_ORDER->po_number;
+        $AUDIT_LOG->action = 'APPROVE';
+        $AUDIT_LOG->description = 'APPROVE PURCHASE ORDER NO #' . $PURCHASE_ORDER->po_number;
+        $AUDIT_LOG->user_id = $_SESSION['id'];
+        $AUDIT_LOG->created_at = date("Y-m-d H:i:s");
+        $AUDIT_LOG->create();
+
+        echo json_encode(['status' => 'success']);
+    } else {
+        echo json_encode(['status' => 'error', 'message' => 'Failed to approve purchase order.']);
+    }
+    exit();
+}
+
 if (isset($_POST['action']) && $_POST['action'] == 'check_po_id') {
 
 
@@ -127,6 +178,12 @@ if (isset($_POST['action']) && $_POST['action'] === 'update_purchase_order') {
 
     // Load and update PO
     $PURCHASE_ORDER = new PurchaseOrder($purchaseOrderId);
+
+    // Block edits on approved POs
+    if ((int) $PURCHASE_ORDER->status === 1) {
+        echo json_encode(['status' => 'error', 'message' => 'Approved purchase orders cannot be edited.']);
+        exit();
+    }
     $PURCHASE_ORDER->po_number = $_POST['po_no'];
     $PURCHASE_ORDER->order_date = $_POST['order_date'];
     $PURCHASE_ORDER->supplier_id = $_POST['supplier_id'];
@@ -235,6 +292,12 @@ if (isset($_POST['action']) && $_POST['action'] == 'get_purchase_order') {
 if (isset($_POST['action']) && $_POST['action'] == 'delete') {
 
     $PURCHASE_ORDER = new PurchaseOrder($_POST['id']);
+
+    // Block delete on approved POs
+    if ((int) $PURCHASE_ORDER->status === 1) {
+        echo json_encode(['status' => 'error', 'message' => 'Approved purchase orders cannot be deleted.']);
+        exit();
+    }
 
     $result = $PURCHASE_ORDER->delete();
 

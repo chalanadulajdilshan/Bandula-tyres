@@ -4,13 +4,16 @@ include 'class/include.php';
 include './auth.php';
 
 
-//doc id get by session 
+//doc id get by session
 $DOCUMENT_TRACKING = new DocumentTracking($doc_id);
 
 // Get the last inserted quotation
 $lastId = $DOCUMENT_TRACKING->po_id;
 $po_id = $COMPANY_PROFILE_DETAILS->company_code . '/PO/00/0' . ($lastId + 1);
 
+// Head office check - only users in department 1 (HEAD OFFICE) can approve POs
+define('HEAD_OFFICE_DEPT_ID', 1);
+$IS_HEAD_OFFICE = ((int) $US->department_id === HEAD_OFFICE_DEPT_ID);
 ?>
 
 <html lang="en">
@@ -71,7 +74,17 @@ $po_id = $COMPANY_PROFILE_DETAILS->company_code . '/PO/00/0' . ($lastId + 1);
                                 </a>
                             <?php endif; ?>
 
+                            <?php if ($IS_HEAD_OFFICE): ?>
+                                <a href="#" class="btn btn-info" id="approve-po" style="display:none;">
+                                    <i class="uil uil-check-circle me-1"></i> Approve
+                                </a>
+                            <?php endif; ?>
 
+                            <a href="#" class="btn btn-dark" id="print-po" style="display:none;" target="_blank">
+                                <i class="uil uil-print me-1"></i> Print PDF
+                            </a>
+
+                            <span id="po-status-badge" class="ms-2" style="display:none;"></span>
                         </div>
 
 
@@ -207,7 +220,7 @@ $po_id = $COMPANY_PROFILE_DETAILS->company_code . '/PO/00/0' . ($lastId + 1);
 
                                             </div>
 
-                                            <div class="col-md-3">
+                                            <div class="col-md-3" style="display:none;">
                                                 <label for="Country" class="form-label">Country</label>
                                                 <div class="input-group mb-3">
                                                     <select id="country" name="Country" class="form-select">
@@ -468,6 +481,11 @@ $po_id = $COMPANY_PROFILE_DETAILS->company_code . '/PO/00/0' . ($lastId + 1);
 
     <!-- JAVASCRIPT -->
     <script src="assets/libs/jquery/jquery.min.js"></script>
+    <script>
+        window.PO_CONFIG = {
+            isHeadOffice: <?php echo $IS_HEAD_OFFICE ? 'true' : 'false'; ?>
+        };
+    </script>
     <script src="ajax/js/purchase-order.js"></script>
 
     <!-- /////////////////////////// -->

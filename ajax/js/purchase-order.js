@@ -74,6 +74,10 @@ jQuery(document).ready(function () {
         $("#create").show();
         $("#update").hide();
         $('.delete-purchase-order').hide();
+        $('#approve-po').hide();
+        $('#print-po').hide();
+        $('#po-status-badge').hide();
+        $('#purchase_order_id').val('');
     });
 
 
@@ -651,16 +655,38 @@ jQuery(document).ready(function () {
                     `);
                     }
 
-                    // Show/hide buttons as needed
-                    if (status == 1) {
-                        // status 1 = "active" (or whatever logic you want)
+                    // Show/hide buttons based on approval status
+                    var isApproved = (parseInt(status, 10) === 1);
+                    var isHeadOffice = !!(window.PO_CONFIG && window.PO_CONFIG.isHeadOffice);
+
+                    if (isApproved) {
+                        // Approved POs are locked - no edit/delete/approve
                         $('#create').hide();
                         $('#update').hide();
                         $('.delete-purchase-order').hide();
+                        $('#approve-po').hide();
+                        $('#print-po').attr('href', 'purchase-order-print.php?id=' + id).show();
+                        $('#po-status-badge')
+                            .removeClass('badge bg-soft-danger font-size-12')
+                            .addClass('badge bg-soft-success font-size-12')
+                            .text('Approved')
+                            .show();
                     } else {
                         $('#create').hide();
                         $('#update').show();
                         $('.delete-purchase-order').show();
+                        $('#print-po').hide();
+                        // Approve button only for head-office users on unapproved POs
+                        if (isHeadOffice) {
+                            $('#approve-po').data('po-id', id).show();
+                        } else {
+                            $('#approve-po').hide();
+                        }
+                        $('#po-status-badge')
+                            .removeClass('badge bg-soft-success font-size-12')
+                            .addClass('badge bg-soft-danger font-size-12')
+                            .text('Pending Approval')
+                            .show();
                     }
 
                     // Hide modal
@@ -692,6 +718,52 @@ jQuery(document).ready(function () {
         });
     });
 
+
+    // Approve purchase order (head-office only)
+    $(document).on('click', '#approve-po', function (e) {
+        e.preventDefault();
+
+        var id = $('#purchase_order_id').val();
+        if (!id) {
+            swal({ title: "Error!", text: "Please select a purchase order to approve.", type: 'error', timer: 2500, showConfirmButton: false });
+            return;
+        }
+
+        swal({
+            title: "Approve this PO?",
+            text: "Once approved, the purchase order cannot be edited or deleted.",
+            type: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#28a745",
+            cancelButtonColor: "#6c757d",
+            confirmButtonText: "Yes, approve",
+            cancelButtonText: "Cancel",
+            closeOnConfirm: false
+        }, function (isConfirm) {
+            if (!isConfirm) return;
+
+            $('.someBlock').preloader();
+            $.ajax({
+                url: 'ajax/php/purchase-order.php',
+                method: 'POST',
+                data: { action: 'approve_purchase_order', id: id },
+                dataType: 'json',
+                success: function (response) {
+                    $('.someBlock').preloader('remove');
+                    if (response.status === 'success') {
+                        swal({ title: "Approved!", text: "Purchase Order approved.", type: "success", timer: 2000, showConfirmButton: false });
+                        setTimeout(function () { window.location.reload(); }, 2000);
+                    } else {
+                        swal({ title: "Error!", text: response.message || "Approval failed.", type: "error", timer: 2500, showConfirmButton: false });
+                    }
+                },
+                error: function () {
+                    $('.someBlock').preloader('remove');
+                    swal({ title: "Error!", text: "AJAX request failed.", type: "error", timer: 2500, showConfirmButton: false });
+                }
+            });
+        });
+    });
 
     //delete purchase order
     $(document).on('click', '.delete-purchase-order', function (e) {
