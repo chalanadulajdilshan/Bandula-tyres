@@ -264,6 +264,8 @@ if (isset($_POST['action']) && $_POST['action'] == 'get_purchase_order') {
 
     $enhancedItems = [];
 
+    $brandWiseDis = new BrandWiseDis();
+
     foreach ($items as $item) {
         $ITEM_MASTER = new ItemMaster($item['item_id']); // item_code must exist in item row
         $BRAND_MASTER = new Brand($ITEM_MASTER->brand); // item_code must exist in item row
@@ -272,7 +274,19 @@ if (isset($_POST['action']) && $_POST['action'] == 'get_purchase_order') {
         $item['item_name'] = $ITEM_MASTER->name;
 
         $item['item_discount'] = $ITEM_MASTER->discount;
-        $item['brand_discount'] = $BRAND_MASTER->discount;
+
+        // Brand-wise discount lookup (brand + category). Falls back to brand master discount.
+        $brandDiscount = 0;
+        $bwRows = $brandWiseDis->getByBrand((int)$ITEM_MASTER->brand, (int)$ITEM_MASTER->category);
+        if (!empty($bwRows)) {
+            $row = $bwRows[0];
+            $brandDiscount = (float)($row['discount_percent_01'] ?? 0)
+                           + (float)($row['discount_percent_02'] ?? 0)
+                           + (float)($row['discount_percent_03'] ?? 0);
+        } else {
+            $brandDiscount = (float)$BRAND_MASTER->discount;
+        }
+        $item['brand_discount'] = $brandDiscount;
 
         $item['item_selling_price'] = $ITEM_MASTER->invoice_price;
         $item['item_list_price'] = $ITEM_MASTER->list_price;

@@ -139,6 +139,28 @@ class PurchaseOrder
 
         return $array_res;
     }
+
+    // Approved POs that have not yet been GRN'd (no active ARN linked by po_number)
+    public function getApprovedNotGrned()
+    {
+        $query = "SELECT po.* FROM `purchase_orders` po
+                  WHERE po.`status` = 1
+                  AND NOT EXISTS (
+                      SELECT 1 FROM `arn_master` am
+                      WHERE am.`po_no` = po.`po_number`
+                      AND (am.`is_cancelled` IS NULL OR am.`is_cancelled` != 1)
+                  )
+                  ORDER BY po.`id` DESC";
+        $db = Database::getInstance();
+        $result = $db->readQuery($query);
+        $array_res = array();
+
+        while ($row = mysqli_fetch_array($result)) {
+            array_push($array_res, $row);
+        }
+
+        return $array_res;
+    }
     public function checkPurchaseIdExist($po_no)
     {
         $query = "SELECT * FROM `purchase_orders` where `po_number` = '$po_no'";

@@ -557,7 +557,7 @@ $arn_id = $COMPANY_PROFILE_DETAILS->company_code . '/ARN/00/' . ($lastId + 1);
                                 <tbody>
                                     <?php
                                     $PURCHASE_ORDER = new PurchaseOrder(null);
-                                    foreach ($PURCHASE_ORDER->getAllByStatus(0) as $key => $purchase_order) {
+                                    foreach ($PURCHASE_ORDER->getApprovedNotGrned() as $key => $purchase_order) {
                                         $CUSTOMER_MASTER = new CustomerMaster($purchase_order['supplier_id']);
                                         $DEPARTMENT_MASTER = new DepartmentMaster($purchase_order['department']);
                                         $key++;

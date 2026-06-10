@@ -198,6 +198,18 @@ jQuery(document).ready(function () {
             }
         });
 
+        // Set category from the selected item so brand-wise discount can be looked up
+        if (data.category_id) {
+            $('#category').val(data.category_id);
+        } else if (data.category) {
+            $('#category option').each(function () {
+                if ($(this).text().trim() === String(data.category).trim()) {
+                    $('#category').val($(this).val());
+                    return false;
+                }
+            });
+        }
+
         // Get the selected brand ID after setting it
         const brandId = $('#brand').val();
         const categoryId = $('#category').val();
