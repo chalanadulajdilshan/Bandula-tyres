@@ -522,6 +522,8 @@ jQuery(document).ready(function ($) {
 
     $("#noItemRow").remove();
     const chequeId = "cheque_" + Date.now();
+    const billFileInput = document.getElementById('cheque_bill_file');
+    const billFile = (billFileInput && billFileInput.files.length > 0) ? billFileInput.files[0] : null;
     state.chequeInfo.push({
       id: chequeId,
       chequeNo,
@@ -532,8 +534,10 @@ jQuery(document).ready(function ($) {
       used: false,
       usedAmount: 0,
       remaining: amount,
+      billFile: billFile,
     });
 
+    const billLabel = billFile ? billFile.name : '<span class="text-muted">-</span>';
     const newRow = `
       <tr data-cheque-id="${chequeId}">
         <td>${chequeNo}<input type="hidden" name="cheque_no[]" value="${chequeNo}"></td>
@@ -542,12 +546,13 @@ jQuery(document).ready(function ($) {
         <td class="cheque-amount" data-amount="${amount}">${formatAmount(
       amount
     )}<input type="hidden" name="cheque_amounts[]" value="${amount}"></td>
+        <td class="cheque-bill">${billLabel}</td>
         <td><button type="button" class="btn btn-sm btn-danger remove-row">Remove</button></td>
       </tr>`;
     $("#chequeBody").append(newRow);
     updateState();
 
-    $("#cheque_no, #cheque_date, #bank_branch_name, #bank_branch, #amount").val(
+    $("#cheque_no, #cheque_date, #bank_branch_name, #bank_branch, #amount, #cheque_bill_file").val(
       ""
     );
   });
@@ -576,7 +581,7 @@ jQuery(document).ready(function ($) {
     }
     if ($("#chequeBody tr").length === 0) {
       $("#chequeBody").append(
-        `<tr id="noItemRow"><td colspan="5" class="text-center text-muted">No items added</td></tr>`
+        `<tr id="noItemRow"><td colspan="6" class="text-center text-muted">No items added</td></tr>`
       );
     }
     updateState();
@@ -869,6 +874,44 @@ jQuery(document).ready(function ($) {
       contentType: false,
       processData: false,
       success: function (result) {
+        if (result.status === "success" && result.id) {
+          // Upload cash bill file (optional)
+          const cashFileInput = document.getElementById('cash_bill_file');
+          if (cashFileInput && cashFileInput.files.length > 0) {
+            const fd = new FormData();
+            fd.append('action', 'upload_cash_bill');
+            fd.append('receipt_id', result.id);
+            fd.append('bill_file', cashFileInput.files[0]);
+            $.ajax({
+              url: 'ajax/php/payment-receipt-supplier.php',
+              type: 'POST',
+              data: fd,
+              processData: false,
+              contentType: false,
+              async: false
+            });
+          }
+
+          // Upload per-cheque bill files (optional)
+          state.chequeInfo.forEach((cheque) => {
+            if (cheque.billFile) {
+              const fd = new FormData();
+              fd.append('action', 'upload_cheque_bill');
+              fd.append('receipt_id', result.id);
+              fd.append('cheq_no', cheque.chequeNo);
+              fd.append('bill_file', cheque.billFile);
+              $.ajax({
+                url: 'ajax/php/payment-receipt-supplier.php',
+                type: 'POST',
+                data: fd,
+                processData: false,
+                contentType: false,
+                async: false
+              });
+            }
+          });
+        }
+
         $(".someBlock").preloader("remove");
         if (result.status === "success") {
           swal({

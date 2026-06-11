@@ -234,6 +234,7 @@ if ($id > 0 && empty($receipt)) {
                                                         <th>Cheque Date</th>
                                                         <th>Bank</th>
                                                         <th>Branch</th>
+                                                        <th>Bill</th>
                                                         <th>Status</th>
                                                     </tr>
                                                 </thead>
@@ -314,6 +315,24 @@ if ($id > 0 && empty($receipt)) {
                                                                     ?>
                                                                 </td>
                                                                 <td>
+                                                                    <?php
+                                                                    if ($paymentTypeId == 1) {
+                                                                        // Cash row: pull from receipt's cash_bill_file
+                                                                        if (!empty($PAYMENT_RECEIPT_SUPPLIER->cash_bill_file)) {
+                                                                            echo '<a href="uploads/payment-receipt-supplier-bills/' . htmlspecialchars($PAYMENT_RECEIPT_SUPPLIER->cash_bill_file) . '" target="_blank" class="btn btn-sm btn-outline-primary">View</a>';
+                                                                        } else {
+                                                                            echo '<span class="text-muted">-</span>';
+                                                                        }
+                                                                    } else {
+                                                                        if (!empty($method['bill_file'])) {
+                                                                            echo '<a href="uploads/payment-receipt-supplier-bills/' . htmlspecialchars($method['bill_file']) . '" target="_blank" class="btn btn-sm btn-outline-primary">View</a>';
+                                                                        } else {
+                                                                            echo '<span class="text-muted">-</span>';
+                                                                        }
+                                                                    }
+                                                                    ?>
+                                                                </td>
+                                                                <td>
                                                                     <?php if (isset($method['is_settle']) && $method['is_settle'] == 1): ?>
                                                                         <span class="badge bg-success">Settled</span>
                                                                     <?php else: ?>
@@ -324,12 +343,77 @@ if ($id > 0 && empty($receipt)) {
                                                         <?php endforeach; ?>
                                                     <?php else: ?>
                                                         <tr>
-                                                            <td colspan="9" class="text-center text-muted">No payment
+                                                            <td colspan="10" class="text-center text-muted">No payment
                                                                 methods found</td>
                                                         </tr>
                                                     <?php endif; ?>
                                                 </tbody>
                                             </table>
+                                            <!-- Attachments Preview -->
+                                            <?php
+                                            $attachments = [];
+                                            if (!empty($PAYMENT_RECEIPT_SUPPLIER->cash_bill_file)) {
+                                                $attachments[] = [
+                                                    'label' => 'Cash Bill',
+                                                    'file' => $PAYMENT_RECEIPT_SUPPLIER->cash_bill_file,
+                                                ];
+                                            }
+                                            $seenCheques = [];
+                                            foreach ($paymentMethods as $m) {
+                                                if (($m['payment_type_id'] ?? 0) == 2 && !empty($m['bill_file'])) {
+                                                    $key = $m['cheq_no'] . '|' . $m['bill_file'];
+                                                    if (!isset($seenCheques[$key])) {
+                                                        $seenCheques[$key] = true;
+                                                        $attachments[] = [
+                                                            'label' => 'Cheque ' . htmlspecialchars($m['cheq_no']),
+                                                            'file' => $m['bill_file'],
+                                                        ];
+                                                    }
+                                                }
+                                            }
+                                            ?>
+                                            <?php if (!empty($attachments)): ?>
+                                                <div class="row mt-4">
+                                                    <div class="col-md-12">
+                                                        <h6 class="mb-3">Attachments</h6>
+                                                        <div class="row g-3">
+                                                            <?php foreach ($attachments as $att):
+                                                                $url = 'uploads/payment-receipt-supplier-bills/' . $att['file'];
+                                                                $ext = strtolower(pathinfo($att['file'], PATHINFO_EXTENSION));
+                                                                $isImage = in_array($ext, ['jpg', 'jpeg', 'png']);
+                                                                $isPdf = ($ext === 'pdf');
+                                                            ?>
+                                                                <div class="col-md-3">
+                                                                    <div class="card h-100">
+                                                                        <div class="card-body p-2 text-center">
+                                                                            <div class="mb-2 fw-bold"><?php echo $att['label']; ?></div>
+                                                                            <?php if ($isImage): ?>
+                                                                                <a href="<?php echo htmlspecialchars($url); ?>" target="_blank">
+                                                                                    <img src="<?php echo htmlspecialchars($url); ?>"
+                                                                                        alt="<?php echo htmlspecialchars($att['label']); ?>"
+                                                                                        style="max-width:100%; max-height:220px; object-fit:contain; border:1px solid #eee;">
+                                                                                </a>
+                                                                            <?php elseif ($isPdf): ?>
+                                                                                <iframe src="<?php echo htmlspecialchars($url); ?>"
+                                                                                    style="width:100%; height:220px; border:1px solid #eee;"></iframe>
+                                                                            <?php else: ?>
+                                                                                <div class="text-muted small">Preview not available</div>
+                                                                            <?php endif; ?>
+                                                                            <div class="mt-2">
+                                                                                <a href="<?php echo htmlspecialchars($url); ?>" target="_blank"
+                                                                                    class="btn btn-sm btn-outline-primary">Open</a>
+                                                                                <a href="<?php echo htmlspecialchars($url); ?>"
+                                                                                    download class="btn btn-sm btn-outline-secondary">Download</a>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            <?php endforeach; ?>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            <?php endif; ?>
+
                                             <!-- Payment Summary -->
                                             <?php if (!empty($paymentMethods)): ?>
                                                 <?php

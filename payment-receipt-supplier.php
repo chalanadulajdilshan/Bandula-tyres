@@ -176,6 +176,14 @@ $payment_receipt_id = $COMPANY_PROFILE_DETAILS->company_code . '/SPR/00/0' . ($l
                                                             step="0.01">
                                                     </div>
                                                 </div>
+                                                <div class="col-md-3">
+                                                    <label for="cash_bill_file" class="form-label">Cash Bill / Receipt</label>
+                                                    <div class="input-group">
+                                                        <input id="cash_bill_file" name="cash_bill_file" type="file"
+                                                            accept=".pdf,.jpg,.jpeg,.png"
+                                                            class="form-control">
+                                                    </div>
+                                                </div>
                                             </div>
                                         </form>
                                     </div>
@@ -239,14 +247,21 @@ $payment_receipt_id = $COMPANY_PROFILE_DETAILS->company_code . '/SPR/00/0' . ($l
                                                         </div>
                                                     </div>
 
-                                                    <div class="col-md-3">
+                                                    <div class="col-md-2">
                                                         <label class="form-label">Amount</label>
                                                         <input type="number" id="amount" class="form-control"
                                                             placeholder="Amount">
                                                     </div>
 
                                                     <div class="col-md-1">
-                                                        <button type="button" class="btn btn-success  "
+                                                        <label class="form-label">Bill</label>
+                                                        <input type="file" id="cheque_bill_file" class="form-control"
+                                                            accept=".pdf,.jpg,.jpeg,.png">
+                                                    </div>
+
+                                                    <div class="col-md-1">
+                                                        <label class="form-label">&nbsp;</label>
+                                                        <button type="button" class="btn btn-success d-block w-100"
                                                             id="add_cheque">Add</button>
                                                     </div>
                                                 </div>
@@ -260,12 +275,13 @@ $payment_receipt_id = $COMPANY_PROFILE_DETAILS->company_code . '/SPR/00/0' . ($l
                                                                 <th>Cheque Date</th>
                                                                 <th>Bank & Branch</th>
                                                                 <th>Amount</th>
+                                                                <th>Bill</th>
                                                                 <th>Action</th>
                                                             </tr>
                                                         </thead>
                                                         <tbody id="chequeBody">
                                                             <tr id="noItemRow">
-                                                                <td colspan="5" class="text-center text-muted">No
+                                                                <td colspan="6" class="text-center text-muted">No
                                                                     items added</td>
                                                             </tr>
                                                         </tbody>

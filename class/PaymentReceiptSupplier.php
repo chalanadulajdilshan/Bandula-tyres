@@ -8,12 +8,13 @@ class PaymentReceiptSupplier
     public $entry_date;
     public $amount_paid;
     public $remark;
+    public $cash_bill_file;
     public $created_at;
 
     public function __construct($id = null)
     {
         if ($id) {
-            $query = "SELECT `id`, `receipt_no`, `customer_id`, `entry_date`, `amount_paid`, `remark`, `created_at`
+            $query = "SELECT `id`, `receipt_no`, `customer_id`, `entry_date`, `amount_paid`, `remark`, `cash_bill_file`, `created_at`
                       FROM `payment_receipt_supplier`
                       WHERE `id` = " . (int) $id;
 
@@ -27,6 +28,7 @@ class PaymentReceiptSupplier
                 $this->entry_date = $result['entry_date'];
                 $this->amount_paid = $result['amount_paid'];
                 $this->remark = $result['remark'];
+                $this->cash_bill_file = $result['cash_bill_file'];
                 $this->created_at = $result['created_at'];
             }
         }
@@ -34,13 +36,14 @@ class PaymentReceiptSupplier
 
     public function create()
     {
-        $query = "INSERT INTO `payment_receipt_supplier` (`receipt_no`, `customer_id`, `entry_date`, `amount_paid`, `remark`, `created_at`) 
+        $query = "INSERT INTO `payment_receipt_supplier` (`receipt_no`, `customer_id`, `entry_date`, `amount_paid`, `remark`, `cash_bill_file`, `created_at`)
                   VALUES (
-                    '{$this->receipt_no}', 
-                    '{$this->customer_id}', 
-                    '{$this->entry_date}', 
-                    '{$this->amount_paid}', 
-                    '{$this->remark}', 
+                    '{$this->receipt_no}',
+                    '{$this->customer_id}',
+                    '{$this->entry_date}',
+                    '{$this->amount_paid}',
+                    '{$this->remark}',
+                    '{$this->cash_bill_file}',
                     NOW()
                   )";
 
@@ -55,8 +58,9 @@ class PaymentReceiptSupplier
                     `receipt_no` = '{$this->receipt_no}', 
                     `customer_id` = '{$this->customer_id}', 
                     `entry_date` = '{$this->entry_date}', 
-                    `amount_paid` = '{$this->amount_paid}', 
-                    `remark` = '{$this->remark}'
+                    `amount_paid` = '{$this->amount_paid}',
+                    `remark` = '{$this->remark}',
+                    `cash_bill_file` = '{$this->cash_bill_file}'
                   WHERE `id` = '{$this->id}'";
 
         $db = Database::getInstance();

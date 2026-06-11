@@ -2,6 +2,73 @@
 include '../../class/include.php';
 header('Content-Type: application/json');
 
+// ---------- Upload Cash Bill File ----------
+if (isset($_POST['action']) && $_POST['action'] === 'upload_cash_bill') {
+    $receipt_id = isset($_POST['receipt_id']) ? (int)$_POST['receipt_id'] : 0;
+    if ($receipt_id <= 0 || !isset($_FILES['bill_file']) || $_FILES['bill_file']['error'] !== UPLOAD_ERR_OK) {
+        echo json_encode(['status' => 'error', 'message' => 'Invalid upload request.']);
+        exit();
+    }
+
+    $uploadDir = '../../uploads/payment-receipt-supplier-bills/';
+    $allowedExtensions = ['pdf', 'jpg', 'jpeg', 'png'];
+    $fileExt = strtolower(pathinfo($_FILES['bill_file']['name'], PATHINFO_EXTENSION));
+
+    if (!in_array($fileExt, $allowedExtensions)) {
+        echo json_encode(['status' => 'error', 'message' => 'Invalid file type.']);
+        exit();
+    }
+    if (!file_exists($uploadDir)) {
+        mkdir($uploadDir, 0777, true);
+    }
+    $randomFileName = uniqid('cashbill_', true) . '.' . $fileExt;
+    $uploadPath = $uploadDir . $randomFileName;
+
+    if (move_uploaded_file($_FILES['bill_file']['tmp_name'], $uploadPath)) {
+        $RECEIPT = new PaymentReceiptSupplier($receipt_id);
+        if (!empty($RECEIPT->id)) {
+            $RECEIPT->cash_bill_file = $randomFileName;
+            $RECEIPT->update();
+        }
+        echo json_encode(['status' => 'success', 'file' => $randomFileName]);
+    } else {
+        echo json_encode(['status' => 'error', 'message' => 'Failed to save uploaded file.']);
+    }
+    exit();
+}
+
+// ---------- Upload Cheque Bill File ----------
+if (isset($_POST['action']) && $_POST['action'] === 'upload_cheque_bill') {
+    $receipt_id = isset($_POST['receipt_id']) ? (int)$_POST['receipt_id'] : 0;
+    $cheq_no = isset($_POST['cheq_no']) ? trim($_POST['cheq_no']) : '';
+    if ($receipt_id <= 0 || $cheq_no === '' || !isset($_FILES['bill_file']) || $_FILES['bill_file']['error'] !== UPLOAD_ERR_OK) {
+        echo json_encode(['status' => 'error', 'message' => 'Invalid upload request.']);
+        exit();
+    }
+
+    $uploadDir = '../../uploads/payment-receipt-supplier-bills/';
+    $allowedExtensions = ['pdf', 'jpg', 'jpeg', 'png'];
+    $fileExt = strtolower(pathinfo($_FILES['bill_file']['name'], PATHINFO_EXTENSION));
+
+    if (!in_array($fileExt, $allowedExtensions)) {
+        echo json_encode(['status' => 'error', 'message' => 'Invalid file type.']);
+        exit();
+    }
+    if (!file_exists($uploadDir)) {
+        mkdir($uploadDir, 0777, true);
+    }
+    $randomFileName = uniqid('chqbill_', true) . '.' . $fileExt;
+    $uploadPath = $uploadDir . $randomFileName;
+
+    if (move_uploaded_file($_FILES['bill_file']['tmp_name'], $uploadPath)) {
+        $METHOD = new PaymentReceiptMethodSupplier(null);
+        $METHOD->updateBillFileByChequeNo($receipt_id, $cheq_no, $randomFileName);
+        echo json_encode(['status' => 'success', 'file' => $randomFileName]);
+    } else {
+        echo json_encode(['status' => 'error', 'message' => 'Failed to save uploaded file.']);
+    }
+    exit();
+}
 
 if ($_POST['action'] === 'get_credit_invoices') {
     $customerId = (int) $_POST['customer_id'];

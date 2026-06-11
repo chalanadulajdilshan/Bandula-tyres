@@ -12,12 +12,13 @@ class PaymentReceiptMethodSupplier
     public $branch_id;
     public $cheq_date;
     public $is_settle;
+    public $bill_file;
 
     public function __construct($id = null)
     {
         if ($id) {
-            $query = "SELECT `id`, `receipt_id`, `invoice_id`, `payment_type_id`, `amount`, 
-                             `cheq_no`, `bank_id`, `branch_id`, `cheq_date`
+            $query = "SELECT `id`, `receipt_id`, `invoice_id`, `payment_type_id`, `amount`,
+                             `cheq_no`, `bank_id`, `branch_id`, `cheq_date`, `bill_file`
                       FROM `payment_receipt_method_supplier`
                       WHERE `id` = " . (int)$id;
 
@@ -35,14 +36,15 @@ class PaymentReceiptMethodSupplier
                 $this->branch_id = $result['branch_id'];
                 $this->cheq_date = $result['cheq_date'];
                 $this->is_settle = $result['is_settle'];
+                $this->bill_file = $result['bill_file'];
             }
         }
     }
 
     public function create()
     {
-        $query = "INSERT INTO `payment_receipt_method_supplier` 
-                    (`receipt_id`, `invoice_id`, `payment_type_id`, `amount`, `cheq_no`, `bank_id`, `branch_id`, `cheq_date`, `is_settle`) 
+        $query = "INSERT INTO `payment_receipt_method_supplier`
+                    (`receipt_id`, `invoice_id`, `payment_type_id`, `amount`, `cheq_no`, `bank_id`, `branch_id`, `cheq_date`, `is_settle`, `bill_file`)
                   VALUES (
                     '{$this->receipt_id}',
                     '{$this->invoice_id}',
@@ -52,7 +54,8 @@ class PaymentReceiptMethodSupplier
                     '{$this->bank_id}',
                     '{$this->branch_id}',
                     '{$this->cheq_date}',
-                    '{$this->is_settle}'
+                    '{$this->is_settle}',
+                    '{$this->bill_file}'
                   )";
 
         $db = Database::getInstance();
@@ -105,8 +108,8 @@ class PaymentReceiptMethodSupplier
 
     public function getByReceipt($receiptId)
     {
-        $query = "SELECT `id`, `receipt_id`, `invoice_id`, `payment_type_id`, `amount`, 
-                         `cheq_no`, `bank_id`, `branch_id`, `cheq_date`, `is_settle`
+        $query = "SELECT `id`, `receipt_id`, `invoice_id`, `payment_type_id`, `amount`,
+                         `cheq_no`, `bank_id`, `branch_id`, `cheq_date`, `is_settle`, `bill_file`
                   FROM `payment_receipt_method_supplier`
                   WHERE `receipt_id` = '" . (int)$receiptId . "'
                   ORDER BY `id` ASC";
@@ -122,6 +125,18 @@ class PaymentReceiptMethodSupplier
         return $array;
     }
     
+
+    public function updateBillFileByChequeNo($receiptId, $chequeNo, $billFile)
+    {
+        $db = Database::getInstance();
+        $receiptId = (int)$receiptId;
+        $chequeNo = mysqli_real_escape_string($db->DB_CON, $chequeNo);
+        $billFile = mysqli_real_escape_string($db->DB_CON, $billFile);
+        $query = "UPDATE `payment_receipt_method_supplier`
+                  SET `bill_file` = '{$billFile}'
+                  WHERE `receipt_id` = '{$receiptId}' AND `cheq_no` = '{$chequeNo}'";
+        return $db->readQuery($query);
+    }
 
     public function updateIsSettle($id)
     {
