@@ -20,7 +20,8 @@
       "Bash(\"c:\\\\xampp\\\\mysql\\\\bin\\\\mysql.exe\" -u root bandula_battery -e \"SELECT id, arn_id, item_code, received_qty, created_at FROM arn_items WHERE arn_id=26;\")",
       "Bash(\"c:\\\\xampp\\\\mysql\\\\bin\\\\mysql.exe\" -u root bandula_battery -e \"SELECT COUNT\\(*\\) FROM arn_item_barcodes WHERE arn_id=26;\")",
       "Bash(c:/xampp/mysql/bin/mysql.exe -u root -e \"USE bandula_tyres; SELECT id, page_url, page_name FROM pages WHERE page_url LIKE '%purchase-order%' OR page_name LIKE '%urchase%rder%';\")",
-      "Bash(c:/xampp/mysql/bin/mysql.exe -u root -e \"USE bandula_battery; SELECT id, page_url, page_name FROM pages WHERE page_url LIKE '%purchase%';\")"
+      "Bash(c:/xampp/mysql/bin/mysql.exe -u root -e \"USE bandula_battery; SELECT id, page_url, page_name FROM pages WHERE page_url LIKE '%purchase%';\")",
+      "Bash(findstr -i \"brand discount qty\")"
     ]
   }
 }
