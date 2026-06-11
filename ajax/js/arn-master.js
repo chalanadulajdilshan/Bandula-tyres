@@ -164,7 +164,7 @@ jQuery(document).ready(function () {
         $('#item_id').val(data.id);
         $('#itemCode').val(data.code + ' - ' + data.name);
         $('#itemName').val(data.name);
-        $('#itemQty').val(1);
+        $('#rec_quantity').val(1);
         $('#available_qty').val(data.qty);
         $('#list_price').val(data.list_price);
         $('#invoice_price').val(data.invoice_price);
@@ -254,7 +254,7 @@ jQuery(document).ready(function () {
             calculatePayment();
         }
 
-        setTimeout(() => $('#itemQty').focus(), 200);
+        setTimeout(() => $('#rec_quantity').focus().select(), 200);
         $('#main_item_master').modal('hide');
 
     });
@@ -327,7 +327,8 @@ jQuery(document).ready(function () {
         const recQty = parseFloat($('#rec_quantity').val()) || 0;
         const list_price = parseFloat($('#list_price').val()) || 0;
 
-        // Get discounts
+        // dis_1 is a DISPLAY-ONLY sum of brand discount components (dis_6+dis_7+dis_8)
+        // dis_2 = Item Dis %, dis_3..dis_5 = manual extra discounts, dis_6..dis_8 = brand discount tiers
         const dis2 = parseFloat($('#dis_2').val()) || 0;
         const dis3 = parseFloat($('#dis_3').val()) || 0;
         const dis4 = parseFloat($('#dis_4').val()) || 0;
@@ -339,26 +340,18 @@ jQuery(document).ready(function () {
         let finalCost;
 
         if (skipActualCost) {
-            // Use the manually entered actual cost
             finalCost = parseFloat($('#actual_cost').val()) || 0;
         } else {
-            // Calculate discounts step by step
-            let disAmount2 = list_price * (dis2 / 100);
-            let disAmount3 = (list_price - disAmount2) * (dis3 / 100);
-            let disAmount4 = (list_price - disAmount2 - disAmount3) * (dis4 / 100);
-            let disAmount5 = (list_price - disAmount2 - disAmount3 - disAmount4) * (dis5 / 100);
-            let disAmount6 = (list_price - disAmount2 - disAmount3 - disAmount4 - disAmount5) * (dis6 / 100);
-            let disAmount7 = (list_price - disAmount2 - disAmount3 - disAmount4 - disAmount5 - disAmount6) * (dis7 / 100);
-            let disAmount8 = (list_price - disAmount2 - disAmount3 - disAmount4 - disAmount5 - disAmount6 - disAmount7) * (dis8 / 100);
+            let running = list_price;
+            let disAmount2 = running * (dis2 / 100); running -= disAmount2;
+            let disAmount3 = running * (dis3 / 100); running -= disAmount3;
+            let disAmount4 = running * (dis4 / 100); running -= disAmount4;
+            let disAmount5 = running * (dis5 / 100); running -= disAmount5;
+            let disAmount6 = running * (dis6 / 100); running -= disAmount6;
+            let disAmount7 = running * (dis7 / 100); running -= disAmount7;
+            let disAmount8 = running * (dis8 / 100); running -= disAmount8;
 
-            finalCost = list_price - disAmount2 - disAmount3 - disAmount4 - disAmount5 - disAmount6 - disAmount7 - disAmount8;
-
-            // Debug logging (remove in production)
-            console.log('Discount calculation:', {
-                list_price, dis2, dis3, dis4, dis5, dis6, dis7, dis8,
-                disAmount2, disAmount3, disAmount4, disAmount5, disAmount6, disAmount7, disAmount8,
-                finalCost
-            });
+            finalCost = running;
 
             $('#actual_cost').val(finalCost.toFixed(2));
         }
