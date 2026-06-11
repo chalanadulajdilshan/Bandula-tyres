@@ -1,6 +1,21 @@
 <?php
 include 'class/include.php';
-include './auth.php';
+
+if (session_status() === PHP_SESSION_NONE) {
+    @session_start();
+}
+
+$USER = new User(NULL);
+if (!$USER->authenticate()) {
+    header('Location: login.php');
+    exit();
+}
+
+$systemStatus = isset($_SESSION['system_down_status']) ? (int)$_SESSION['system_down_status'] : 0;
+if ($systemStatus === 1) {
+    header('Location: system-payment-required.php');
+    exit();
+}
 
 $arn_id = isset($_GET['arn_id']) ? (int)$_GET['arn_id'] : 0;
 if ($arn_id <= 0) {
