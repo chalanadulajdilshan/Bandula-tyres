@@ -126,6 +126,34 @@ $navigationLayout = $COMPANY_PROFILE_DETAILS->navigation_layout ?? 'horizontal';
                         $MESSAGE->showCustomMessages($customMessages, 'danger');
                     }
 
+                    // Pending Purchase Order Approval Notifications (Head Office only)
+                    if (!defined('HEAD_OFFICE_DEPT_ID')) {
+                        define('HEAD_OFFICE_DEPT_ID', 1);
+                    }
+                    if (isset($_SESSION['id'])) {
+                        $CURRENT_USER_FOR_PO = new User($_SESSION['id']);
+                        if ((int) $CURRENT_USER_FOR_PO->department_id === HEAD_OFFICE_DEPT_ID) {
+                            $PURCHASE_ORDER_PENDING = new PurchaseOrder(NULL);
+                            $pendingPOs = $PURCHASE_ORDER_PENDING->getAllByStatus(0);
+                            $totalPendingPOs = count($pendingPOs);
+                            if ($totalPendingPOs > 0) {
+                                $PAGES_FOR_PO = new Pages(null);
+                                $poPage = $PAGES_FOR_PO->getPageByUrl('purchase-order');
+                                $poPageId = $poPage ? (int) $poPage['id'] : 0;
+
+                                if ($poPageId) {
+                                    $poHref = "purchase-order.php?page_id={$poPageId}";
+                                    $poMsg = "<a href='{$poHref}' class='alert-link'>View {$totalPendingPOs} purchase order(s) awaiting approval</a>";
+                                } else {
+                                    $poMsg = "{$totalPendingPOs} purchase order(s) awaiting approval";
+                                }
+                                echo '<div id="po_approval_notification">';
+                                $MESSAGE->showCustomMessages([$poMsg], 'warning');
+                                echo '</div>';
+                            }
+                        }
+                    }
+
                     // Due Date Notifications
                     $db = Database::getInstance();
                     $dueDateColumnCheck = $db->readQuery("SHOW COLUMNS FROM `sales_invoice` LIKE 'due_date'");

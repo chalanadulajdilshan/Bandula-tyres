@@ -129,6 +129,26 @@ class UserPermission
         $pageId = (int) $pageId;
 
         $db = Database::getInstance();
+
+        // Head Office department auto-bypass for the Purchase Order page
+        // (Head Office users are responsible for PO approval and must always reach it.)
+        if (!defined('HEAD_OFFICE_DEPT_ID')) {
+            define('HEAD_OFFICE_DEPT_ID', 1);
+        }
+        $deptQuery = "SELECT `department_id` FROM `user` WHERE `id` = $userId LIMIT 1";
+        $deptRes = $db->readQuery($deptQuery);
+        if ($deptRes && $deptRow = mysqli_fetch_assoc($deptRes)) {
+            if ((int) $deptRow['department_id'] === HEAD_OFFICE_DEPT_ID) {
+                $poPageQuery = "SELECT `id` FROM `pages` WHERE `page_url` = 'purchase-order' LIMIT 1";
+                $poPageRes = $db->readQuery($poPageQuery);
+                if ($poPageRes && $poPageRow = mysqli_fetch_assoc($poPageRes)) {
+                    if ((int) $poPageRow['id'] === $pageId) {
+                        return;
+                    }
+                }
+            }
+        }
+
         $query = "SELECT `add_page`, `edit_page`, `delete_page`, `search_page`, `print_page`, `other_page`
               FROM `user_permission`
               WHERE `user_id` = $userId AND `page_id` = $pageId
