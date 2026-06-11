@@ -219,6 +219,19 @@ $arn_id = $COMPANY_PROFILE_DETAILS->company_code . '/ARN/00/' . ($lastId + 1);
                                             </div>
 
                                             <div class="col-md-2">
+                                                <label for="bill_file" class="form-label">
+                                                    Bill File
+                                                    <a id="view_bill_file" href="#" target="_blank"
+                                                        class="ms-2 text-primary" style="display:none;">[View]</a>
+                                                </label>
+                                                <div class="input-group mb-3">
+                                                    <input id="bill_file" name="bill_file" type="file"
+                                                        accept=".pdf,.jpg,.jpeg,.png"
+                                                        class="form-control">
+                                                </div>
+                                            </div>
+
+                                            <div class="col-md-2">
                                                 <label for="Brand" class="form-label">Brand</label>
                                                 <div class="input-group mb-3">
                                                     <select id="brand" name="brand" class="form-select">
@@ -631,6 +644,7 @@ $arn_id = $COMPANY_PROFILE_DETAILS->company_code . '/ARN/00/' . ($lastId + 1);
                                         <th>Department</th>
                                         <th>Grand Total</th>
                                         <th>Paid Amount</th>
+                                        <th>Bill</th>
                                     </tr>
                                 </thead>
 
@@ -687,6 +701,7 @@ $arn_id = $COMPANY_PROFILE_DETAILS->company_code . '/ARN/00/' . ($lastId + 1);
                                             data-total_order_qty="<?= htmlspecialchars($arn_master['total_order_qty'] ?? 0); ?>"
                                             data-paid_amount="<?= htmlspecialchars($arn_master['paid_amount'] ?? 0); ?>"
                                             data-calls_due_date="<?= htmlspecialchars($arn_master['calls_due_date'] ?? ''); ?>"
+                                            data-bill_file="<?= htmlspecialchars($arn_master['bill_file'] ?? ''); ?>"
                                             data-remarks="<?= htmlspecialchars($arn_master['remark'] ?? ''); ?>">
                                             <td><?= $key; ?></td>
                                             <td>
@@ -702,6 +717,15 @@ $arn_id = $COMPANY_PROFILE_DETAILS->company_code . '/ARN/00/' . ($lastId + 1);
                                             <td><?= htmlspecialchars($DEPARTMENT_MASTER->name ?? ''); ?></td>
                                             <td class="text-end"><?= number_format($arn_master['total_arn_value'] ?? 0, 2); ?></td>
                                             <td class="text-end"><?= number_format($arn_master['paid_amount'] ?? 0, 2); ?></td>
+                                            <td class="text-center">
+                                                <?php if (!empty($arn_master['bill_file'])): ?>
+                                                    <a href="uploads/arn-bills/<?= htmlspecialchars($arn_master['bill_file']); ?>"
+                                                        target="_blank" onclick="event.stopPropagation();"
+                                                        class="btn btn-sm btn-outline-primary">View</a>
+                                                <?php else: ?>
+                                                    <span class="text-muted">-</span>
+                                                <?php endif; ?>
+                                            </td>
                                         </tr>
 
                                     <?php } ?>

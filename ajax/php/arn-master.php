@@ -4,6 +4,43 @@ header('Content-Type: application/json; charset=UTF-8');
 
 $data = json_decode(file_get_contents("php://input"), true);
 
+// ---------- Upload Bill File ----------
+if (isset($_POST['action']) && $_POST['action'] === 'upload_bill') {
+    $arn_id = isset($_POST['arn_id']) ? (int)$_POST['arn_id'] : 0;
+    if ($arn_id <= 0 || !isset($_FILES['bill_file']) || $_FILES['bill_file']['error'] !== UPLOAD_ERR_OK) {
+        echo json_encode(['status' => 'error', 'message' => 'Invalid upload request.']);
+        exit();
+    }
+
+    $uploadDir = '../../uploads/arn-bills/';
+    $allowedExtensions = ['pdf', 'jpg', 'jpeg', 'png'];
+    $fileExt = strtolower(pathinfo($_FILES['bill_file']['name'], PATHINFO_EXTENSION));
+
+    if (!in_array($fileExt, $allowedExtensions)) {
+        echo json_encode(['status' => 'error', 'message' => 'Invalid file type.']);
+        exit();
+    }
+
+    if (!file_exists($uploadDir)) {
+        mkdir($uploadDir, 0777, true);
+    }
+
+    $randomFileName = uniqid('bill_', true) . '.' . $fileExt;
+    $uploadPath = $uploadDir . $randomFileName;
+
+    if (move_uploaded_file($_FILES['bill_file']['tmp_name'], $uploadPath)) {
+        $ARN = new ArnMaster($arn_id);
+        if (!empty($ARN->id)) {
+            $ARN->bill_file = $randomFileName;
+            $ARN->update();
+        }
+        echo json_encode(['status' => 'success', 'file' => $randomFileName]);
+    } else {
+        echo json_encode(['status' => 'error', 'message' => 'Failed to save uploaded file.']);
+    }
+    exit();
+}
+
 // ---------- Check BL No Exists ----------
 if (isset($_POST['check_bl_no'])) {
     $bl_no = trim($_POST['check_bl_no']);

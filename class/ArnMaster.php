@@ -34,6 +34,7 @@ class ArnMaster
     public $paid_amount;
     public $payment_type;
     public $calls_due_date;
+    public $bill_file;
 
     public function __construct($id = null)
     {
@@ -102,14 +103,14 @@ class ArnMaster
             `container_size`, `category`, `brand`, `department`, `po_no`, `country`, `order_by`,
             `purchase_type`, `arn_status`, `remark`, `invoice_date`, `entry_date`, `delivery_date`,
             `credit_note_amount`, `sub_arn_value`, `total_discount`, `total_arn_value`, `paid_amount`,
-            `total_received_qty`, `total_order_qty`, `calls_due_date`, `created_at`
+            `total_received_qty`, `total_order_qty`, `calls_due_date`, `bill_file`, `created_at`
         ) VALUES (
             '{$this->arn_no}', '{$this->lc_tt_no}', '{$this->pi_no}', '{$this->po_date}', '{$this->supplier_id}',
             '{$this->ci_no}', '{$this->bl_no}', '{$this->container_size}', '{$this->category}', '{$this->brand}',
             '{$this->department}', '{$this->po_no}', '{$this->country}', '{$this->order_by}', '{$this->payment_type}',
             '{$this->arn_status}', '{$this->remark}', '{$this->invoice_date}', '{$this->entry_date}', '{$this->delivery_date}',
             '{$this->credit_note_amount}', '{$this->sub_arn_value}', '{$this->total_discount}', '{$this->total_arn_value}',
-            '{$this->paid_amount}', '{$this->total_received_qty}', '{$this->total_order_qty}', '{$this->calls_due_date}', NOW()
+            '{$this->paid_amount}', '{$this->total_received_qty}', '{$this->total_order_qty}', '{$this->calls_due_date}', '{$this->bill_file}', NOW()
         )";
 
         $db = Database::getInstance();
@@ -153,7 +154,8 @@ class ArnMaster
             `paid_amount` = '{$this->paid_amount}',
             `total_received_qty` = '{$this->total_received_qty}',
             `total_order_qty` = '{$this->total_order_qty}',
-            `calls_due_date` = '{$this->calls_due_date}'
+            `calls_due_date` = '{$this->calls_due_date}',
+            `bill_file` = '{$this->bill_file}'
         WHERE `id` = '{$this->id}'";
 
         $db = Database::getInstance();

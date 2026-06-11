@@ -1129,6 +1129,23 @@ jQuery(document).ready(function () {
                     $(".someBlock").preloader("remove");
 
                     if (response.status === 'success') {
+                        // Upload bill file if user selected one
+                        var billFileInput = document.getElementById('bill_file');
+                        if (response.arn_id && billFileInput && billFileInput.files.length > 0) {
+                            var fd = new FormData();
+                            fd.append('action', 'upload_bill');
+                            fd.append('arn_id', response.arn_id);
+                            fd.append('bill_file', billFileInput.files[0]);
+                            $.ajax({
+                                url: 'ajax/php/arn-master.php',
+                                type: 'POST',
+                                data: fd,
+                                processData: false,
+                                contentType: false,
+                                async: false
+                            });
+                        }
+
                         swal({
                             title: "Success!",
                             text: "ARN created successfully!",
@@ -1250,8 +1267,19 @@ jQuery(document).ready(function () {
             status: row.data('status'),
             remarks: row.data('remarks'),
             is_cancelled: row.data('is_cancelled'),
-            calls_due_date: row.data('calls_due_date')
+            calls_due_date: row.data('calls_due_date'),
+            bill_file: row.data('bill_file')
         };
+
+        // Show "View" link for the existing bill file (if any)
+        $('#bill_file').val('');
+        if (arnData.bill_file) {
+            $('#view_bill_file')
+                .attr('href', 'uploads/arn-bills/' + arnData.bill_file)
+                .show();
+        } else {
+            $('#view_bill_file').hide().attr('href', '#');
+        }
 
         // Fill form fields (update selectors based on your actual form field IDs or classes)
         $('#arn_id').val(arnData.id);
