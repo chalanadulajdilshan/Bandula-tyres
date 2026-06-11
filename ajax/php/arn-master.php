@@ -129,7 +129,30 @@ if (isset($data['create'])) {
             $ARN_ITEM->list_price = $item['list_price'];
             $ARN_ITEM->invoice_price = $item['invoice_price'];
             $ARN_ITEM->created_at = date("Y-m-d H:i:s");
-            $ARN_ITEM->create();
+            $arn_item_id = $ARN_ITEM->create();
+
+            // Generate one barcode per unit received (whole units only)
+            $unitsToBarcode = (int) floor(max(0, $recQty));
+            if ($arn_item_id && $unitsToBarcode > 0) {
+                $entryDateForBarcode = !empty($ARN->entry_date) ? $ARN->entry_date : date('Y-m-d');
+                $ts = strtotime($entryDateForBarcode) ?: time();
+                $monthLetter = ArnItemBarcode::monthLetter(date('n', $ts));
+                $yearCode = date('y', $ts);
+
+                for ($u = 1; $u <= $unitsToBarcode; $u++) {
+                    $BARCODE = new ArnItemBarcode(NULL);
+                    $BARCODE->arn_id = $arn_id;
+                    $BARCODE->arn_item_id = $arn_item_id;
+                    $BARCODE->item_id = $itemId;
+                    $BARCODE->unit_seq = $u;
+                    $BARCODE->month_letter = $monthLetter;
+                    $BARCODE->year_code = $yearCode;
+                    $BARCODE->arn_no = $ARN->arn_no;
+                    $BARCODE->entry_date = $entryDateForBarcode;
+                    $BARCODE->barcode = ArnItemBarcode::buildBarcode($ARN->arn_no, $arn_item_id, $u, $entryDateForBarcode);
+                    $BARCODE->create();
+                }
+            }
 
             $stockMaster = new StockMaster();
 

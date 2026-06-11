@@ -308,6 +308,7 @@ jQuery(document).ready(function () {
         // For a new ARN, hide payment and cancel buttons and show Save
         $('#payment').hide();
         $('.cancel-arn-btn').hide();
+        $('#print_barcodes').hide();
         $('#create_arn').show();
 
         // Clear item table
@@ -1136,14 +1137,26 @@ jQuery(document).ready(function () {
                             showConfirmButton: false,
                         });
 
+                        var openBarcodeTab = function () {
+                            if (response.arn_id) {
+                                try {
+                                    window.open('arn-barcode-print.php?arn_id=' + encodeURIComponent(response.arn_id), '_blank');
+                                } catch (e) { /* popup blocked - user can still reach via list */ }
+                            }
+                        };
+
                         if (payload.company_arn_adjust) {
                             // For company ARN adjust, just reload the page without payment processing
+                            openBarcodeTab();
                             setTimeout(() => location.reload(), 2000);
                         } else if (payload.payment_type === '1') {
+                            // Cash: let sendPayment handle the flow; it reloads on success.
+                            // Don't open a tab here — it interferes with the payment swal/AJAX focus.
                             if (response.arn_id) {
                                 sendPayment(response.arn_id, response.supplier_id);
                             }
                         } else {
+                            openBarcodeTab();
                             setTimeout(() => location.reload(), 2000);
                         }
                     } else {
@@ -1242,6 +1255,15 @@ jQuery(document).ready(function () {
 
         // Fill form fields (update selectors based on your actual form field IDs or classes)
         $('#arn_id').val(arnData.id);
+
+        // Show Print Barcodes button pointing at this ARN
+        if (arnData.id) {
+            $('#print_barcodes')
+                .attr('href', 'arn-barcode-print.php?arn_id=' + encodeURIComponent(arnData.id))
+                .show();
+        } else {
+            $('#print_barcodes').hide();
+        }
         $('#arn_no').val(arnData.arn_no);
         $('#po_no').val(arnData.po_no);
         $('#order_date').val(arnData.order_date);

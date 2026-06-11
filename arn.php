@@ -62,6 +62,10 @@ $arn_id = $COMPANY_PROFILE_DETAILS->company_code . '/ARN/00/' . ($lastId + 1);
                                 <i class="uil uil-trash-alt me-1"></i> Cancel ARN
                             </a>
 
+                            <a href="#" class="btn btn-dark" id="print_barcodes" style="display: none;" target="_blank">
+                                <i class="uil uil-print me-1"></i> Print Barcodes
+                            </a>
+
                             <div class="d-flex align-items-center ms-3" id="payment_Label" style="display: none; font-size: 1.1rem;">
                                 <span id="paymentStatusText" class="fw-bold d-inline-flex align-items-center">
                                     <i class="uil uil-check-circle me-1" style="font-size: 1.3rem; display: none;"></i>
