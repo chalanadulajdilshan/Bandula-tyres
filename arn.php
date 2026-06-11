@@ -630,7 +630,7 @@ $arn_id = $COMPANY_PROFILE_DETAILS->company_code . '/ARN/00/' . ($lastId + 1);
                 </div>
                 <div class="modal-body">
                     <div class="row">
-                        <div class="col-12">
+                        <div class="col-12 table-responsive">
                             <table class="datatable table table-bordered dt-responsive nowrap"
                                 style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                                 <thead>
@@ -638,10 +638,7 @@ $arn_id = $COMPANY_PROFILE_DETAILS->company_code . '/ARN/00/' . ($lastId + 1);
                                         <th>#id</th>
                                         <th>ARN No</th>
                                         <th>Supplier </th>
-                                        <th>Invoice No</th>
-                                        <th>Invoice Date</th>
-                                        <th>Calls Due Date</th>
-                                        <th>Department</th>
+                                        <th style="width: 180px; white-space: normal;">Department</th>
                                         <th>Grand Total</th>
                                         <th>Paid Amount</th>
                                         <th>Bill</th>
@@ -705,16 +702,20 @@ $arn_id = $COMPANY_PROFILE_DETAILS->company_code . '/ARN/00/' . ($lastId + 1);
                                             data-remarks="<?= htmlspecialchars($arn_master['remark'] ?? ''); ?>">
                                             <td><?= $key; ?></td>
                                             <td>
-                                                <?= htmlspecialchars($arn_master['arn_no'] ?? ''); ?>
-                                                <?php if ($is_cancelled): ?>
-                                                    <span class="badge bg-danger ms-2">Cancelled</span>
+                                                <div><?= htmlspecialchars($arn_master['arn_no'] ?? ''); ?>
+                                                    <?php if ($is_cancelled): ?>
+                                                        <span class="badge bg-danger ms-2">Cancelled</span>
+                                                    <?php endif; ?>
+                                                </div>
+                                                <?php if (!empty($arn_master['bl_no'])): ?>
+                                                    <div class="small text-muted">Inv No: <?= htmlspecialchars($arn_master['bl_no']); ?></div>
+                                                <?php endif; ?>
+                                                <?php if (!empty($arn_master['invoice_date'])): ?>
+                                                    <div class="small text-muted">Inv Date: <?= htmlspecialchars($arn_master['invoice_date']); ?></div>
                                                 <?php endif; ?>
                                             </td>
                                             <td><?= htmlspecialchars(($CUSTOMER_MASTER->code ?? '') . ' - ' . ($CUSTOMER_MASTER->name ?? '')); ?></td>
-                                            <td><?= htmlspecialchars($arn_master['bl_no'] ?? ''); ?></td>
-                                            <td><?= htmlspecialchars($arn_master['invoice_date'] ?? ''); ?></td>
-                                            <td><?= htmlspecialchars($arn_master['calls_due_date'] ?? ''); ?></td>
-                                            <td><?= htmlspecialchars($DEPARTMENT_MASTER->name ?? ''); ?></td>
+                                            <td style="white-space: normal;"><?= htmlspecialchars($DEPARTMENT_MASTER->name ?? ''); ?></td>
                                             <td class="text-end"><?= number_format($arn_master['total_arn_value'] ?? 0, 2); ?></td>
                                             <td class="text-end"><?= number_format($arn_master['paid_amount'] ?? 0, 2); ?></td>
                                             <td class="text-center">
