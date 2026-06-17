@@ -4,13 +4,11 @@ jQuery(document).ready(function () {
         var acid     = parseFloat($("#acid").val()) || 0;
         var repairs  = parseFloat($("#repairs").val()) || 0;
         var charging = parseFloat($("#charging").val()) || 0;
-        var loan     = parseFloat($("#loan_hire_per_day").val()) || 0;
-        var deposit  = parseFloat($("#deposit_amount").val()) || 0;
-        var total    = acid + repairs + charging + loan - deposit;
+        var total    = acid + repairs + charging;
         $("#total").val(total.toFixed(2));
     }
 
-    $("#acid, #repairs, #charging, #loan_hire_per_day, #deposit_amount").on("input change", calcTotal);
+    $("#acid, #repairs, #charging").on("input change", calcTotal);
 
     // Create
     $("#create").click(function (e) {
