@@ -5,8 +5,6 @@ include 'auth.php';
 
 $BC_TMP = new BatteryCharging(null);
 $nextInvoice = $BC_TMP->nextInvoiceNo();
-
-$CUSTOMERS = (new CustomerMaster(null))->all();
 ?>
 <html lang="en">
 
@@ -80,111 +78,120 @@ $CUSTOMERS = (new CustomerMaster(null))->all();
                                     </div>
                                 </div>
 
-                                <div class="p-4">
+                                <div class="p-4 pt-0">
                                     <form id="form-data" autocomplete="off">
                                         <input type="hidden" id="id" name="id" value="0">
+                                        <input type="hidden" id="customer_id">
 
-                                        <div class="row">
-                                            <div class="col-md-3">
-                                                <label class="form-label">Invoice No</label>
-                                                <input id="invoice_no" name="invoice_no" type="text"
-                                                       value="<?php echo $nextInvoice; ?>"
-                                                       class="form-control" readonly>
-                                            </div>
-                                            <div class="col-md-3">
-                                                <label class="form-label">Date</label>
-                                                <input id="bill_date" name="bill_date" type="date"
-                                                       value="<?php echo date('Y-m-d'); ?>" class="form-control">
-                                            </div>
-                                            <div class="col-md-3">
-                                                <label class="form-label">Battery Ready On</label>
-                                                <input id="ready_date" name="ready_date" type="date" class="form-control">
+                                        <!-- Section: Invoice details -->
+                                        <div class="border rounded p-3 mb-3 bg-light">
+                                            <h6 class="text-uppercase text-muted fw-bold mb-3">Invoice Details</h6>
+                                            <div class="row g-3">
+                                                <div class="col-md-4">
+                                                    <label class="form-label">Invoice No</label>
+                                                    <input id="invoice_no" name="invoice_no" type="text"
+                                                           value="<?php echo $nextInvoice; ?>"
+                                                           class="form-control fw-bold" readonly>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <label class="form-label">Date</label>
+                                                    <input id="bill_date" name="bill_date" type="date"
+                                                           value="<?php echo date('Y-m-d'); ?>" class="form-control">
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <label class="form-label">Battery Ready On</label>
+                                                    <input id="ready_date" name="ready_date" type="date" class="form-control">
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <label class="form-label">Deposit Amount</label>
+                                                    <input id="deposit_amount" name="deposit_amount" type="number" step="0.01"
+                                                           value="0" class="form-control text-end">
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <label class="form-label">Loan Hire / Day</label>
+                                                    <input id="loan_hire_per_day" name="loan_hire_per_day" type="number" step="0.01"
+                                                           value="0" class="form-control text-end">
+                                                </div>
                                             </div>
                                         </div>
 
-                                        <hr>
-
-                                        <div class="row">
-                                            <div class="col-md-6">
-                                                <label class="form-label">Customer</label>
-                                                <select id="customer_id" class="form-control select2-customer" style="width:100%;">
-                                                    <option value="">-- Select Customer --</option>
-                                                    <?php foreach ($CUSTOMERS as $c) { ?>
-                                                        <option value="<?php echo (int)$c['id']; ?>"
-                                                            data-name="<?php echo htmlspecialchars($c['name']); ?>"
-                                                            data-address="<?php echo htmlspecialchars($c['address']); ?>">
-                                                            <?php echo htmlspecialchars($c['name']); ?>
-                                                            <?php if (!empty($c['mobile_number'])) echo ' - ' . htmlspecialchars($c['mobile_number']); ?>
-                                                        </option>
-                                                    <?php } ?>
-                                                </select>
-                                                <input id="customer_name" name="customer_name" type="hidden">
-                                            </div>
-                                            <div class="col-md-6">
-                                                <label class="form-label">Address</label>
-                                                <input id="address" name="address" type="text"
-                                                       placeholder="Address (auto-filled)" class="form-control">
-                                            </div>
-                                        </div>
-
-                                        <hr>
-
-                                        <div class="row">
-                                            <div class="col-md-3">
-                                                <label class="form-label">Make</label>
-                                                <input id="make" name="make" type="text" class="form-control">
-                                            </div>
-                                            <div class="col-md-3">
-                                                <label class="form-label">Voltage</label>
-                                                <input id="voltage" name="voltage" type="text" class="form-control">
-                                            </div>
-                                            <div class="col-md-3">
-                                                <label class="form-label">Battery No</label>
-                                                <input id="battery_no" name="battery_no" type="text" class="form-control">
-                                            </div>
-                                            <div class="col-md-3">
-                                                <label class="form-label">Loan Battery</label>
-                                                <input id="loan_battery" name="loan_battery" type="text" class="form-control">
+                                        <!-- Section: Customer -->
+                                        <div class="border rounded p-3 mb-3">
+                                            <h6 class="text-uppercase text-muted fw-bold mb-3">Customer</h6>
+                                            <div class="row g-3">
+                                                <div class="col-md-3">
+                                                    <label class="form-label">Customer Code</label>
+                                                    <div class="input-group">
+                                                        <input id="customer_code" type="text" class="form-control" placeholder="Code" readonly>
+                                                        <button class="btn btn-info" type="button" data-bs-toggle="modal" data-bs-target="#customerModal">
+                                                            <i class="uil uil-search"></i>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-5">
+                                                    <label class="form-label">Customer Name</label>
+                                                    <input id="customer_name" name="customer_name" type="text" class="form-control" placeholder="Customer name" readonly>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <label class="form-label">Mobile</label>
+                                                    <input id="customer_mobile" type="text" class="form-control" readonly>
+                                                </div>
+                                                <div class="col-md-12">
+                                                    <label class="form-label">Address</label>
+                                                    <input id="customer_address" name="address" type="text" class="form-control" placeholder="Address" readonly>
+                                                </div>
                                             </div>
                                         </div>
 
-                                        <hr>
-
-                                        <div class="row">
-                                            <div class="col-md-3">
-                                                <label class="form-label">Deposit Amount</label>
-                                                <input id="deposit_amount" name="deposit_amount" type="number" step="0.01"
-                                                       value="0" class="form-control text-end">
-                                            </div>
-                                            <div class="col-md-3">
-                                                <label class="form-label">Loan Hire / Day</label>
-                                                <input id="loan_hire_per_day" name="loan_hire_per_day" type="number" step="0.01"
-                                                       value="0" class="form-control text-end">
+                                        <!-- Section: Battery details -->
+                                        <div class="border rounded p-3 mb-3">
+                                            <h6 class="text-uppercase text-muted fw-bold mb-3">Battery Details</h6>
+                                            <div class="row g-3">
+                                                <div class="col-md-3">
+                                                    <label class="form-label">Make</label>
+                                                    <input id="make" name="make" type="text" class="form-control">
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <label class="form-label">Voltage</label>
+                                                    <input id="voltage" name="voltage" type="text" class="form-control">
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <label class="form-label">Battery No</label>
+                                                    <input id="battery_no" name="battery_no" type="text" class="form-control">
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <label class="form-label">Loan Battery</label>
+                                                    <input id="loan_battery" name="loan_battery" type="text" class="form-control">
+                                                </div>
                                             </div>
                                         </div>
 
-                                        <hr>
-
-                                        <div class="row">
-                                            <div class="col-md-3">
-                                                <label class="form-label">Acid</label>
-                                                <input id="acid" name="acid" type="number" step="0.01"
-                                                       value="0" class="form-control text-end">
-                                            </div>
-                                            <div class="col-md-3">
-                                                <label class="form-label">Repairs</label>
-                                                <input id="repairs" name="repairs" type="number" step="0.01"
-                                                       value="0" class="form-control text-end">
-                                            </div>
-                                            <div class="col-md-3">
-                                                <label class="form-label">Charging</label>
-                                                <input id="charging" name="charging" type="number" step="0.01"
-                                                       value="0" class="form-control text-end">
-                                            </div>
-                                            <div class="col-md-3">
-                                                <label class="form-label fw-bold">TOTAL</label>
-                                                <input id="total" name="total" type="number" step="0.01"
-                                                       value="0" class="form-control text-end fw-bold" readonly>
+                                        <!-- Section: Charges -->
+                                        <div class="border rounded p-3 mb-2 bg-light">
+                                            <h6 class="text-uppercase text-muted fw-bold mb-3">Charges</h6>
+                                            <div class="row g-3 align-items-end">
+                                                <div class="col-md-3">
+                                                    <label class="form-label">Acid</label>
+                                                    <input id="acid" name="acid" type="number" step="0.01"
+                                                           value="0" class="form-control text-end">
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <label class="form-label">Repairs</label>
+                                                    <input id="repairs" name="repairs" type="number" step="0.01"
+                                                           value="0" class="form-control text-end">
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <label class="form-label">Charging</label>
+                                                    <input id="charging" name="charging" type="number" step="0.01"
+                                                           value="0" class="form-control text-end">
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <label class="form-label fw-bold text-primary">TOTAL</label>
+                                                    <input id="total" name="total" type="number" step="0.01"
+                                                           value="0"
+                                                           class="form-control form-control-lg text-end fw-bold text-primary border-primary"
+                                                           readonly>
+                                                </div>
                                             </div>
                                         </div>
 
@@ -270,8 +277,10 @@ $CUSTOMERS = (new CustomerMaster(null))->all();
     <div class="rightbar-overlay"></div>
 
     <script src="assets/libs/jquery/jquery.min.js"></script>
-    <script src="ajax/js/battery-charging.js"></script>
 
     <?php include 'main-js.php' ?>
+
+    <script src="ajax/js/common.js"></script>
+    <script src="ajax/js/battery-charging.js"></script>
 </body>
 </html>

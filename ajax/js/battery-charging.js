@@ -1,30 +1,16 @@
 jQuery(document).ready(function () {
 
-    // Initialize Select2 on the customer dropdown
-    $(".select2-customer").select2({
-        placeholder: "Search customer...",
-        allowClear: true,
-        width: '100%'
-    });
-
-    // When customer is picked, copy name + address into the hidden/visible fields
-    $("#customer_id").on("change", function () {
-        var opt = $(this).find(":selected");
-        var name = opt.data("name") || "";
-        var address = opt.data("address") || "";
-        $("#customer_name").val(name);
-        $("#address").val(address);
-    });
-
     function calcTotal() {
-        var acid = parseFloat($("#acid").val()) || 0;
-        var repairs = parseFloat($("#repairs").val()) || 0;
+        var acid     = parseFloat($("#acid").val()) || 0;
+        var repairs  = parseFloat($("#repairs").val()) || 0;
         var charging = parseFloat($("#charging").val()) || 0;
-        var total = acid + repairs + charging;
+        var loan     = parseFloat($("#loan_hire_per_day").val()) || 0;
+        var deposit  = parseFloat($("#deposit_amount").val()) || 0;
+        var total    = acid + repairs + charging + loan - deposit;
         $("#total").val(total.toFixed(2));
     }
 
-    $("#acid, #repairs, #charging").on("input change", calcTotal);
+    $("#acid, #repairs, #charging, #loan_hire_per_day, #deposit_amount").on("input change", calcTotal);
 
     // Create
     $("#create").click(function (e) {
@@ -163,18 +149,10 @@ jQuery(document).ready(function () {
         $("#invoice_no").val(d.invoice_no);
         $("#bill_date").val(d.bill_date);
         $("#customer_name").val(d.customer_name);
-        $("#address").val(d.address);
-
-        // Try to reflect the saved customer in the Select2 dropdown
-        var matched = $("#customer_id option").filter(function () {
-            return ($(this).data("name") || "").toString().trim() ===
-                   (d.customer_name || "").toString().trim();
-        }).first();
-        if (matched.length) {
-            $("#customer_id").val(matched.val()).trigger("change.select2");
-        } else {
-            $("#customer_id").val("").trigger("change.select2");
-        }
+        $("#customer_address").val(d.address);
+        $("#customer_code").val("");
+        $("#customer_mobile").val("");
+        $("#customer_id").val("");
         $("#deposit_amount").val(d.deposit_amount);
         $("#loan_hire_per_day").val(d.loan_hire_per_day);
         $("#ready_date").val(d.ready_date);

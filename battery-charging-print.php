@@ -1,6 +1,18 @@
 <?php
 include 'class/include.php';
-include 'auth.php';
+
+if (session_status() === PHP_SESSION_NONE) {
+    @session_start();
+}
+
+$USER = new User(NULL);
+if (!$USER->authenticate()) {
+    header('Location: login.php');
+    exit();
+}
+
+$US = new User($_SESSION['id']);
+$company = new CompanyProfile($US->company_id);
 
 $id = isset($_GET['id']) ? (int) $_GET['id'] : 0;
 $BC = new BatteryCharging($id);
@@ -9,8 +21,6 @@ if (!$BC->id) {
     echo "Record not found";
     exit;
 }
-
-$company = $COMPANY_PROFILE_DETAILS;
 
 function f($v) { return number_format((float)$v, 2); }
 ?>
