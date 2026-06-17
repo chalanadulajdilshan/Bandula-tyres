@@ -85,6 +85,7 @@ include_once(dirname(__FILE__) . '/CustomerComplaint.php');
 include_once(dirname(__FILE__) . '/CompanyHandling.php');
 include_once(dirname(__FILE__) . '/DagCustomer.php');
 include_once(dirname(__FILE__) . '/DagCompanyAssignment.php');
+include_once(dirname(__FILE__) . '/BatteryCharging.php');
 
 
 // Initialize session if not already started
