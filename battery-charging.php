@@ -5,6 +5,8 @@ include 'auth.php';
 
 $BC_TMP = new BatteryCharging(null);
 $nextInvoice = $BC_TMP->nextInvoiceNo();
+
+$CUSTOMERS = (new CustomerMaster(null))->all();
 ?>
 <html lang="en">
 
@@ -104,14 +106,24 @@ $nextInvoice = $BC_TMP->nextInvoiceNo();
 
                                         <div class="row">
                                             <div class="col-md-6">
-                                                <label class="form-label">Customer Name</label>
-                                                <input id="customer_name" name="customer_name" type="text"
-                                                       placeholder="Enter Customer Name" class="form-control">
+                                                <label class="form-label">Customer</label>
+                                                <select id="customer_id" class="form-control select2-customer" style="width:100%;">
+                                                    <option value="">-- Select Customer --</option>
+                                                    <?php foreach ($CUSTOMERS as $c) { ?>
+                                                        <option value="<?php echo (int)$c['id']; ?>"
+                                                            data-name="<?php echo htmlspecialchars($c['name']); ?>"
+                                                            data-address="<?php echo htmlspecialchars($c['address']); ?>">
+                                                            <?php echo htmlspecialchars($c['name']); ?>
+                                                            <?php if (!empty($c['mobile_number'])) echo ' - ' . htmlspecialchars($c['mobile_number']); ?>
+                                                        </option>
+                                                    <?php } ?>
+                                                </select>
+                                                <input id="customer_name" name="customer_name" type="hidden">
                                             </div>
                                             <div class="col-md-6">
                                                 <label class="form-label">Address</label>
                                                 <input id="address" name="address" type="text"
-                                                       placeholder="Enter Address" class="form-control">
+                                                       placeholder="Address (auto-filled)" class="form-control">
                                             </div>
                                         </div>
 
