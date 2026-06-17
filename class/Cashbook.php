@@ -213,7 +213,15 @@ class Cashbook
         $resultIncome = mysqli_fetch_array($db->readQuery($queryDailyIncome));
         $totalDailyIncome = (float) $resultIncome['total'];
 
-        return $totalCashInvoices + $totalCreditAdvance + $totalPaymentReceipts + $totalDailyIncome;
+        // Cash from Battery Charging bills
+        $whereBattery = str_replace('si.invoice_date', 'bc.bill_date', $where);
+        $queryBattery = "SELECT COALESCE(SUM(total), 0) as total
+                         FROM `battery_charging` bc
+                         $whereBattery AND bc.status = 1";
+        $resultBattery = mysqli_fetch_array($db->readQuery($queryBattery));
+        $totalBattery = (float) $resultBattery['total'];
+
+        return $totalCashInvoices + $totalCreditAdvance + $totalPaymentReceipts + $totalDailyIncome + $totalBattery;
     }
 
     // Get total cash OUT from various sources
@@ -422,6 +430,29 @@ class Cashbook
                   $wherePayment
                   HAVING amount > 0
                   ORDER BY pr.entry_date ASC";
+        $result = $db->readQuery($query);
+        while ($row = mysqli_fetch_array($result)) {
+            $runningBalance += (float) $row['amount'];
+            $transactions[] = [
+                'date' => date('Y-m-d', strtotime($row['date'])),
+                'account_type' => 'CASH',
+                'transaction' => 'IN',
+                'description' => $row['description'],
+                'doc' => $row['doc'],
+                'debit' => number_format($row['amount'], 2),
+                'credit' => '0.00',
+                'balance' => number_format($runningBalance, 2),
+                'sort_date' => $row['date']
+            ];
+        }
+
+        // Battery Charging bills
+        $whereBattery = str_replace('invoice_date', 'bill_date', $where);
+        $query = "SELECT bill_date as date, invoice_no as doc, total as amount,
+                         CONCAT('Battery Charging - ', COALESCE(customer_name, '')) as description
+                  FROM battery_charging
+                  $whereBattery AND status = 1 AND total > 0
+                  ORDER BY bill_date ASC";
         $result = $db->readQuery($query);
         while ($row = mysqli_fetch_array($result)) {
             $runningBalance += (float) $row['amount'];
