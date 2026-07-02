@@ -117,7 +117,7 @@ jQuery(document).ready(function () {
         $('#item_id').val(item.id);
         $('#code').val(item.code);
         $('#name').val(item.name);
-        $('#brand').val(item.brand_id).trigger('change');
+        $('#brand').val(item.brand_id).trigger('sync-category').trigger('change');
         $('#size').val(item.size);
         $('#pattern').val(item.pattern);
         $('#voltage').val(item.voltage || '');
@@ -220,6 +220,7 @@ jQuery(document).ready(function () {
         $('#is_active').prop('checked', data.status == 1); // assuming 1 = active
 
         // Optional: trigger change for dropdowns if you have dependent selects
+        $('#brand').trigger('sync-category');
         $('#brand, #group, #category, #stock_type').trigger('change');
         $('#create').hide();
         $('#update').removeAttr('hidden');

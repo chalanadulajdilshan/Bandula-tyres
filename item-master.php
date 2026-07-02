@@ -125,6 +125,23 @@ $item_id = 'TI/0' . ($lastId + 1);
                                                 </div>
                                             </div>
 
+                                            <!-- Brand Category (filter) -->
+                                            <div class="col-md-3">
+                                                <div class="mb-3">
+                                                    <label class="form-label" for="brand_category">Brand Category <span
+                                                            class="text-danger">*</span></label>
+                                                    <select id="brand_category" name="brand_category" class="form-select">
+                                                        <option value="">-- All Categories --</option>
+                                                        <?php
+                                                        $BRAND_CATEGORY = new BrandCategory(NULL);
+                                                        foreach ($BRAND_CATEGORY->all() as $brand_category) {
+                                                            echo "<option value='{$brand_category['id']}'>{$brand_category['name']}</option>";
+                                                        }
+                                                        ?>
+                                                    </select>
+                                                </div>
+                                            </div>
+
                                             <!-- Brand -->
                                             <div class="col-md-3">
                                                 <div class="mb-3">
@@ -135,7 +152,7 @@ $item_id = 'TI/0' . ($lastId + 1);
                                                         <?php
                                                         $BRAND = new Brand(NULL);
                                                         foreach ($BRAND->activeBrands() as $brand) {
-                                                            echo "<option value='{$brand['id']}'>{$brand['name']}</option>";
+                                                            echo "<option value='{$brand['id']}' data-category='{$brand['category_id']}'>{$brand['name']}</option>";
                                                         }
                                                         ?>
                                                     </select>
@@ -385,6 +402,42 @@ $item_id = 'TI/0' . ($lastId + 1);
 
     <script>
         $(document).ready(function() {
+            // Keep a full copy of all brand options so we can re-filter freely
+            const allBrandOptions = $('#brand option').clone();
+
+            // Filter the Manufacturer Brand dropdown by the selected Brand Category
+            function filterBrandsByCategory() {
+                const categoryId = $('#brand_category').val();
+                const currentBrand = $('#brand').val();
+
+                $('#brand').empty();
+
+                allBrandOptions.each(function() {
+                    const optCategory = String($(this).data('category'));
+                    if (!categoryId || optCategory === String(categoryId)) {
+                        $('#brand').append($(this).clone());
+                    }
+                });
+
+                // Try to keep the previously selected brand if it still belongs to this category
+                if ($('#brand option[value="' + currentBrand + '"]').length) {
+                    $('#brand').val(currentBrand);
+                }
+
+                $('#brand').trigger('change');
+            }
+
+            $('#brand_category').on('change', filterBrandsByCategory);
+
+            // When a brand is set programmatically (edit / search select), sync the
+            // category dropdown so the selected brand stays visible.
+            $('#brand').on('sync-category', function() {
+                const selectedCategory = $('#brand option:selected').data('category');
+                if (selectedCategory !== undefined && selectedCategory !== null) {
+                    $('#brand_category').val(String(selectedCategory));
+                }
+            });
+
             // Function to update item name
             function updateItemName() {
                 const brand = $('#brand option:selected').text().trim();
