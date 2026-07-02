@@ -151,6 +151,7 @@ if (isset($_POST['create'])) {
 
     $totalSubTotal = 0;
     $totalDiscount = 0;
+    $totalOldBattery = 0;
     $final_cost = 0;
 
     // Calculate subtotal and discount
@@ -201,12 +202,17 @@ if (isset($_POST['create'])) {
             $SERVICE_ITEM->update();
         }
 
+        // Old battery trade-in reduces the invoice total (matches interface calculation)
+        $old_bat_price = isset($item['old_battery_price']) ? (float)$item['old_battery_price'] : 0;
+        $old_bat_qty = isset($item['old_battery_qty']) ? (float)$item['old_battery_qty'] : 0;
+
         $itemTotal = $price * $qty;
         $discount_amount = $discount_per_unit * $qty;
         $totalSubTotal += $itemTotal;
         $totalDiscount += $discount_amount;
+        $totalOldBattery += $old_bat_price * $old_bat_qty;
     }
-    $netTotal = $totalSubTotal - $totalDiscount;
+    $netTotal = $totalSubTotal - $totalDiscount - $totalOldBattery;
 
     $USER = new User($_SESSION['id']);
     $COMPANY_PROFILE = new CompanyProfile($USER->company_id);
