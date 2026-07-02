@@ -123,8 +123,21 @@ $nextInvoice = $BC_TMP->nextInvoiceNo();
                                                     <label class="form-label">Customer Code</label>
                                                     <div class="input-group">
                                                         <input id="customer_code" type="text" class="form-control" placeholder="Code" readonly>
-                                                        <button class="btn btn-info" type="button" data-bs-toggle="modal" data-bs-target="#customerModal">
+                                                        <button class="btn btn-info" type="button" data-bs-toggle="modal" data-bs-target="#customerModal" title="Search Customer">
                                                             <i class="uil uil-search"></i>
+                                                        </button>
+                                                        <?php
+                                                        $hasAddCustomerPermission = false;
+                                                        if (isset($_SESSION['id'])) {
+                                                            $specialPermission = new SpecialUserPermission();
+                                                            $hasAddCustomerPermission = $specialPermission->hasAccess($_SESSION['id'], 'add_customer');
+                                                        }
+                                                        ?>
+                                                        <button class="btn btn-danger" type="button" title="Add New Customer"
+                                                                data-bs-toggle="modal"
+                                                                data-bs-target="#customerAddModal"
+                                                                style="display: <?php echo $hasAddCustomerPermission ? 'inline-block' : 'none'; ?>">
+                                                            <i class="uil uil-plus"></i>
                                                         </button>
                                                     </div>
                                                 </div>
@@ -281,6 +294,7 @@ $nextInvoice = $BC_TMP->nextInvoiceNo();
     <?php include 'main-js.php' ?>
 
     <script src="ajax/js/common.js"></script>
+    <script src="ajax/js/customer-master.js"></script>
     <script src="ajax/js/battery-charging.js"></script>
 </body>
 </html>
