@@ -168,4 +168,14 @@ jQuery(document).ready(function () {
         $("#print_bill").show();
         $(".bs-example-modal-xl").modal("hide");
     });
+
+    // Select a loan battery from the master and auto-fill battery details
+    $(document).on("click", ".select-loan-battery-row", function () {
+        var d = $(this).data();
+        $("#make").val(d.make);
+        $("#voltage").val(d.voltage);
+        $("#battery_no").val(d.battery_no);
+        $("#loan_battery").val(d.name);
+        $("#loanBatteryModal").modal("hide");
+    });
 });

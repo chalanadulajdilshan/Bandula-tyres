@@ -158,7 +158,13 @@ $nextInvoice = $BC_TMP->nextInvoiceNo();
 
                                         <!-- Section: Battery details -->
                                         <div class="border rounded p-3 mb-3">
-                                            <h6 class="text-uppercase text-muted fw-bold mb-3">Battery Details</h6>
+                                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                                <h6 class="text-uppercase text-muted fw-bold mb-0">Battery Details</h6>
+                                                <button type="button" class="btn btn-sm btn-info"
+                                                        data-bs-toggle="modal" data-bs-target="#loanBatteryModal">
+                                                    <i class="uil uil-search me-1"></i> Select Loan Battery
+                                                </button>
+                                            </div>
                                             <div class="row g-3">
                                                 <div class="col-md-3">
                                                     <label class="form-label">Make</label>
@@ -278,6 +284,50 @@ $nextInvoice = $BC_TMP->nextInvoiceNo();
                                             <i class="uil uil-print"></i>
                                         </a>
                                     </td>
+                                </tr>
+                            <?php } ?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loan Battery selection modal -->
+    <div class="modal fade" id="loanBatteryModal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Select Loan Battery</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <table class="datatable table table-bordered dt-responsive nowrap" style="width:100%;">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Battery Name</th>
+                                <th>Make</th>
+                                <th>Voltage</th>
+                                <th>Battery No</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php
+                            $LB = new LoanBattery(null);
+                            foreach ($LB->activeBatteries() as $key => $battery) {
+                                $key++;
+                                ?>
+                                <tr class="select-loan-battery-row" style="cursor:pointer;"
+                                    data-name="<?php echo htmlspecialchars($battery['name']); ?>"
+                                    data-make="<?php echo htmlspecialchars($battery['make']); ?>"
+                                    data-voltage="<?php echo htmlspecialchars($battery['voltage']); ?>"
+                                    data-battery_no="<?php echo htmlspecialchars($battery['battery_no']); ?>">
+                                    <td><?php echo $key; ?></td>
+                                    <td><?php echo htmlspecialchars($battery['name']); ?></td>
+                                    <td><?php echo htmlspecialchars($battery['make']); ?></td>
+                                    <td><?php echo htmlspecialchars($battery['voltage']); ?></td>
+                                    <td><?php echo htmlspecialchars($battery['battery_no']); ?></td>
                                 </tr>
                             <?php } ?>
                         </tbody>
