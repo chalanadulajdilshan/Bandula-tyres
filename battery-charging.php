@@ -345,6 +345,6 @@ $nextInvoice = $BC_TMP->nextInvoiceNo();
 
     <script src="ajax/js/common.js"></script>
     <script src="ajax/js/customer-master.js"></script>
-    <script src="ajax/js/battery-charging.js"></script>
+    <script src="ajax/js/battery-charging.js?v=<?php echo @filemtime('ajax/js/battery-charging.js'); ?>"></script>
 </body>
 </html>
